@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mersey Investor Leads | AI Tenant Maintenance Triage</title>
+  <meta name="description" content="AI-powered tenant maintenance email triage for landlords across Liverpool and the Wirral. Emergencies flagged instantly. Contact Jonathan: 07576 618414">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --grey: #64748b;
+      --grey-light: #f1f5f9;
+      --white: #ffffff;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .header-contact {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .header-contact a {
+      color: var(--navy);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .header-contact a:hover {
+      color: var(--accent);
+    }
+
+    .phone-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--navy);
+      color: var(--white) !important;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .phone-link:hover {
+      background: var(--navy-light);
+    }
+
+    .hero {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem 3.5rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--grey-light);
+      color: var(--grey);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .pilot-badge {
+      display: inline-block;
+      background: #ecfdf5;
+      color: #047857;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+      border: 1px solid #a7f3d0;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--grey);
+      max-width: 540px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .trust-line {
+      font-size: 0.95rem;
+      color: var(--grey);
+      max-width: 540px;
+      margin: 0 auto 2rem;
+      font-weight: 500;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-subnote {
+      font-size: 0.85rem;
+      color: var(--grey);
+      margin-bottom: 2.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--navy-light);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--navy);
+      border: 1.5px solid #cbd5e1;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--navy);
+      background: var(--grey-light);
+    }
+
+    .hero-contact-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 2.5rem;
+      background: var(--grey-light);
+      padding: 1rem 1.75rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .hero-contact-bar a {
+      color: var(--navy);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hero-contact-bar a:hover {
+      color: var(--accent);
+    }
+
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.25;
+    }
+
+    .section-intro {
+      color: var(--grey);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+    }
+
+    .video-wrapper {
+      max-width: 640px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      display: block;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--white);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .feature-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--grey-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.1rem;
+      font-size: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      color: var(--grey);
+      font-size: 0.95rem;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding-left: 0;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .step h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .step p {
+      color: var(--grey);
+      font-size: 0.95rem;
+    }
+
+    .contact-strip {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 2.75rem 2rem;
+      text-align: center;
+      margin: 1rem 1.5rem 3.5rem;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .contact-strip h2 {
+      color: var(--white);
+      margin-bottom: 0.75rem;
+    }
+
+    .contact-strip p {
+      color: #94a3b8;
+      margin-bottom: 1.75rem;
+      font-size: 1.05rem;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.25rem 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .contact-item span {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .contact-item a {
+      color: var(--white);
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-item a:hover {
+      color: var(--accent);
+    }
+
+    .form-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      max-width: 420px;
+      margin: 0 auto 2rem;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+
+    .form-divider::before,
+    .form-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #334155;
+    }
+
+    .contact-form {
+      max-width: 420px;
+      margin: 0 auto;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .contact-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 0.35rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.95rem;
+    }
+
+    .contact-form input::placeholder,
+    .contact-form textarea::placeholder {
+      color: #64748b;
+    }
+
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .contact-form button {
+      margin-top: 0.25rem;
+      width: 100%;
+    }
+
+    footer {
+      border-top: 1px solid #e2e8f0;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .footer-inner p {
+      color: var(--grey);
+      font-size: 0.9rem;
+    }
+
+    .footer-contact {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .footer-contact a {
+      color: var(--navy);
+      text-decoration: none;
+      margin: 0 0.6rem;
+    }
+
+    .footer-contact a:hover {
+      color: var(--accent);
+    }
+
+    @media (max-width: 640px) {
+      .header-contact .email-link {
+        display: none;
+      }
+
+      .hero {
+        padding: 3rem 1.25rem 2.5rem;
+      }
+
+      .hero-cta {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .hero-contact-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .contact-strip {
+        margin: 1rem 1rem 2.5rem;
+        padding: 2rem 1.25rem;
+      }
+
+      .contact-item a {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">Mersey <span>Investor Leads</span></a>
+      <div class="header-contact">
+        <a href="mailto:jonathansmallbone889@gmail.com" class="email-link">jonathansmallbone889@gmail.com</a>
+        <a href="tel:07576618414" class="phone-link">07576 618414</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="pilot-badge">Free 2-Week Pilot — No Cost, No Commitment</div>
+    <div class="hero-badge">Liverpool &amp; the Wirral</div>
+    <h1>AI tenant maintenance triage for landlords</h1>
+    <p>Your tenants email maintenance issues. Our AI flags emergencies instantly, replies professionally, and logs everything. Try it free for two weeks on a handful of your properties — no cost, no commitment.</p>
+    <p class="trust-line">Built by the team behind Mersey Investor Leads — working with landlords and investors across Liverpool &amp; the Wirral.</p>
+    <div class="hero-cta">
+      <a href="tel:07576618414" class="btn btn-primary">Start My Free Pilot</a>
+      <a href="#demo" class="btn btn-secondary">Watch the Demo</a>
+    </div>
+    <p class="hero-subnote">No credit card, no setup fee, no obligation.</p>
+    <div class="hero-contact-bar">
+      <a href="tel:07576618414">📞 07576 618414</a>
+      <a href="mailto:jonathansmallbone889@gmail.com">✉️ jonathansmallbone889@gmail.com</a>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="section-label">See it in action</div>
+    <h2>Watch how the AI triages maintenance emails</h2>
+    <div class="video-wrapper">
+      <video controls playsinline preload="metadata" poster="">
+        <source src="demo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </section>
+
+  <section id="service">
+    <div class="section-label">The service</div>
+    <h2>Maintenance emails handled. Emergencies never missed.</h2>
+    <p class="section-intro">Built for landlords and property investors across Liverpool and the Wirral who want a reliable first line of defence for tenant maintenance requests.</p>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant emergency flagging</h3>
+        <p>Urgent issues — leaks, no heating, electrical faults — are identified and prioritised the moment the email arrives.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✉️</div>
+        <h3>Professional tenant replies</h3>
+        <p>Tenants receive clear, professional acknowledgements so they know their request has been received and is being handled.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3>Full logging &amp; audit trail</h3>
+        <p>Every email is logged with status, priority and timestamps so you always have a complete record.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="section-label">How it works</div>
+    <h2>Simple. Automatic. Reliable.</h2>
+    <p class="section-intro">Three steps. No new software for your tenants to learn. Just forward or connect your maintenance inbox.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Connect your inbox</h3>
+        <p>Point your tenant maintenance emails to the AI system. Setup is straightforward.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>AI triages every message</h3>
+        <p>Each email is classified by urgency, replied to, and logged automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>You stay informed</h3>
+        <p>Emergencies are escalated to you immediately. Everything else is organised and ready when you need it.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="contact-strip" id="contact">
+    <h2>Ready to try it free for two weeks?</h2>
+    <p>Speak directly with Jonathan — the person behind Mersey Investor Leads.</p>
+    <div class="contact-details">
+      <div class="contact-item">
+        <span>Phone</span>
+        <a href="tel:07576618414">07576 618414</a>
+      </div>
+      <div class="contact-item">
+        <span>Email</span>
+        <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a>
+      </div>
+    </div>
+
+    <div class="form-divider">or send a quick message</div>
+
+    <form class="contact-form" id="pilotForm" onsubmit="return sendPilotEnquiry(event)">
+      <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name" required>
+      </div>
+      <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div>
+        <label for="properties">Number of properties (optional)</label>
+        <input type="text" id="properties" name="properties" placeholder="e.g. 25">
+      </div>
+      <div>
+        <label for="message">Message (optional)</label>
+        <textarea id="message" name="message" placeholder="Anything you'd like to add..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Request My Free Pilot</button>
+    </form>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <p>© 2026 Mersey Investor Leads · Serving landlords across Liverpool &amp; the Wirral</p>
+      <div class="footer-contact">
+        <a href="tel:07576618414">07576 618414</a>
+        <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function sendPilotEnquiry(event) {
+      event.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const properties = document.getElementById('properties').value;
+      const message = document.getElementById('message').value;
+
+      const subject = encodeURIComponent('Free Pilot Enquiry - ' + name);
+      const body = encodeURIComponent(
+        'Name: ' + name + '\n' +
+        'Email: ' + email + '\n' +
+        'Number of properties: ' + (properties || 'Not provided') + '\n' +
+        'Message: ' + (message || 'None') 
+      );
+
+      window.location.href = 'mailto:jonathansmallbone889@gmail.com?subject=' + subject + '&body=' + body;
+      return false;
+    }
+  </script>
+
+</body>
+</html>
