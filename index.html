@@ -492,6 +492,11 @@
       background: var(--accent-hover);
     }
 
+    .contact-form button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
     .form-note {
       color: #cbd5e1;
       font-size: 0.9rem;
@@ -716,8 +721,9 @@
         <label for="message">Message (optional)</label>
         <textarea id="message" name="message" placeholder="Anything you'd like to add..."></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Request My Free Pilot</button>
-      <p class="form-note" id="formNote" role="status" hidden>Your email app should now open with your enquiry ready to send. If it didn't, email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.</p>
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
+      <button type="submit" class="btn btn-primary" id="pilotSubmit">Request My Free Pilot</button>
+      <p class="form-note" id="formNote" role="status" hidden></p>
     </form>
   </div>
 
@@ -732,8 +738,57 @@
   </footer>
 
   <script>
+    // Paste your Formspree endpoint here, e.g. 'https://formspree.io/f/abcdwxyz'.
+    // While it's empty, the form falls back to opening the visitor's email app.
+    const FORMSPREE_ENDPOINT = '';
+
+    const CONTACT_FALLBACK = 'email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.';
+
+    function showFormNote(html) {
+      const note = document.getElementById('formNote');
+      note.innerHTML = html;
+      note.hidden = false;
+    }
+
     function sendPilotEnquiry(event) {
       event.preventDefault();
+      const form = document.getElementById('pilotForm');
+      const name = document.getElementById('name').value;
+
+      if (!FORMSPREE_ENDPOINT) {
+        openMailtoEnquiry();
+        return false;
+      }
+
+      const button = document.getElementById('pilotSubmit');
+      const data = new FormData(form);
+      data.append('_subject', 'Free Pilot Enquiry - ' + name);
+
+      button.disabled = true;
+      button.textContent = 'Sending...';
+
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error('Formspree returned ' + response.status);
+          form.reset();
+          showFormNote('Thanks — your request has been sent. Jonathan will be in touch shortly.');
+        })
+        .catch(function () {
+          showFormNote('Sorry, something went wrong sending your message. Please ' + CONTACT_FALLBACK);
+        })
+        .finally(function () {
+          button.disabled = false;
+          button.textContent = 'Request My Free Pilot';
+        });
+
+      return false;
+    }
+
+    function openMailtoEnquiry() {
       const name = document.getElementById('name').value;
       const email = document.getElementById('email').value;
       const properties = document.getElementById('properties').value;
@@ -748,8 +803,7 @@
       );
 
       window.location.href = 'mailto:jonathansmallbone889@gmail.com?subject=' + subject + '&body=' + body;
-      document.getElementById('formNote').hidden = false;
-      return false;
+      showFormNote('Your email app should now open with your enquiry ready to send. If it didn\'t, ' + CONTACT_FALLBACK);
     }
   </script>
 
