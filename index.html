@@ -704,7 +704,7 @@
 
     <div class="form-divider">or send a quick message</div>
 
-    <form class="contact-form" id="pilotForm" onsubmit="return sendPilotEnquiry(event)">
+    <form class="contact-form" id="pilotForm" action="https://formspree.io/f/mnpnkrby" method="POST" onsubmit="return sendPilotEnquiry(event)">
       <div>
         <label for="name">Name</label>
         <input type="text" id="name" name="name" placeholder="Your name" required>
@@ -738,11 +738,13 @@
   </footer>
 
   <script>
-    // Paste your Formspree endpoint here, e.g. 'https://formspree.io/f/abcdwxyz'.
-    // While it's empty, the form falls back to opening the visitor's email app.
-    const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mnpnkrby';
-
     const CONTACT_FALLBACK = 'email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.';
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
 
     function showFormNote(html) {
       const note = document.getElementById('formNote');
@@ -754,8 +756,11 @@
       event.preventDefault();
       const form = document.getElementById('pilotForm');
       const name = document.getElementById('name').value;
+      // The Formspree endpoint lives in the form's action attribute. If it's
+      // removed, fall back to opening the visitor's email app.
+      const endpoint = form.getAttribute('action');
 
-      if (!FORMSPREE_ENDPOINT) {
+      if (!endpoint) {
         openMailtoEnquiry();
         return false;
       }
@@ -767,15 +772,22 @@
       button.disabled = true;
       button.textContent = 'Sending...';
 
-      fetch(FORMSPREE_ENDPOINT, {
+      fetch(endpoint, {
         method: 'POST',
         body: data,
         headers: { 'Accept': 'application/json' }
       })
         .then(function (response) {
-          if (!response.ok) throw new Error('Formspree returned ' + response.status);
-          form.reset();
-          showFormNote('Thanks — your request has been sent. Jonathan will be in touch shortly.');
+          if (response.ok) {
+            form.reset();
+            showFormNote('Thanks — your request has been sent. Jonathan will be in touch shortly.');
+            return;
+          }
+          return response.json().catch(function () { return {}; }).then(function (result) {
+            const errors = (result && result.errors) || [];
+            const details = errors.map(function (e) { return e.message; }).filter(Boolean).join('. ');
+            showFormNote('Sorry, your message couldn\'t be sent' + (details ? ' (' + escapeHtml(details) + ')' : '') + '. Please ' + CONTACT_FALLBACK);
+          });
         })
         .catch(function () {
           showFormNote('Sorry, something went wrong sending your message. Please ' + CONTACT_FALLBACK);
