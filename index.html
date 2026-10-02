@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mersey Investor Leads | AI Tenant Maintenance Triage</title>
   <meta name="description" content="AI-powered tenant maintenance email triage for landlords across Liverpool and the Wirral. Emergencies flagged instantly. Contact Jonathan: 07576 618414">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='17' font-weight='700' fill='%230ea5e9' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -27,6 +28,7 @@
 
     html {
       scroll-behavior: smooth;
+      scroll-padding-top: 5rem;
     }
 
     body {
@@ -95,6 +97,7 @@
       padding: 0.5rem 1rem;
       border-radius: 6px;
       font-weight: 600;
+      white-space: nowrap;
     }
 
     .phone-link:hover {
@@ -261,12 +264,17 @@
       margin-bottom: 2.5rem;
     }
 
+    .video-section {
+      text-align: center;
+    }
+
     .video-wrapper {
       max-width: 640px;
       margin: 0 auto;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid #e2e8f0;
+      background: #000;
       box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
     }
 
@@ -398,6 +406,7 @@
       font-weight: 600;
       text-decoration: none;
       transition: color 0.2s;
+      overflow-wrap: anywhere;
     }
 
     .contact-item a:hover {
@@ -474,6 +483,27 @@
     .contact-form button {
       margin-top: 0.25rem;
       width: 100%;
+      background: var(--accent);
+    }
+
+    .contact-form button:hover {
+      background: var(--accent-hover);
+    }
+
+    .contact-form button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    .form-note {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .form-note a {
+      color: var(--accent);
     }
 
     footer {
@@ -513,6 +543,21 @@
         display: none;
       }
 
+      .header-inner {
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+      }
+
+      .logo {
+        font-size: 0.95rem;
+        white-space: nowrap;
+      }
+
+      .phone-link {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.85rem;
+      }
+
       .hero {
         padding: 3rem 1.25rem 2.5rem;
       }
@@ -529,6 +574,11 @@
       .hero-contact-bar {
         flex-direction: column;
         gap: 0.75rem;
+        max-width: 100%;
+      }
+
+      .hero-contact-bar a {
+        overflow-wrap: anywhere;
       }
 
       .contact-strip {
@@ -538,7 +588,13 @@
       }
 
       .contact-item a {
-        font-size: 1.1rem;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 350px) {
+      .logo {
+        white-space: normal;
       }
     }
   </style>
@@ -550,7 +606,7 @@
       <a href="#" class="logo">Mersey <span>Investor Leads</span></a>
       <div class="header-contact">
         <a href="mailto:jonathansmallbone889@gmail.com" class="email-link">jonathansmallbone889@gmail.com</a>
-        <a href="tel:07576618414" class="phone-link">07576 618414</a>
+        <a href="tel:+447576618414" class="phone-link">07576 618414</a>
       </div>
     </div>
   </header>
@@ -560,23 +616,23 @@
     <div class="hero-badge">Liverpool &amp; the Wirral</div>
     <h1>AI tenant maintenance triage for landlords</h1>
     <p>Your tenants email maintenance issues. Our AI flags emergencies instantly, replies professionally, and logs everything. Try it free for two weeks on a handful of your properties — no cost, no commitment.</p>
-    <p class="trust-line">Built by the team behind Mersey Investor Leads — working with landlords and investors across Liverpool &amp; the Wirral.</p>
+    <p class="trust-line">Built by Jonathan at Mersey Investor Leads — working with landlords and investors across Liverpool &amp; the Wirral.</p>
     <div class="hero-cta">
-      <a href="tel:07576618414" class="btn btn-primary">Start My Free Pilot</a>
+      <a href="#contact" class="btn btn-primary">Start My Free Pilot</a>
       <a href="#demo" class="btn btn-secondary">Watch the Demo</a>
     </div>
     <p class="hero-subnote">No credit card, no setup fee, no obligation.</p>
     <div class="hero-contact-bar">
-      <a href="tel:07576618414">📞 07576 618414</a>
+      <a href="tel:+447576618414">📞 07576 618414</a>
       <a href="mailto:jonathansmallbone889@gmail.com">✉️ jonathansmallbone889@gmail.com</a>
     </div>
   </section>
 
-  <section id="demo">
+  <section id="demo" class="video-section">
     <div class="section-label">See it in action</div>
     <h2>Watch how the AI triages maintenance emails</h2>
     <div class="video-wrapper">
-      <video controls playsinline preload="metadata">
+      <video controls muted playsinline preload="metadata">
         <source src="demo.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -637,7 +693,7 @@
     <div class="contact-details">
       <div class="contact-item">
         <span>Phone</span>
-        <a href="tel:07576618414">07576 618414</a>
+        <a href="tel:+447576618414">07576 618414</a>
       </div>
       <div class="contact-item">
         <span>Email</span>
@@ -647,7 +703,7 @@
 
     <div class="form-divider">or send a quick message</div>
 
-    <form class="contact-form" id="pilotForm" onsubmit="return sendPilotEnquiry(event)">
+    <form class="contact-form" id="pilotForm" action="https://formspree.io/f/mnpnkrby" method="POST" onsubmit="return sendPilotEnquiry(event)">
       <div>
         <label for="name">Name</label>
         <input type="text" id="name" name="name" placeholder="Your name" required>
@@ -664,7 +720,9 @@
         <label for="message">Message (optional)</label>
         <textarea id="message" name="message" placeholder="Anything you'd like to add..."></textarea>
       </div>
-      <button type="submit" class="btn btn-primary">Request My Free Pilot</button>
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
+      <button type="submit" class="btn btn-primary" id="pilotSubmit">Request My Free Pilot</button>
+      <p class="form-note" id="formNote" role="status" hidden></p>
     </form>
   </div>
 
@@ -672,20 +730,33 @@
     <div class="footer-inner">
       <p>© 2026 Mersey Investor Leads · Serving landlords across Liverpool &amp; the Wirral</p>
       <div class="footer-contact">
-        <a href="tel:07576618414">07576 618414</a>
+        <a href="tel:+447576618414">07576 618414</a>
         <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a>
       </div>
     </div>
   </footer>
 
   <script>
+    const CONTACT_FALLBACK = 'email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.';
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showFormNote(html) {
+      const note = document.getElementById('formNote');
+      note.innerHTML = html;
+      note.hidden = false;
+    }
+
     function sendPilotEnquiry(event) {
       event.preventDefault();
+      const form = document.getElementById('pilotForm');
       const name = document.getElementById('name').value;
       const emailInput = document.getElementById('email');
       const email = emailInput.value.trim();
-      const properties = document.getElementById('properties').value;
-      const message = document.getElementById('message').value;
 
       if (!isValidEmail(email)) {
         emailInput.setCustomValidity('Please enter a valid email address, e.g. you@example.com');
@@ -694,6 +765,57 @@
         emailInput.focus();
         return false;
       }
+
+      emailInput.value = email;
+      // The Formspree endpoint lives in the form's action attribute. If it's
+      // removed, fall back to opening the visitor's email app.
+      const endpoint = form.getAttribute('action');
+
+      if (!endpoint) {
+        openMailtoEnquiry();
+        return false;
+      }
+
+      const button = document.getElementById('pilotSubmit');
+      const data = new FormData(form);
+      data.append('_subject', 'Free Pilot Enquiry - ' + name);
+
+      button.disabled = true;
+      button.textContent = 'Sending...';
+
+      fetch(endpoint, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(function (response) {
+          if (response.ok) {
+            form.reset();
+            showFormNote('Thanks — your request has been sent. Jonathan will be in touch shortly.');
+            return;
+          }
+          return response.json().catch(function () { return {}; }).then(function (result) {
+            const errors = (result && result.errors) || [];
+            const details = errors.map(function (e) { return e.message; }).filter(Boolean).join('. ');
+            showFormNote('Sorry, your message couldn\'t be sent' + (details ? ' (' + escapeHtml(details) + ')' : '') + '. Please ' + CONTACT_FALLBACK);
+          });
+        })
+        .catch(function () {
+          showFormNote('Sorry, something went wrong sending your message. Please ' + CONTACT_FALLBACK);
+        })
+        .finally(function () {
+          button.disabled = false;
+          button.textContent = 'Request My Free Pilot';
+        });
+
+      return false;
+    }
+
+    function openMailtoEnquiry() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const properties = document.getElementById('properties').value;
+      const message = document.getElementById('message').value;
 
       const subject = encodeURIComponent('Free Pilot Enquiry - ' + name);
       const body = encodeURIComponent(
@@ -704,7 +826,7 @@
       );
 
       window.location.href = 'mailto:jonathansmallbone889@gmail.com?subject=' + subject + '&body=' + body;
-      return false;
+      showFormNote('Your email app should now open with your enquiry ready to send. If it didn\'t, ' + CONTACT_FALLBACK);
     }
 
     function isValidEmail(email) {
