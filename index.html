@@ -150,7 +150,7 @@
       margin: 0 auto 1.5rem;
     }
 
-    .trust-line {
+    .hero .trust-line {
       font-size: 0.95rem;
       color: var(--grey);
       max-width: 540px;
@@ -166,7 +166,7 @@
       margin-bottom: 1rem;
     }
 
-    .hero-subnote {
+    .hero .hero-subnote {
       font-size: 0.85rem;
       color: var(--grey);
       margin-bottom: 2.5rem;
@@ -321,12 +321,6 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 2rem;
-      counter-reset: step;
-    }
-
-    .step {
-      position: relative;
-      padding-left: 0;
     }
 
     .step-number {
@@ -360,10 +354,9 @@
       border-radius: 16px;
       padding: 2.75rem 2rem;
       text-align: center;
-      margin: 1rem 1.5rem 3.5rem;
+      width: calc(100% - 3rem);
       max-width: 1100px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 1rem auto 3.5rem;
     }
 
     .contact-strip h2 {
@@ -469,6 +462,10 @@
       border-color: var(--accent);
     }
 
+    .contact-form input[aria-invalid="true"] {
+      border-color: #f87171;
+    }
+
     .contact-form textarea {
       resize: vertical;
       min-height: 90px;
@@ -535,7 +532,8 @@
       }
 
       .contact-strip {
-        margin: 1rem 1rem 2.5rem;
+        width: calc(100% - 2rem);
+        margin: 1rem auto 2.5rem;
         padding: 2rem 1.25rem;
       }
 
@@ -578,7 +576,7 @@
     <div class="section-label">See it in action</div>
     <h2>Watch how the AI triages maintenance emails</h2>
     <div class="video-wrapper">
-      <video controls playsinline preload="metadata" poster="">
+      <video controls playsinline preload="metadata">
         <source src="demo.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
@@ -684,21 +682,39 @@
     function sendPilotEnquiry(event) {
       event.preventDefault();
       const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value.trim();
       const properties = document.getElementById('properties').value;
       const message = document.getElementById('message').value;
+
+      if (!isValidEmail(email)) {
+        emailInput.setCustomValidity('Please enter a valid email address, e.g. you@example.com');
+        emailInput.setAttribute('aria-invalid', 'true');
+        emailInput.reportValidity();
+        emailInput.focus();
+        return false;
+      }
 
       const subject = encodeURIComponent('Free Pilot Enquiry - ' + name);
       const body = encodeURIComponent(
         'Name: ' + name + '\n' +
         'Email: ' + email + '\n' +
         'Number of properties: ' + (properties || 'Not provided') + '\n' +
-        'Message: ' + (message || 'None') 
+        'Message: ' + (message || 'None')
       );
 
       window.location.href = 'mailto:jonathansmallbone889@gmail.com?subject=' + subject + '&body=' + body;
       return false;
     }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    }
+
+    document.getElementById('email').addEventListener('input', function () {
+      this.setCustomValidity('');
+      this.removeAttribute('aria-invalid');
+    });
   </script>
 
 </body>
