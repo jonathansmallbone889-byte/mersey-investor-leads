@@ -355,7 +355,7 @@
   <script>
     // Google Sheets → File → Share → Publish to web → (request log tab) → CSV.
     // Paste the link it gives you here.
-    const SHEET_CSV_URL = '';
+    const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_nsjdsX_K3WQdFah_Q1oF9VziMyAPUQZgrBpHhR2J17XkgT2dUp1z10sYZwFnVvEdrM2TgL0L_nLI/pub?gid=0&single=true&output=csv';
 
     // Columns are matched by heading, so their order in the sheet doesn't matter.
     // Patterns are tried in order, so "Summary" wins over "Subject" if both exist.
@@ -538,7 +538,11 @@
         render();
       } catch (err) {
         meta.textContent = 'Couldn\'t load requests.';
-        showNotice('Couldn\'t load the sheet', err.message);
+        // fetch() rejects with a TypeError when the network or CORS blocks it.
+        const detail = err instanceof TypeError
+          ? 'Couldn\'t reach Google Sheets. Check your connection and that the sheet is still published to the web, then press Refresh.'
+          : err.message;
+        showNotice('Couldn\'t load the sheet', detail);
       }
     }
 
