@@ -153,7 +153,7 @@
       margin: 0 auto 1.5rem;
     }
 
-    .trust-line {
+    .hero .trust-line {
       font-size: 0.95rem;
       color: var(--grey);
       max-width: 540px;
@@ -169,7 +169,7 @@
       margin-bottom: 1rem;
     }
 
-    .hero-subnote {
+    .hero .hero-subnote {
       font-size: 0.85rem;
       color: var(--grey);
       margin-bottom: 2.5rem;
@@ -331,11 +331,6 @@
       gap: 2rem;
     }
 
-    .step {
-      position: relative;
-      padding-left: 0;
-    }
-
     .step-number {
       display: inline-flex;
       align-items: center;
@@ -367,10 +362,9 @@
       border-radius: 16px;
       padding: 2.75rem 2rem;
       text-align: center;
-      margin: 1rem 1.5rem 3.5rem;
+      width: calc(100% - 3rem);
       max-width: 1100px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 1rem auto 3.5rem;
     }
 
     .contact-strip h2 {
@@ -475,6 +469,10 @@
     .contact-form textarea:focus {
       outline: none;
       border-color: var(--accent);
+    }
+
+    .contact-form input[aria-invalid="true"] {
+      border-color: #f87171;
     }
 
     .contact-form textarea {
@@ -584,7 +582,8 @@
       }
 
       .contact-strip {
-        margin: 1rem 1rem 2.5rem;
+        width: calc(100% - 2rem);
+        margin: 1rem auto 2.5rem;
         padding: 2rem 1.25rem;
       }
 
@@ -621,6 +620,7 @@
     <div class="hero-cta">
       <a href="#contact" class="btn btn-primary">Start My Free Pilot</a>
       <a href="#demo" class="btn btn-secondary">Watch the Demo</a>
+      <a href="roi-calculator.html" class="btn btn-secondary">Calculate Your Time Savings</a>
     </div>
     <p class="hero-subnote">No credit card, no setup fee, no obligation.</p>
     <div class="hero-contact-bar">
@@ -756,6 +756,18 @@
       event.preventDefault();
       const form = document.getElementById('pilotForm');
       const name = document.getElementById('name').value;
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value.trim();
+
+      if (!isValidEmail(email)) {
+        emailInput.setCustomValidity('Please enter a valid email address, e.g. you@example.com');
+        emailInput.setAttribute('aria-invalid', 'true');
+        emailInput.reportValidity();
+        emailInput.focus();
+        return false;
+      }
+
+      emailInput.value = email;
       // The Formspree endpoint lives in the form's action attribute. If it's
       // removed, fall back to opening the visitor's email app.
       const endpoint = form.getAttribute('action');
@@ -817,6 +829,15 @@
       window.location.href = 'mailto:jonathansmallbone889@gmail.com?subject=' + subject + '&body=' + body;
       showFormNote('Your email app should now open with your enquiry ready to send. If it didn\'t, ' + CONTACT_FALLBACK);
     }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    }
+
+    document.getElementById('email').addEventListener('input', function () {
+      this.setCustomValidity('');
+      this.removeAttribute('aria-invalid');
+    });
   </script>
 
 </body>

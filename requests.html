@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Requests | Mersey Investor Leads</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --grey: #64748b;
+      --grey-light: #f1f5f9;
+      --border: #e2e8f0;
+      --white: #ffffff;
+      --accent: #0ea5e9;
+      --emergency: #b91c1c;
+      --emergency-bg: #fef2f2;
+      --emergency-border: #fecaca;
+      --routine: #047857;
+      --routine-bg: #ecfdf5;
+      --routine-border: #a7f3d0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner,
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .header-inner {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    main {
+      padding-top: 2.5rem;
+      padding-bottom: 3.5rem;
+    }
+
+    h1 {
+      font-size: clamp(1.5rem, 3vw, 1.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    .meta {
+      color: var(--grey);
+      font-size: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip,
+    .refresh {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--navy);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .chip:hover,
+    .refresh:hover {
+      border-color: #cbd5e1;
+      background: var(--grey-light);
+    }
+
+    .chip[aria-pressed="true"] {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: var(--white);
+    }
+
+    .chip .count {
+      font-variant-numeric: tabular-nums;
+      opacity: 0.7;
+      margin-left: 0.3rem;
+    }
+
+    .chip:focus-visible,
+    .refresh:focus-visible,
+    .sort-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .table-wrap {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.925rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.8rem 1rem;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--grey-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--grey);
+      white-space: nowrap;
+    }
+
+    tbody tr + tr td {
+      border-top: 1px solid var(--border);
+    }
+
+    tbody tr.is-emergency td:first-child {
+      box-shadow: inset 3px 0 0 var(--emergency);
+    }
+
+    .sort-btn {
+      font: inherit;
+      color: inherit;
+      text-transform: inherit;
+      letter-spacing: inherit;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .sort-btn:hover {
+      color: var(--navy);
+    }
+
+    .col-date {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      color: var(--grey);
+    }
+
+    .col-summary {
+      min-width: 260px;
+    }
+
+    .col-sender a {
+      color: var(--navy);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .col-sender a:hover {
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--grey-light);
+      color: var(--grey);
+      white-space: nowrap;
+    }
+
+    .badge.emergency {
+      background: var(--emergency-bg);
+      border-color: var(--emergency-border);
+      color: var(--emergency);
+    }
+
+    .badge.routine {
+      background: var(--routine-bg);
+      border-color: var(--routine-border);
+      color: var(--routine);
+    }
+
+    .notice {
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--grey);
+    }
+
+    .notice strong {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 0.35rem;
+    }
+
+    @media (max-width: 640px) {
+      .header-inner,
+      main {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      main {
+        padding-top: 1.75rem;
+      }
+
+      .table-wrap {
+        border: none;
+        overflow: visible;
+      }
+
+      table,
+      tbody,
+      tr,
+      td {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      tbody tr {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.4rem 0.75rem;
+      }
+
+      tbody tr.is-emergency {
+        border-left: 3px solid var(--emergency);
+      }
+
+      tbody tr + tr td,
+      tbody tr.is-emergency td:first-child {
+        border-top: none;
+        box-shadow: none;
+      }
+
+      td {
+        padding: 0;
+      }
+
+      .col-date { grid-column: 1; grid-row: 1; font-size: 0.85rem; }
+      .col-category { grid-column: 2; grid-row: 1; }
+      .col-summary { grid-column: 1 / -1; min-width: 0; }
+      .col-sender { grid-column: 1 / -1; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo">Mersey <span>Investor Leads</span></a>
+    </div>
+  </header>
+
+  <main>
+    <h1>Maintenance requests</h1>
+    <p class="meta" id="meta">Loading requests…</p>
+
+    <div class="toolbar">
+      <div class="filters" role="group" aria-label="Filter by category">
+        <button type="button" class="chip" data-filter="all" aria-pressed="true">All<span class="count" id="count-all"></span></button>
+        <button type="button" class="chip" data-filter="emergency" aria-pressed="false">Emergency<span class="count" id="count-emergency"></span></button>
+        <button type="button" class="chip" data-filter="routine" aria-pressed="false">Routine<span class="count" id="count-routine"></span></button>
+      </div>
+      <button type="button" class="refresh" id="refresh">Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="descending" id="date-header">
+              <button type="button" class="sort-btn" id="sort-date">Date <span id="sort-arrow" aria-hidden="true">↓</span></button>
+            </th>
+            <th scope="col">Category</th>
+            <th scope="col">Summary</th>
+            <th scope="col">Sender</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="notice" id="notice" hidden></div>
+    </div>
+  </main>
+
+  <script>
+    // Google Sheets → File → Share → Publish to web → (request log tab) → CSV.
+    // Paste the link it gives you here.
+    const SHEET_CSV_URL = '';
+
+    // Columns are matched by heading, so their order in the sheet doesn't matter.
+    // Patterns are tried in order, so "Summary" wins over "Subject" if both exist.
+    const COLUMN_MATCHERS = {
+      date: [/date/i, /timestamp|time|received/i],
+      category: [/category/i, /priority|urgency|type/i],
+      summary: [/summary/i, /issue|description/i, /subject/i],
+      sender: [/sender|from/i, /e-?mail/i]
+    };
+
+    let requests = [];
+    let activeFilter = 'all';
+    let newestFirst = true;
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQuotes) {
+          if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
+          else if (c === '"') inQuotes = false;
+          else field += c;
+        } else if (c === '"') {
+          inQuotes = true;
+        } else if (c === ',') {
+          row.push(field); field = '';
+        } else if (c === '\n' || c === '\r') {
+          if (c === '\r' && text[i + 1] === '\n') i++;
+          row.push(field); rows.push(row); row = []; field = '';
+        } else {
+          field += c;
+        }
+      }
+      if (field || row.length) { row.push(field); rows.push(row); }
+      return rows.filter(r => r.some(cell => cell.trim() !== ''));
+    }
+
+    // Accepts ISO dates and UK-style dd/mm/yyyy [hh:mm[:ss]] (Google Sheets' en-GB format).
+    function parseDate(value) {
+      const s = value.trim();
+      const uk = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ ,T]+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+      if (uk) {
+        const [, d, m, y, hh = 0, mm = 0, ss = 0] = uk;
+        return new Date(+y, +m - 1, +d, +hh, +mm, +ss);
+      }
+      const parsed = new Date(s);
+      return isNaN(parsed) ? null : parsed;
+    }
+
+    function categoryKey(value) {
+      if (/emerg|urgent/i.test(value)) return 'emergency';
+      if (/routine/i.test(value)) return 'routine';
+      return 'other';
+    }
+
+    function findColumns(header) {
+      const columns = {};
+      for (const [key, patterns] of Object.entries(COLUMN_MATCHERS)) {
+        columns[key] = -1;
+        for (const pattern of patterns) {
+          const index = header.findIndex((h, i) =>
+            pattern.test(h) && !Object.values(columns).includes(i));
+          if (index !== -1) { columns[key] = index; break; }
+        }
+      }
+      return columns;
+    }
+
+    function toRequests(rows) {
+      const [header, ...body] = rows;
+      const cols = findColumns(header);
+      const missing = Object.keys(cols).filter(k => cols[k] === -1);
+      if (missing.length) {
+        throw new Error('Couldn\'t find a column for: ' + missing.join(', ') +
+          '. Found headings: ' + header.join(', ') + '.');
+      }
+      return body.map(r => {
+        const rawDate = (r[cols.date] || '').trim();
+        const category = (r[cols.category] || '').trim();
+        return {
+          rawDate,
+          date: parseDate(rawDate),
+          category,
+          categoryKey: categoryKey(category),
+          summary: (r[cols.summary] || '').trim(),
+          sender: (r[cols.sender] || '').trim()
+        };
+      });
+    }
+
+    const dateFormat = new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+
+    function cell(className, content) {
+      const td = document.createElement('td');
+      td.className = className;
+      if (content instanceof Node) td.appendChild(content);
+      else td.textContent = content;
+      return td;
+    }
+
+    function render() {
+      const counts = { all: requests.length, emergency: 0, routine: 0 };
+      requests.forEach(r => { if (r.categoryKey in counts) counts[r.categoryKey]++; });
+      for (const key of Object.keys(counts)) {
+        document.getElementById('count-' + key).textContent = counts[key];
+      }
+
+      const visible = requests
+        .filter(r => activeFilter === 'all' || r.categoryKey === activeFilter)
+        .sort((a, b) => {
+          // Rows with an unreadable date always sink to the bottom.
+          if (!a.date || !b.date) return (a.date ? -1 : 1) - (b.date ? -1 : 1);
+          return newestFirst ? b.date - a.date : a.date - b.date;
+        });
+
+      const tbody = document.getElementById('rows');
+      tbody.replaceChildren(...visible.map(r => {
+        const tr = document.createElement('tr');
+        if (r.categoryKey === 'emergency') tr.className = 'is-emergency';
+
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + r.categoryKey;
+        badge.textContent = r.category || 'Uncategorised';
+
+        const sender = document.createElement('a');
+        sender.href = 'mailto:' + r.sender;
+        sender.textContent = r.sender;
+
+        tr.append(
+          cell('col-date', r.date ? dateFormat.format(r.date) : r.rawDate),
+          cell('col-category', badge),
+          cell('col-summary', r.summary),
+          cell('col-sender', r.sender ? sender : '')
+        );
+        return tr;
+      }));
+
+      if (requests.length && !visible.length) {
+        showNotice('No ' + activeFilter + ' requests', 'Choose "All" to see every request.');
+      } else if (requests.length) {
+        hideNotice();
+      }
+    }
+
+    function showNotice(title, detail) {
+      const notice = document.getElementById('notice');
+      notice.replaceChildren();
+      const strong = document.createElement('strong');
+      strong.textContent = title;
+      notice.append(strong, detail);
+      notice.hidden = false;
+    }
+
+    function hideNotice() {
+      document.getElementById('notice').hidden = true;
+    }
+
+    async function load() {
+      const meta = document.getElementById('meta');
+      if (!SHEET_CSV_URL) {
+        meta.textContent = 'Not connected to a sheet yet.';
+        showNotice('No sheet connected', 'Set SHEET_CSV_URL in requests.html to your sheet\'s published CSV link.');
+        return;
+      }
+      meta.textContent = 'Loading requests…';
+      try {
+        const res = await fetch(SHEET_CSV_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('The sheet returned an error (' + res.status + '). Check it is still published to the web.');
+        const rows = parseCsv(await res.text());
+        if (rows.length < 1) throw new Error('The sheet is empty.');
+        requests = toRequests(rows);
+        meta.textContent = requests.length + ' request' + (requests.length === 1 ? '' : 's') +
+          ' · updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        if (!requests.length) showNotice('No requests yet', 'New requests will appear here as they\'re logged.');
+        render();
+      } catch (err) {
+        meta.textContent = 'Couldn\'t load requests.';
+        showNotice('Couldn\'t load the sheet', err.message);
+      }
+    }
+
+    document.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        activeFilter = chip.dataset.filter;
+        document.querySelectorAll('.chip').forEach(c =>
+          c.setAttribute('aria-pressed', String(c === chip)));
+        render();
+      });
+    });
+
+    document.getElementById('sort-date').addEventListener('click', () => {
+      newestFirst = !newestFirst;
+      document.getElementById('sort-arrow').textContent = newestFirst ? '↓' : '↑';
+      document.getElementById('date-header').setAttribute('aria-sort', newestFirst ? 'descending' : 'ascending');
+      render();
+    });
+
+    document.getElementById('refresh').addEventListener('click', load);
+
+    load();
+  </script>
+
+</body>
+</html>
