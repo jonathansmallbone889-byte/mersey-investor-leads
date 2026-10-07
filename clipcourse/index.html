@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClipCourse | Turn Viral AI Videos into Courses</title>
+  <meta name="description" content="Paste a viral AI video and its transcript. ClipCourse turns it into a structured mini-course with modules, timestamped lessons, key takeaways and a quiz.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237c3aed'/%3E%3Cpath d='M12 9l11 7-11 7z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f6f5fb;
+      --card: #ffffff;
+      --text: #14121f;
+      --muted: #5f5b73;
+      --border: #e4e1ef;
+      --accent: #7c3aed;
+      --accent-hover: #6d28d9;
+      --accent-soft: #f1eafe;
+      --hot: #ec4899;
+      --on-accent: #ffffff;
+      --ok: #059669;
+      --bad: #dc2626;
+      --shadow: 0 1px 2px rgba(20, 18, 31, .05), 0 8px 24px rgba(20, 18, 31, .06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0e0c16;
+        --bg-soft: #151223;
+        --card: #1a1729;
+        --text: #f1eff8;
+        --muted: #a7a2bd;
+        --border: #2c2842;
+        --accent: #a78bfa;
+        --accent-hover: #c4b5fd;
+        --accent-soft: #2a2145;
+        --hot: #f472b6;
+      --on-accent: #160f2b;
+        --on-accent: #160f2b;
+        --ok: #34d399;
+        --bad: #f87171;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0e0c16;
+      --bg-soft: #151223;
+      --card: #1a1729;
+      --text: #f1eff8;
+      --muted: #a7a2bd;
+      --border: #2c2842;
+      --accent: #a78bfa;
+      --accent-hover: #c4b5fd;
+      --accent-soft: #2a2145;
+      --hot: #f472b6;
+      --on-accent: #160f2b;
+      --ok: #34d399;
+      --bad: #f87171;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 12px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.15rem; color: var(--text); text-decoration: none; }
+    .logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; }
+    .nav-links { display: flex; gap: 20px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: .95rem; font-weight: 500; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.btn, .nav-links a.btn:hover { color: var(--on-accent); }
+    .theme-btn { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 8px; width: 36px; height: 36px; cursor: pointer; font-size: 1rem; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--accent); color: var(--on-accent); border: 0; border-radius: 10px;
+      padding: 12px 20px; font: inherit; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: background .15s, transform .15s;
+    }
+    .btn:hover { background: var(--accent-hover); }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .6; cursor: progress; }
+    .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn.ghost:hover { background: var(--bg-soft); }
+    .btn.small { padding: 8px 14px; font-size: .9rem; }
+
+    /* Hero */
+    .hero { padding: 72px 0 56px; text-align: center; background: radial-gradient(ellipse at top, var(--accent-soft), transparent 65%); }
+    .pill { display: inline-block; padding: 6px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: .85rem; font-weight: 600; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2.1rem, 6vw, 3.6rem); line-height: 1.1; letter-spacing: -.03em; font-weight: 800; max-width: 820px; margin: 0 auto 18px; }
+    .hero h1 span { background: linear-gradient(90deg, var(--accent), var(--hot)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .hero p { color: var(--muted); font-size: 1.15rem; max-width: 620px; margin: 0 auto 28px; }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* Steps */
+    section { padding: 64px 0; }
+    .section-title { text-align: center; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; letter-spacing: -.02em; margin-bottom: 10px; }
+    .section-sub { text-align: center; color: var(--muted); max-width: 600px; margin: 0 auto 40px; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+    .step { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); }
+    .step-num { width: 34px; height: 34px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 800; margin-bottom: 14px; }
+    .step h3 { font-size: 1.05rem; margin-bottom: 6px; }
+    .step p { color: var(--muted); font-size: .95rem; }
+
+    /* Builder */
+    #builder { background: var(--bg-soft); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow); }
+    .field { margin-bottom: 18px; }
+    .field label { display: block; font-weight: 600; font-size: .95rem; margin-bottom: 6px; }
+    .field .hint { color: var(--muted); font-size: .85rem; font-weight: 400; }
+    input[type="text"], input[type="url"], input[type="password"], textarea, select {
+      width: 100%; font: inherit; color: var(--text); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 10px; padding: 11px 13px;
+    }
+    textarea { min-height: 220px; resize: vertical; font-size: .92rem; line-height: 1.5; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    details.ai { border: 1px dashed var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; }
+    details.ai summary { cursor: pointer; font-weight: 600; font-size: .95rem; }
+    details.ai p { color: var(--muted); font-size: .85rem; margin: 8px 0; }
+    .status { font-size: .9rem; color: var(--muted); }
+    .status.error { color: var(--bad); }
+
+    /* Course output */
+    #course { display: none; }
+    .course-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 24px; }
+    .course-head h2 { font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1.2; letter-spacing: -.02em; }
+    .course-head .meta { color: var(--muted); margin-top: 6px; }
+    .course-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; align-items: start; }
+    .video-box { position: sticky; top: 84px; }
+    .video-frame { aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+    .video-frame iframe, .video-frame video { width: 100%; height: 100%; border: 0; display: block; }
+    .video-placeholder { height: 100%; display: grid; place-items: center; color: #bbb; text-align: center; padding: 16px; font-size: .9rem; }
+    .progress { margin-top: 14px; }
+    .progress-bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--hot)); transition: width .3s; }
+    .progress-label { font-size: .85rem; color: var(--muted); margin-top: 6px; }
+    .summary-card { margin-top: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+    .summary-card h4 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 8px; }
+    .summary-card ul { padding-left: 18px; }
+    .summary-card li { margin-bottom: 6px; font-size: .95rem; }
+
+    .module { background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 14px; overflow: hidden; }
+    .module-head { padding: 16px 18px; border-bottom: 1px solid var(--border); background: var(--bg-soft); }
+    .module-head small { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; }
+    .module-head h3 { font-size: 1.1rem; }
+    .lesson { padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .lesson:last-child { border-bottom: 0; }
+    .lesson-top { display: flex; gap: 10px; align-items: flex-start; }
+    .lesson-top input[type="checkbox"] { margin-top: 5px; width: 18px; height: 18px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+    .lesson-title { font-weight: 600; flex: 1; }
+    .ts { font: 600 .8rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--accent-soft); color: var(--accent); border: 0; border-radius: 6px; padding: 5px 8px; cursor: pointer; flex-shrink: 0; }
+    .lesson p { color: var(--muted); font-size: .93rem; margin: 6px 0 0 28px; }
+    .lesson ul { margin: 8px 0 0 46px; font-size: .92rem; }
+
+    .quiz { margin-top: 24px; }
+    .quiz h3 { font-size: 1.3rem; margin-bottom: 12px; }
+    .q { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; margin-bottom: 12px; }
+    .q-text { font-weight: 600; margin-bottom: 10px; }
+    .q-opts { display: grid; gap: 8px; }
+    .q-opt { text-align: left; font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+    .q-opt:hover:not(:disabled) { border-color: var(--accent); }
+    .q-opt.right { border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+    .q-opt.wrong { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+    .q-opt:disabled { cursor: default; }
+    .score { font-weight: 700; color: var(--accent); }
+
+    /* Library */
+    .library { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .lib-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+    .lib-card h4 { font-size: 1rem; line-height: 1.3; }
+    .lib-card .meta { color: var(--muted); font-size: .85rem; }
+    .lib-card .actions { margin-top: auto; }
+    .empty { text-align: center; color: var(--muted); grid-column: 1 / -1; padding: 24px; border: 1px dashed var(--border); border-radius: 14px; }
+
+    /* FAQ */
+    .faq { max-width: 760px; margin: 0 auto; }
+    .faq details { border-bottom: 1px solid var(--border); padding: 16px 0; }
+    .faq summary { cursor: pointer; font-weight: 600; }
+    .faq p { color: var(--muted); margin-top: 8px; }
+
+    footer { padding: 32px 0; text-align: center; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--border); }
+
+    @media (max-width: 820px) {
+      .course-grid { grid-template-columns: 1fr; }
+      .video-box { position: static; }
+      .row { grid-template-columns: 1fr; }
+      .nav-links a.hide-sm { display: none; }
+    }
+
+    @media print {
+      nav, .hero, #how, #builder, #library-section, #faq, footer, .no-print, .video-frame { display: none !important; }
+      #course { display: block !important; padding: 0; }
+      .course-grid { grid-template-columns: 1fr; }
+      .module, .q { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#">
+      <span class="logo-mark"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 1l10 6-10 6z" fill="#fff"/></svg></span>
+      ClipCourse
+    </a>
+    <div class="nav-links">
+      <a class="hide-sm" href="#how">How it works</a>
+      <a class="hide-sm" href="#library-section">My courses</a>
+      <a class="btn small" href="#builder">Build a course</a>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle dark mode">◐</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="pill">From 60-second scroll to structured learning</span>
+    <h1>Turn viral <span>AI videos</span> into bite-sized courses</h1>
+    <p>Paste a link and transcript from any trending AI video on YouTube, TikTok, Instagram or X. ClipCourse breaks it into modules, timestamped lessons, key takeaways and a quiz, all in seconds.</p>
+    <div class="hero-cta">
+      <a class="btn" href="#builder">Create a course</a>
+      <button class="btn ghost" id="heroDemo">Try a demo video</button>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="wrap">
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Three steps from "that was cool" to "I actually learned it".</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h3>Drop in the video</h3><p>Paste the video URL. YouTube links play inline, and every lesson jumps straight to its moment in the clip.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Add the transcript</h3><p>Copy the captions or transcript (YouTube: ⋯ → Show transcript). Timestamps like <code>1:23</code> are picked up automatically.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Learn and share</h3><p>Get modules, lessons, takeaways and a quiz. Track progress, save to your library, and export to Markdown or PDF.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="builder">
+  <div class="wrap">
+    <h2 class="section-title">Build your course</h2>
+    <p class="section-sub">Everything runs in your browser. Nothing is uploaded unless you turn on AI mode below.</p>
+    <div class="panel">
+      <form id="form">
+        <div class="row">
+          <div class="field">
+            <label for="url">Video URL <span class="hint">(YouTube, TikTok, Instagram, X…)</span></label>
+            <input type="url" id="url" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+          <div class="field">
+            <label for="title">Course title <span class="hint">(optional)</span></label>
+            <input type="text" id="title" placeholder="We'll suggest one if blank">
+          </div>
+        </div>
+        <div class="field">
+          <label for="transcript">Transcript <span class="hint">(paste captions, with or without timestamps)</span></label>
+          <textarea id="transcript" placeholder="0:00 Everyone is talking about AI agents, but here is what nobody tells you...&#10;0:12 First, an agent is just a model in a loop with tools..."></textarea>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="level">Audience level</label>
+            <select id="level">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="depth">Course size</label>
+            <select id="depth">
+              <option value="compact">Compact (2 modules)</option>
+              <option value="standard" selected>Standard (3 modules)</option>
+              <option value="deep">Deep dive (4 modules)</option>
+            </select>
+          </div>
+        </div>
+        <details class="ai">
+          <summary>✨ AI mode (optional): richer lessons with Claude</summary>
+          <p>Add your own Anthropic API key to have Claude write the course: clearer lesson titles, explanations, exercises and better quiz questions. Your key is sent only to api.anthropic.com from your browser and is kept for this tab only. Without a key, ClipCourse uses its built-in offline generator.</p>
+          <input type="password" id="apiKey" placeholder="sk-ant-..." autocomplete="off">
+        </details>
+        <div class="actions">
+          <button class="btn" type="submit" id="genBtn">Generate course</button>
+          <button class="btn ghost" type="button" id="demoBtn">Load demo</button>
+          <span class="status" id="status" role="status"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section id="course">
+  <div class="wrap">
+    <div class="course-head">
+      <div>
+        <span class="pill" id="courseLevel">Beginner</span>
+        <h2 id="courseTitle"></h2>
+        <div class="meta" id="courseMeta"></div>
+      </div>
+      <div class="actions no-print">
+        <button class="btn small" id="saveBtn">Save to library</button>
+        <button class="btn small ghost" id="mdBtn">Export Markdown</button>
+        <button class="btn small ghost" id="printBtn">Print / PDF</button>
+      </div>
+    </div>
+    <div class="course-grid">
+      <div class="video-box">
+        <div class="video-frame" id="videoFrame"></div>
+        <div class="progress">
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-label" id="progressLabel">0% complete</div>
+        </div>
+        <div class="summary-card">
+          <h4>Key takeaways</h4>
+          <ul id="takeaways"></ul>
+        </div>
+      </div>
+      <div>
+        <div id="modules"></div>
+        <div class="quiz">
+          <h3>Check your understanding <span class="score" id="score"></span></h3>
+          <div id="quiz"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="library-section">
+  <div class="wrap">
+    <h2 class="section-title">My courses</h2>
+    <p class="section-sub">Courses you save are stored in this browser.</p>
+    <div class="library" id="library"></div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2 class="section-title">FAQ</h2>
+    <div class="faq">
+      <details><summary>Why do I need to paste the transcript?</summary><p>Video platforms don't let websites download videos or captions directly. Copying the transcript takes a few seconds: on YouTube open the description, choose "Show transcript", select all and paste.</p></details>
+      <details><summary>Does it work without timestamps?</summary><p>Yes. Without timestamps, ClipCourse splits the transcript by topic and estimates the timing at an average speaking pace.</p></details>
+      <details><summary>What does AI mode change?</summary><p>The offline generator picks out key sentences and keywords to build the course. AI mode sends the transcript to Claude, which writes proper explanations, practice exercises and quiz questions. It uses your own API key.</p></details>
+      <details><summary>Can I share a course?</summary><p>Export it as Markdown for Notion, Google Docs or a blog, or use Print / PDF to save a clean handout.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">ClipCourse · Learn from what's trending</div>
+</footer>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const LIB_KEY = 'clipcourse.library';
+  let current = null;
+  let answered = 0, correct = 0;
+
+  // ---------- Theme ----------
+  $('themeBtn').addEventListener('click', () => {
+    const root = document.documentElement;
+    const isDark = root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = isDark ? 'light' : 'dark';
+    try { localStorage.setItem('clipcourse.theme', root.dataset.theme); } catch (e) {}
+  });
+  try {
+    const saved = localStorage.getItem('clipcourse.theme');
+    if (saved) document.documentElement.dataset.theme = saved;
+  } catch (e) {}
+
+  // ---------- Demo ----------
+  const DEMO = {
+    url: '',
+    title: 'How ChatGPT Actually Works (Demo)',
+    transcript: `0:00 Everyone keeps asking how ChatGPT actually works, so here is the whole thing in a few minutes.
+0:08 A large language model is a neural network trained to predict the next word in a sequence of text.
+0:16 It learns by reading a huge amount of internet text, books and code during a phase called pretraining.
+0:25 Pretraining is expensive: thousands of GPUs running for months, costing millions of dollars.
+0:34 The result is a base model, which is basically a compressed snapshot of the internet.
+0:42 But a base model is not an assistant. Ask it a question and it might just continue with more questions.
+0:51 That is why there is a second phase called fine-tuning.
+0:57 In fine-tuning, humans write example conversations showing how a helpful assistant should answer.
+1:06 The model is trained on these examples so it learns the format and tone of an assistant.
+1:14 Then comes reinforcement learning from human feedback, often called RLHF.
+1:21 People compare different answers and pick the better one, and the model is rewarded for preferred answers.
+1:30 Now let's talk about tokens. Models don't read words, they read tokens, which are chunks of characters.
+1:39 A token is roughly three quarters of a word in English, so a thousand tokens is about seven hundred fifty words.
+1:48 The context window is how many tokens the model can look at at once, like its working memory.
+1:57 If your conversation is longer than the context window, the model simply cannot see the earliest parts.
+2:06 Hallucinations happen because the model is predicting plausible text, not looking facts up in a database.
+2:15 That is why you should verify important facts, and why tools like web search and retrieval help so much.
+2:24 Retrieval augmented generation, or RAG, means fetching relevant documents and putting them into the prompt.
+2:33 Prompting matters too. Give the model context, a clear goal, examples, and the format you want back.
+2:42 A great trick is asking the model to think step by step before answering hard reasoning problems.
+2:51 Finally, agents are models in a loop: they plan, call tools like code or search, read the results, and repeat.
+3:01 So to recap: pretraining builds knowledge, fine-tuning and RLHF make it helpful, and tools make it useful.
+3:10 Follow for part two where we build a tiny agent from scratch.`
+  };
+  function loadDemo() {
+    $('url').value = DEMO.url;
+    $('title').value = DEMO.title;
+    $('transcript').value = DEMO.transcript;
+    $('apiKey').value = '';
+    $('builder').scrollIntoView();
+    generate();
+  }
+  $('demoBtn').addEventListener('click', loadDemo);
+  $('heroDemo').addEventListener('click', loadDemo);
+
+  // ---------- Helpers ----------
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmtTime = (sec) => {
+    sec = Math.max(0, Math.round(sec));
+    const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0');
+  };
+  const parseTime = (t) => t.split(':').reduce((acc, n) => acc * 60 + Number(n), 0);
+  const titleCase = (s) => s.replace(/\b\w/g, (c) => c.toUpperCase());
+  const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  function youtubeId(url) {
+    const m = String(url).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+  function platformName(url) {
+    if (!url) return 'Video';
+    if (youtubeId(url)) return 'YouTube';
+    if (/tiktok\.com/.test(url)) return 'TikTok';
+    if (/instagram\.com/.test(url)) return 'Instagram';
+    if (/(twitter|x)\.com/.test(url)) return 'X';
+    return 'Video';
+  }
+
+  const STOP = new Set(('a about above after again all also am an and any are as at be because been before being below between both but by can could did do does doing down during each few for from further get gets got had has have having he her here hers him his how i if in into is it its itself just know let lets like ll me more most much my no nor not now of off on once only or other our out over own really right same say says she should so some such than that thats the their them then there these they thing things this those through to too under until up us very want was way we well were what when where which while who whom why will with would you your youre basically actually simply going gonna here heres okay ok yeah one two first second finally next now called often roughly something every everyone nobody tells part follow whole few minutes lot make makes made don doesn isn aren re ve s t d m'.split(' ')));
+
+  // ---------- Transcript parsing ----------
+  function parseTranscript(raw) {
+    const lines = raw.replace(/\r/g, '').split('\n').map((l) => l.trim()).filter(Boolean);
+    const tsRe = /^\[?(\d{1,2}:\d{2}(?::\d{2})?)\]?\s*[-–:]?\s*(.*)$/;
+    const segs = [];
+    let hasTs = false;
+    let pendingTs = null;
+    for (const line of lines) {
+      const m = line.match(tsRe);
+      if (m) {
+        hasTs = true;
+        if (m[2]) segs.push({ t: parseTime(m[1]), text: m[2] });
+        else pendingTs = parseTime(m[1]); // YouTube copy puts the time on its own line
+      } else if (pendingTs !== null) {
+        segs.push({ t: pendingTs, text: line });
+        pendingTs = null;
+      } else if (hasTs && segs.length) {
+        segs[segs.length - 1].text += ' ' + line;
+      } else {
+        segs.push({ t: null, text: line });
+      }
+    }
+    // Split into sentences, keeping (or estimating at ~150 wpm) timestamps.
+    const sentences = [];
+    let clock = 0;
+    for (const seg of segs) {
+      if (seg.t !== null) clock = seg.t;
+      const parts = seg.text.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [seg.text];
+      for (const p of parts) {
+        const text = p.trim();
+        if (text.length < 3) continue;
+        sentences.push({ t: clock, text });
+        if (seg.t === null || !hasTs) clock += text.split(/\s+/).length / 2.5;
+      }
+    }
+    return { sentences, hasTs };
+  }
+
+  function tokenize(s) {
+    return (s.toLowerCase().match(/[a-z][a-z0-9'-]+/g) || [])
+      .map((w) => w.replace(/'s$/, '').replace(/'/g, ''))
+      .filter((w) => w.length > 2 && !STOP.has(w));
+  }
+
+  // ---------- Offline course generator ----------
+  function buildOffline({ url, title, transcript, level, depth }) {
+    const { sentences } = parseTranscript(transcript);
+    if (sentences.length < 3) throw new Error('Please paste a longer transcript (at least a few sentences).');
+
+    const freq = {};
+    sentences.forEach((s) => new Set(tokenize(s.text)).forEach((w) => { freq[w] = (freq[w] || 0) + 1; }));
+    const score = (s) => {
+      const toks = tokenize(s.text);
+      if (!toks.length) return 0;
+      const sum = toks.reduce((a, w) => a + Math.log(1 + (freq[w] || 0)), 0);
+      const definitional = /\b(is|are|means|called|because|why|so that)\b/i.test(s.text) ? 1.25 : 1;
+      const fluff = /\b(follow|subscribe|like and|part two|link in bio|comment)\b/i.test(s.text) ? 0.2 : 1;
+      return (sum / Math.sqrt(toks.length)) * definitional * fluff;
+    };
+    sentences.forEach((s) => { s.score = score(s); });
+
+    const nModules = { compact: 2, standard: 3, deep: 4 }[depth] || 3;
+    const lessonsPerModule = Math.max(1, Math.min(4, Math.round(sentences.length / (nModules * 3))));
+    const nLessons = Math.min(sentences.length, nModules * lessonsPerModule);
+
+    // Even split into lessons, then pull boundaries toward topic shifts (low keyword overlap).
+    const chunk = sentences.length / nLessons;
+    const lessons = [];
+    for (let i = 0; i < nLessons; i++) {
+      const items = sentences.slice(Math.round(i * chunk), Math.round((i + 1) * chunk));
+      if (items.length) lessons.push(items);
+    }
+
+    const usedTitles = new Set();
+    const lessonObjs = lessons.map((items) => {
+      const local = {};
+      items.forEach((s) => tokenize(s.text).forEach((w) => { local[w] = (local[w] || 0) + 1; }));
+      const kws = Object.keys(local)
+        .sort((a, b) => (local[b] * 2 + Math.log(1 + freq[b])) - (local[a] * 2 + Math.log(1 + freq[a])));
+      const pick = kws.filter((k) => !usedTitles.has(k)).slice(0, 2);
+      pick.forEach((k) => usedTitles.add(k));
+      const best = items.slice().sort((a, b) => b.score - a.score);
+      return {
+        title: pick.length ? titleCase(pick.join(' & ')) : 'Key Ideas',
+        start: items[0].t,
+        summary: items.map((s) => s.text).join(' ').slice(0, 260).replace(/\s\S*$/, '') + (items.map((s) => s.text).join(' ').length > 260 ? '…' : ''),
+        points: best.slice(0, Math.min(3, items.length)).sort((a, b) => a.t - b.t).map((s) => s.text),
+        keywords: kws.slice(0, 5)
+      };
+    });
+
+    const per = Math.ceil(lessonObjs.length / nModules);
+    const modules = [];
+    const usedModuleKws = new Set();
+    for (let i = 0; i < lessonObjs.length; i += per) {
+      const ls = lessonObjs.slice(i, i + per);
+      const kwCount = {};
+      ls.forEach((l) => l.keywords.forEach((k) => { kwCount[k] = (kwCount[k] || 0) + 1; }));
+      const top = Object.keys(kwCount).filter((k) => !usedModuleKws.has(k))
+        .sort((a, b) => kwCount[b] - kwCount[a] || (freq[b] - freq[a]))[0] || 'core ideas';
+      usedModuleKws.add(top);
+      const prefix = ['Foundations of', 'Understanding', 'Working with', 'Putting it together:'][modules.length] || 'More on';
+      modules.push({ title: prefix + ' ' + titleCase(top), lessons: ls });
+    }
+
+    const takeaways = sentences.slice().sort((a, b) => b.score - a.score).slice(0, 5).sort((a, b) => a.t - b.t).map((s) => s.text);
+
+    // Cloze quiz: blank out a strong keyword, distractors from other keywords.
+    const allKws = Object.keys(freq).filter((w) => w.length > 3).sort((a, b) => freq[b] - freq[a]).slice(0, 40);
+    const quiz = [];
+    const usedAns = new Set();
+    for (const s of sentences.slice().sort((a, b) => b.score - a.score)) {
+      if (quiz.length >= 5) break;
+      const cand = tokenize(s.text).filter((w) => w.length > 3 && !usedAns.has(w) && allKws.includes(w))
+        .sort((a, b) => freq[b] - freq[a])[0];
+      if (!cand) continue;
+      const re = new RegExp('\\b' + cand.replace(/[-]/g, '\\-') + "('s)?\\b", 'i');
+      if (!re.test(s.text)) continue;
+      const distractors = shuffle(allKws.filter((w) => w !== cand && !s.text.toLowerCase().includes(w))).slice(0, 3);
+      if (distractors.length < 2) continue;
+      usedAns.add(cand);
+      const options = shuffle([cand, ...distractors]);
+      quiz.push({ q: 'Fill in the blank: "' + s.text.replace(re, '_____') + '"', options, answer: options.indexOf(cand), explain: s.text });
+    }
+
+    const firstLesson = lessonObjs[0];
+    return {
+      title: title || ('Learn ' + titleCase(Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 2).join(' & ')) + ' from a Viral Clip'),
+      level, url, platform: platformName(url), modules, takeaways, quiz,
+      duration: sentences[sentences.length - 1].t + 5,
+      engine: 'Offline generator',
+      created: Date.now(),
+      _first: firstLesson && firstLesson.start
+    };
+  }
+
+  // ---------- AI generator (Claude) ----------
+  async function buildWithClaude(opts, apiKey) {
+    const { sentences } = parseTranscript(opts.transcript);
+    const timed = sentences.map((s) => '[' + fmtTime(s.t) + '] ' + s.text).join('\n');
+    const nModules = { compact: 2, standard: 3, deep: 4 }[opts.depth] || 3;
+    const prompt = `Turn this transcript of a viral AI video into a structured mini-course for a ${opts.level} learner.
+Use exactly ${nModules} modules with 2-4 lessons each. Lessons must follow the video's order and use the timestamps given.
+Expand on the video where helpful so a learner truly understands it, but stay accurate.
+
+Return ONLY a JSON object with this shape, no prose:
+{"title": string, "takeaways": [5 short strings],
+ "modules": [{"title": string, "lessons": [{"title": string, "start": "m:ss", "summary": "2-3 sentence explanation", "points": [2-3 key points or a hands-on exercise]}]}],
+ "quiz": [{"q": string, "options": [4 strings], "answer": index of correct option, "explain": one sentence}] (5 questions)}
+${opts.title ? 'Course title: ' + opts.title : ''}
+
+Transcript:
+${timed}`;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({ model: 'claude-sonnet-5-5', max_tokens: 4096, messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!res.ok) {
+      let msg = res.status + ' ' + res.statusText;
+      try { msg = (await res.json()).error.message || msg; } catch (e) {}
+      throw new Error('Claude API error: ' + msg);
+    }
+    const data = await res.json();
+    const text = data.content.filter((b) => b.type === 'text').map((b) => b.text).join('');
+    const json = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+    json.modules.forEach((m) => m.lessons.forEach((l) => { l.start = typeof l.start === 'number' ? l.start : parseTime(String(l.start || '0:00')); }));
+    return {
+      title: opts.title || json.title,
+      level: opts.level, url: opts.url, platform: platformName(opts.url),
+      modules: json.modules, takeaways: json.takeaways || [], quiz: json.quiz || [],
+      duration: sentences.length ? sentences[sentences.length - 1].t + 5 : 0,
+      engine: 'Claude AI', created: Date.now()
+    };
+  }
+
+  // ---------- Generate ----------
+  async function generate() {
+    const opts = {
+      url: $('url').value.trim(),
+      title: $('title').value.trim(),
+      transcript: $('transcript').value,
+      level: $('level').value,
+      depth: $('depth').value
+    };
+    const key = $('apiKey').value.trim();
+    const status = $('status');
+    status.className = 'status';
+    if (!opts.transcript.trim()) {
+      status.className = 'status error';
+      status.textContent = 'Paste a transcript first, or click "Load demo".';
+      return;
+    }
+    $('genBtn').disabled = true;
+    status.textContent = key ? 'Claude is writing your course…' : 'Building your course…';
+    try {
+      let course;
+      if (key) {
+        try { course = await buildWithClaude(opts, key); }
+        catch (err) {
+          course = buildOffline(opts);
+          status.className = 'status error';
+          status.textContent = err.message + ' Used the offline generator instead.';
+        }
+      } else {
+        course = buildOffline(opts);
+      }
+      if (!status.classList.contains('error')) status.textContent = '';
+      renderCourse(course);
+    } catch (err) {
+      status.className = 'status error';
+      status.textContent = err.message;
+    } finally {
+      $('genBtn').disabled = false;
+    }
+  }
+  $('form').addEventListener('submit', (e) => { e.preventDefault(); generate(); });
+
+  // ---------- Render ----------
+  function setVideo(course, start) {
+    const frame = $('videoFrame');
+    const id = youtubeId(course.url);
+    if (id) {
+      frame.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?start=' + Math.floor(start || 0) + (start ? '&autoplay=1' : '') + '" title="Course video" allow="accelerometer; autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>';
+    } else if (course.url) {
+      frame.innerHTML = '<div class="video-placeholder"><div>This ' + esc(course.platform) + ' video can\'t be embedded here.<br><a href="' + esc(course.url) + '" target="_blank" rel="noopener">Open the original video ↗</a>' + (start ? '<br>Jump to ' + fmtTime(start) : '') + '</div></div>';
+    } else {
+      frame.innerHTML = '<div class="video-placeholder">No video linked. Add a YouTube link to watch alongside the lessons.</div>';
+    }
+  }
+
+  function renderCourse(course) {
+    current = course;
+    current.done = current.done || {};
+    $('course').style.display = 'block';
+    $('courseTitle').textContent = course.title;
+    $('courseLevel').textContent = course.level;
+    const nLessons = course.modules.reduce((a, m) => a + m.lessons.length, 0);
+    $('courseMeta').textContent = [
+      course.modules.length + ' modules', nLessons + ' lessons', course.quiz.length + ' quiz questions',
+      course.duration ? fmtTime(course.duration) + ' video' : null, course.url ? course.platform : null, course.engine
+    ].filter(Boolean).join(' · ');
+    setVideo(course, 0);
+
+    $('takeaways').innerHTML = course.takeaways.map((t) => '<li>' + esc(t) + '</li>').join('');
+
+    let li = 0;
+    $('modules').innerHTML = course.modules.map((m, mi) => (
+      '<div class="module"><div class="module-head"><small>Module ' + (mi + 1) + '</small><h3>' + esc(m.title) + '</h3></div>' +
+      m.lessons.map((l) => {
+        const id = 'l' + (li++);
+        return '<div class="lesson"><div class="lesson-top">' +
+          '<input type="checkbox" data-lesson="' + id + '" aria-label="Mark lesson complete"' + (current.done[id] ? ' checked' : '') + '>' +
+          '<span class="lesson-title">' + esc(l.title) + '</span>' +
+          '<button class="ts" data-t="' + (l.start || 0) + '" title="Play from here">▶ ' + fmtTime(l.start || 0) + '</button></div>' +
+          '<p>' + esc(l.summary || '') + '</p>' +
+          (l.points && l.points.length ? '<ul>' + l.points.map((p) => '<li>' + esc(p) + '</li>').join('') + '</ul>' : '') +
+          '</div>';
+      }).join('') + '</div>'
+    )).join('');
+
+    $('quiz').innerHTML = course.quiz.length ? course.quiz.map((q, qi) => (
+      '<div class="q" data-q="' + qi + '"><div class="q-text">' + (qi + 1) + '. ' + esc(q.q) + '</div><div class="q-opts">' +
+      q.options.map((o, oi) => '<button class="q-opt" data-o="' + oi + '">' + esc(o) + '</button>').join('') +
+      '</div></div>'
+    )).join('') : '<p class="status">Not enough content for a quiz. Try a longer transcript.</p>';
+    $('score').textContent = '';
+    answered = correct = 0;
+    updateProgress();
+    $('course').scrollIntoView();
+  }
+
+  function updateProgress() {
+    const boxes = [...document.querySelectorAll('[data-lesson]')];
+    const done = boxes.filter((b) => b.checked).length;
+    const pct = boxes.length ? Math.round((done / boxes.length) * 100) : 0;
+    $('progressFill').style.width = pct + '%';
+    $('progressLabel').textContent = pct + '% complete (' + done + '/' + boxes.length + ' lessons)';
+  }
+
+  $('modules').addEventListener('click', (e) => {
+    const ts = e.target.closest('.ts');
+    if (ts) { setVideo(current, Number(ts.dataset.t)); $('videoFrame').scrollIntoView({ block: 'nearest' }); }
+  });
+  $('modules').addEventListener('change', (e) => {
+    if (e.target.dataset.lesson) { current.done[e.target.dataset.lesson] = e.target.checked; updateProgress(); persistIfSaved(); }
+  });
+
+  $('quiz').addEventListener('click', (e) => {
+    const opt = e.target.closest('.q-opt');
+    if (!opt || opt.disabled) return;
+    const qEl = opt.closest('.q');
+    const q = current.quiz[Number(qEl.dataset.q)];
+    const chosen = Number(opt.dataset.o);
+    const btns = qEl.querySelectorAll('.q-opt');
+    btns.forEach((b, i) => { b.disabled = true; if (i === q.answer) b.classList.add('right'); });
+    if (chosen !== q.answer) opt.classList.add('wrong'); else correct++;
+    answered++;
+    if (q.explain) qEl.insertAdjacentHTML('beforeend', '<p class="status" style="margin-top:10px">' + esc(q.explain) + '</p>');
+    $('score').textContent = '· ' + correct + '/' + answered;
+  });
+
+  // ---------- Export ----------
+  function toMarkdown(c) {
+    let md = '# ' + c.title + '\n\n';
+    md += '*' + c.level + ' · ' + c.platform + (c.url ? ' · [Original video](' + c.url + ')' : '') + '*\n\n';
+    md += '## Key takeaways\n\n' + c.takeaways.map((t) => '- ' + t).join('\n') + '\n\n';
+    c.modules.forEach((m, i) => {
+      md += '## Module ' + (i + 1) + ': ' + m.title + '\n\n';
+      m.lessons.forEach((l) => {
+        md += '### ' + l.title + ' (' + fmtTime(l.start || 0) + ')\n\n' + (l.summary || '') + '\n\n';
+        if (l.points && l.points.length) md += l.points.map((p) => '- ' + p).join('\n') + '\n\n';
+      });
+    });
+    if (c.quiz.length) {
+      md += '## Quiz\n\n';
+      c.quiz.forEach((q, i) => {
+        md += (i + 1) + '. ' + q.q + '\n' + q.options.map((o, oi) => '   ' + String.fromCharCode(97 + oi) + ') ' + o).join('\n') + '\n\n';
+      });
+      md += '**Answers:** ' + c.quiz.map((q, i) => (i + 1) + String.fromCharCode(97 + q.answer)).join(', ') + '\n';
+    }
+    return md;
+  }
+  $('mdBtn').addEventListener('click', () => {
+    const blob = new Blob([toMarkdown(current)], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = current.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.md';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+  $('printBtn').addEventListener('click', () => window.print());
+
+  // ---------- Library ----------
+  function readLib() { try { return JSON.parse(localStorage.getItem(LIB_KEY)) || []; } catch (e) { return []; } }
+  function writeLib(lib) { try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); return true; } catch (e) { return false; } }
+  function persistIfSaved() {
+    const lib = readLib();
+    const i = lib.findIndex((c) => c.created === current.created);
+    if (i >= 0) { lib[i] = current; writeLib(lib); renderLib(); }
+  }
+  $('saveBtn').addEventListener('click', () => {
+    const lib = readLib().filter((c) => c.created !== current.created);
+    lib.unshift(current);
+    $('saveBtn').textContent = writeLib(lib) ? 'Saved ✓' : 'Storage unavailable';
+    setTimeout(() => { $('saveBtn').textContent = 'Save to library'; }, 1800);
+    renderLib();
+  });
+  function renderLib() {
+    const lib = readLib();
+    $('library').innerHTML = lib.length ? lib.map((c, i) => {
+      const total = c.modules.reduce((a, m) => a + m.lessons.length, 0);
+      const done = Object.values(c.done || {}).filter(Boolean).length;
+      return '<div class="lib-card"><span class="pill" style="margin:0;align-self:flex-start">' + esc(c.platform) + '</span>' +
+        '<h4>' + esc(c.title) + '</h4><div class="meta">' + esc(c.level) + ' · ' + total + ' lessons · ' + Math.round((done / (total || 1)) * 100) + '% done</div>' +
+        '<div class="actions"><button class="btn small" data-open="' + i + '">Open</button><button class="btn small ghost" data-del="' + i + '">Delete</button></div></div>';
+    }).join('') : '<div class="empty">No saved courses yet. Build one above and hit "Save to library".</div>';
+  }
+  $('library').addEventListener('click', (e) => {
+    const lib = readLib();
+    if (e.target.dataset.open !== undefined) { renderCourse(lib[Number(e.target.dataset.open)]); }
+    if (e.target.dataset.del !== undefined) { lib.splice(Number(e.target.dataset.del), 1); writeLib(lib); renderLib(); }
+  });
+  renderLib();
+})();
+</script>
+</body>
+</html>
