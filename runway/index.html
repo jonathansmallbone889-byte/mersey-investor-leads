@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runway | Cash Flow Forecaster</title>
+  <meta name="description" content="A 13-week cash flow forecast for founders and small business owners. See the week your cash runs short, and get a ranked plan to fix it before it happens.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f766e'/%3E%3Cpath d='M7 22h4v-5H7zM14 22h4V12h-4zM21 22h4V8h-4z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f8f7;
+      --card: #ffffff;
+      --text: #0f1a18;
+      --muted: #5a6866;
+      --border: #dfe5e3;
+      --accent: #0f766e;
+      --accent-hover: #115e59;
+      --accent-soft: #e6f4f2;
+      --on-accent: #ffffff;
+      --ok: #15803d;
+      --warn: #b45309;
+      --warn-soft: #fef3e2;
+      --bad: #dc2626;
+      --bad-soft: #fdecec;
+      --bar-ok: #5eaaa2;
+      --bar-warn: #e3a34a;
+      --bar-bad: #e26464;
+      --plan: #1e40af;
+      --shadow: 0 1px 2px rgba(15, 26, 24, .05), 0 6px 20px rgba(15, 26, 24, .06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0b1211;
+        --card: #131c1b;
+        --text: #e9f0ee;
+        --muted: #9aaba8;
+        --border: #263432;
+        --accent: #2dd4bf;
+        --accent-hover: #5eead4;
+        --accent-soft: #123330;
+        --on-accent: #062a26;
+        --ok: #4ade80;
+        --warn: #fbbf24;
+        --warn-soft: #33270f;
+        --bad: #f87171;
+        --bad-soft: #3a1717;
+        --bar-ok: #2f8f86;
+        --bar-warn: #c88a2e;
+        --bar-bad: #c94d4d;
+        --plan: #93c5fd;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .35);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1211;
+      --card: #131c1b;
+      --text: #e9f0ee;
+      --muted: #9aaba8;
+      --border: #263432;
+      --accent: #2dd4bf;
+      --accent-hover: #5eead4;
+      --accent-soft: #123330;
+      --on-accent: #062a26;
+      --ok: #4ade80;
+      --warn: #fbbf24;
+      --warn-soft: #33270f;
+      --bad: #f87171;
+      --bad-soft: #3a1717;
+      --bar-ok: #2f8f86;
+      --bar-warn: #c88a2e;
+      --bar-bad: #c94d4d;
+      --plan: #93c5fd;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+    header.top { padding: 28px 0 8px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; }
+    .brand svg { flex: none; }
+    h1 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 18px 0 8px; letter-spacing: -.02em; text-wrap: balance; }
+    .lede { color: var(--muted); max-width: 680px; margin: 0 0 20px; }
+
+    .layout { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: 20px; align-items: start; padding-bottom: 48px; }
+    @media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 18px; }
+    .card + .card { margin-top: 16px; }
+    .card h2 { font-size: 15px; margin: 0 0 4px; }
+    .card .hint { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+    input, select {
+      font: inherit; font-size: 14px; color: var(--text); background: var(--bg);
+      border: 1px solid var(--border); border-radius: 8px; padding: 7px 9px; width: 100%; min-width: 0;
+    }
+    input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+    input[type="checkbox"] { width: 16px; height: 16px; padding: 0; accent-color: var(--accent); }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .field { margin-bottom: 10px; }
+
+    button {
+      font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 7px 12px;
+    }
+    button:hover { border-color: var(--accent); }
+    button.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    button.primary:hover { background: var(--accent-hover); }
+    button.ghost { border-color: transparent; background: transparent; color: var(--muted); padding: 4px 6px; }
+    button.ghost:hover { color: var(--bad); }
+    .btnrow { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tabs { display: flex; gap: 4px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 3px; margin-bottom: 12px; }
+    .tabs button { flex: 1; border: 0; background: transparent; color: var(--muted); padding: 6px 4px; font-size: 13px; }
+    .tabs button[aria-selected="true"] { background: var(--card); color: var(--text); box-shadow: var(--shadow); }
+
+    .items { display: flex; flex-direction: column; gap: 8px; }
+    .item { border: 1px solid var(--border); border-radius: 10px; padding: 10px; background: var(--bg); }
+    .item.off { opacity: .5; }
+    .item .row1 { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .item .row1 input[type="text"] { font-weight: 600; }
+    .item .row2 { display: grid; grid-template-columns: 1fr 1.3fr 1fr; gap: 8px; }
+    @media (max-width: 480px) {
+      .grid3 { grid-template-columns: 1fr 1fr; }
+      .grid3 .field:first-child { grid-column: 1 / -1; }
+      .item .row2 { grid-template-columns: 1fr 1fr; }
+      .item .row2 > div:nth-child(2) { grid-column: 2; }
+      .item .row2 > div:nth-child(3) { grid-column: 1 / -1; }
+    }
+    .item .row2 label { font-size: 11px; }
+    .item .flags { display: flex; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--muted); align-items: center; flex-wrap: wrap; }
+    .item .flags label { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-weight: 500; font-size: 12px; }
+    .pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 999px; }
+    .pill.in { background: var(--accent-soft); color: var(--accent); }
+    .pill.out { background: var(--bad-soft); color: var(--bad); }
+    .pill.late { background: var(--warn-soft); color: var(--warn); }
+    .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 14px; border: 1px dashed var(--border); border-radius: 10px; }
+
+    .drop {
+      display: block; text-align: center; padding: 18px 12px; border: 1.5px dashed var(--border); border-radius: 10px;
+      color: var(--muted); font-size: 14px; font-weight: 500; cursor: pointer; margin: 0; background: var(--bg);
+    }
+    .drop strong { color: var(--accent); }
+    .drop:hover, .drop:focus, .drop.over { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+    .howto { margin-top: 12px; font-size: 13px; color: var(--muted); }
+    .howto summary { cursor: pointer; font-weight: 600; }
+    .howto ul { margin: 8px 0 0; padding-left: 18px; }
+    .howto li { margin-bottom: 4px; }
+    #review { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
+    #review h3 { font-size: 13px; margin: 14px 0 6px; }
+    #review h3:first-child { margin-top: 0; }
+    .ritem { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); margin: 0; font-size: 13px; font-weight: 400; color: var(--text); cursor: pointer; }
+    .ritem:last-child { border-bottom: 0; }
+    .ritem input { flex: none; margin-top: 2px; }
+    .ritem .rmain { flex: 1; min-width: 0; }
+    .ritem .rname { font-weight: 600; overflow-wrap: anywhere; }
+    .ritem .rsub { color: var(--muted); font-size: 12px; }
+    .ritem .ramt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .notice { font-size: 12px; color: var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+    .replace { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 500; color: var(--text); margin: 12px 0; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    @media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
+    .kpi .k { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .kpi .v { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+    .kpi .s { font-size: 12px; color: var(--muted); }
+    .v.bad { color: var(--bad); } .v.warn { color: var(--warn); } .v.ok { color: var(--ok); }
+
+    .banner { border-radius: 12px; padding: 14px 16px; margin-bottom: 16px; font-weight: 500; border: 1px solid; }
+    .banner.bad { background: var(--bad-soft); border-color: var(--bad); }
+    .banner.warn { background: var(--warn-soft); border-color: var(--warn); }
+    .banner.ok { background: var(--accent-soft); border-color: var(--accent); }
+    .banner strong { font-weight: 800; }
+
+    .chart-scroll { overflow-x: auto; }
+    .chart-wrap { position: relative; min-width: 560px; }
+    .chart-wrap svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .tip {
+      position: absolute; pointer-events: none; background: var(--text); color: var(--bg); font-size: 12px;
+      padding: 8px 10px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); display: none; z-index: 2;
+    }
+
+    .plan { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+    .plan li { position: relative; padding: 10px 0 10px 40px; border-bottom: 1px solid var(--border); counter-increment: step; }
+    .plan li:last-child { border-bottom: 0; }
+    .plan li::before {
+      content: counter(step); position: absolute; left: 0; top: 10px; width: 26px; height: 26px; border-radius: 50%;
+      background: var(--accent-soft); color: var(--accent); font-weight: 800; font-size: 13px; display: grid; place-items: center;
+    }
+    .plan li.fund::before { background: var(--bad-soft); color: var(--bad); }
+    .plan .what { font-weight: 600; }
+    .plan .effect { font-size: 13px; color: var(--muted); }
+
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+    th, td { padding: 8px 6px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { font-size: 12px; color: var(--muted); font-weight: 600; }
+    tr.wk { cursor: pointer; }
+    tr.wk:hover td { background: var(--bg); }
+    tr.detail td { text-align: left; background: var(--bg); color: var(--muted); white-space: normal; }
+    tr.detail ul { margin: 0; padding-left: 18px; }
+    td.neg { color: var(--bad); font-weight: 700; }
+    td.low { color: var(--warn); font-weight: 700; }
+    .muted { color: var(--muted); }
+    footer { color: var(--muted); font-size: 12px; padding: 0 0 32px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M7 22h4v-5H7zM14 22h4V12h-4zM21 22h4V8h-4z" fill="var(--on-accent)"/></svg>
+        Runway
+      </div>
+      <h1>Know the week your cash runs short, before it happens.</h1>
+      <p class="lede">Profitable businesses still fail because cash arrives late and bills don't wait. Enter what's in the bank, what's coming in and what's going out. Runway builds a 13-week forecast, flags the danger week, and gives you a ranked plan to get through it.</p>
+    </header>
+
+    <div class="layout">
+      <!-- Inputs -->
+      <div>
+        <section class="card" id="importCard">
+          <h2>Import from your bank or accounting software</h2>
+          <p class="hint">Add a bank statement export (the last 3 months works best) and/or your unpaid invoice list. Runway reads them in your browser. Nothing is uploaded, and you review everything before it's added.</p>
+          <label class="drop" id="drop" tabindex="0">
+            <input type="file" id="fileIn" accept=".csv,text/csv" multiple hidden>
+            <strong>Choose CSV files</strong> or drag them here
+          </label>
+          <div class="btnrow" style="margin-top:10px"><button id="xeroBtn" class="primary" hidden>Sync from Xero</button><button id="trySample">Try it with sample exports</button></div>
+          <details class="howto">
+            <summary>Where do I find these files?</summary>
+            <ul>
+              <li><strong>Bank statement:</strong> in online banking, open your business account, choose the last 3 months of transactions and download or export as CSV. Every major UK bank, plus Monzo, Starling, Tide and Revolut, offers this.</li>
+              <li><strong>Unpaid invoices:</strong> in Xero, QuickBooks, FreeAgent, Zoho or Sage, open your invoice list and export it as CSV. Include paid invoices too if you can, so Runway can learn how late each client pays.</li>
+            </ul>
+          </details>
+          <div id="review" hidden></div>
+        </section>
+
+        <section class="card">
+          <h2>Starting point</h2>
+          <p class="hint">Your bank balance today and the minimum you never want to drop below.</p>
+          <div class="grid2">
+            <div class="field"><label for="startBalance">Cash in bank</label><input id="startBalance" type="number" step="any" inputmode="decimal"></div>
+            <div class="field"><label for="buffer">Safety buffer</label><input id="buffer" type="number" step="any" inputmode="decimal"></div>
+          </div>
+          <div class="grid3">
+            <div class="field"><label for="startDate">Forecast from</label><input id="startDate" type="date"></div>
+            <div class="field"><label for="weeks">Horizon</label>
+              <select id="weeks"><option value="13">13 weeks</option><option value="26">26 weeks</option></select></div>
+            <div class="field"><label for="currency">Currency</label>
+              <select id="currency"><option value="GBP">£ GBP</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option></select></div>
+          </div>
+          <div class="field">
+            <label for="delay">What if every client pays an extra <span id="delayOut">0</span> days late?</label>
+            <input id="delay" type="range" min="0" max="60" step="5" style="padding:0;border:0;background:transparent">
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Money in &amp; out</h2>
+          <p class="hint">Tick <em>flexible</em> on costs you could push back if you had to. Untick an item to see the forecast without it.</p>
+          <div class="tabs" role="tablist">
+            <button role="tab" data-tab="invoice" aria-selected="true">Unpaid invoices</button>
+            <button role="tab" data-tab="recurring" aria-selected="false">Recurring</button>
+            <button role="tab" data-tab="oneoff" aria-selected="false">One-off</button>
+          </div>
+          <div id="itemList" class="items"></div>
+          <div class="btnrow" style="margin-top:12px">
+            <button class="primary" id="addBtn">+ Add invoice</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="btnrow">
+            <button id="sampleBtn">Load example business</button>
+            <button id="csvBtn">Export forecast CSV</button>
+            <button id="clearBtn">Start blank</button>
+          </div>
+          <p class="hint" style="margin:10px 0 0">Everything stays in this browser. Nothing is uploaded.</p>
+        </section>
+      </div>
+
+      <!-- Outputs -->
+      <div>
+        <div id="banner" class="banner"></div>
+        <div class="kpis">
+          <div class="kpi"><div class="k">Lowest balance</div><div class="v" id="kLow">–</div><div class="s" id="kLowWhen"></div></div>
+          <div class="kpi"><div class="k">Danger week</div><div class="v" id="kBreach">–</div><div class="s">first week below buffer</div></div>
+          <div class="kpi"><div class="k">Balance at end</div><div class="v" id="kEnd">–</div><div class="s" id="kEndWhen"></div></div>
+          <div class="kpi"><div class="k">Owed to you</div><div class="v" id="kOwed">–</div><div class="s" id="kOwedSub"></div></div>
+        </div>
+
+        <section class="card">
+          <h2>Weekly closing balance</h2>
+          <div class="chart-scroll"><div class="chart-wrap" id="chartWrap">
+            <svg id="chart" viewBox="0 0 720 280" role="img" aria-label="Weekly cash balance forecast"></svg>
+            <div class="tip" id="tip"></div>
+          </div></div>
+          <div class="legend">
+            <span><i class="sw" style="background:var(--bar-ok)"></i>Above buffer</span>
+            <span><i class="sw" style="background:var(--bar-warn)"></i>Below buffer</span>
+            <span><i class="sw" style="background:var(--bar-bad)"></i>Overdrawn</span>
+            <span id="planLegend"><i class="sw" style="background:var(--plan);height:3px"></i>With fix-it plan</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Fix-it plan</h2>
+          <p class="hint" id="planHint">The fewest moves that keep you above your buffer, with the biggest impact first.</p>
+          <ol class="plan" id="plan"></ol>
+        </section>
+
+        <section class="card">
+          <h2>Week by week</h2>
+          <p class="hint">Tap a week to see what lands in it.</p>
+          <div class="table-scroll"><table id="table"></table></div>
+        </section>
+      </div>
+    </div>
+    <footer>Runway is a planning tool, not financial advice. Forecasts are only as good as the numbers you put in.</footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+  var DAY = 86400000;
+  var STORE_KEY = 'runway.v1';
+
+  // ---------- dates (all UTC midnight to avoid DST drift) ----------
+  function parseD(s) { return new Date(s + 'T00:00:00Z'); }
+  function iso(d) { return d.toISOString().slice(0, 10); }
+  function addDays(d, n) { return new Date(d.getTime() + n * DAY); }
+  function addMonths(d, n) {
+    var y = d.getUTCFullYear(), m = d.getUTCMonth() + n, day = d.getUTCDate();
+    var last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    return new Date(Date.UTC(y, m, Math.min(day, last)));
+  }
+  function today() { var n = new Date(); return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate())); }
+  function mondayOf(d) { return addDays(d, -((d.getUTCDay() + 6) % 7)); }
+  function fmtD(d) { return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' }); }
+
+  // ---------- state ----------
+  var uid = 0;
+  function id() { return 'i' + Date.now().toString(36) + (uid++); }
+
+  function sampleState() {
+    var t = today(), start = mondayOf(t);
+    function rel(n) { return iso(addDays(t, n)); }
+    function nextDom(dom) { // next date with this day-of-month
+      var d = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), dom));
+      return iso(d < t ? addMonths(d, 1) : d);
+    }
+    return {
+      currency: 'GBP', startBalance: 4200, buffer: 3000, startDate: iso(start), weeks: 13, delay: 0, tab: 'invoice',
+      items: [
+        { id: id(), type: 'invoice', name: 'Acme Logistics', amount: 4200, date: rel(-12), late: 14, on: true },
+        { id: id(), type: 'invoice', name: 'Northside Café', amount: 1250, date: rel(5), late: 21, on: true },
+        { id: id(), type: 'invoice', name: 'Harbour Homes', amount: 6800, date: rel(18), late: 30, on: true },
+        { id: id(), type: 'recurring', dir: 'in', name: 'Retainer – Wirral Dental', amount: 3500, freq: 'monthly', date: nextDom(1), on: true },
+        { id: id(), type: 'recurring', dir: 'in', name: 'Retainer – Mersey Build Co', amount: 5000, freq: 'monthly', date: nextDom(20), on: true },
+        { id: id(), type: 'recurring', dir: 'out', name: 'Payroll', amount: 6200, freq: 'monthly', date: nextDom(28), on: true },
+        { id: id(), type: 'recurring', dir: 'out', name: 'Office rent', amount: 1450, freq: 'monthly', date: nextDom(1), on: true },
+        { id: id(), type: 'recurring', dir: 'out', name: 'Software & tools', amount: 380, freq: 'monthly', date: nextDom(15), flexible: true, on: true },
+        { id: id(), type: 'recurring', dir: 'out', name: 'Freelance designer', amount: 900, freq: 'fortnightly', date: rel(4), flexible: true, on: true },
+        { id: id(), type: 'oneoff', dir: 'out', name: 'VAT return', amount: 4800, date: rel(37), on: true },
+        { id: id(), type: 'oneoff', dir: 'out', name: 'New laptops', amount: 2600, date: rel(16), flexible: true, on: true },
+        { id: id(), type: 'oneoff', dir: 'in', name: 'Grant instalment', amount: 2500, date: rel(55), on: true }
+      ]
+    };
+  }
+  function blankState() {
+    return { currency: 'GBP', startBalance: 0, buffer: 0, startDate: iso(mondayOf(today())), weeks: 13, delay: 0, tab: 'invoice', items: [] };
+  }
+
+  var state;
+  try { state = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { state = null; }
+  if (!state || !Array.isArray(state.items)) state = sampleState();
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ } }
+
+  // ---------- money ----------
+  function money(n, opts) {
+    var sym = { GBP: '£', USD: '$', EUR: '€' }[state.currency] || '';
+    var neg = n < 0, a = Math.abs(n);
+    var s = (opts && opts.compact && a >= 10000) ? (a / 1000).toFixed(a >= 100000 ? 0 : 1) + 'k'
+      : a.toLocaleString('en-GB', { maximumFractionDigits: 0 });
+    return (neg ? '−' : '') + sym + s;
+  }
+  function num(v) { var n = parseFloat(v); return isFinite(n) ? n : 0; }
+
+  // ---------- forecasting ----------
+  // Expand all items into dated events. `adj` maps event key -> moved ISO date.
+  function events(adj) {
+    var start = parseD(state.startDate), end = addDays(start, state.weeks * 7), out = [];
+    adj = adj || {};
+    state.items.forEach(function (it) {
+      if (!it.on || !it.date || !(num(it.amount) > 0)) return;
+      var amt = num(it.amount);
+      if (it.type === 'invoice') {
+        var due = parseD(it.date);
+        var exp = addDays(due, num(it.late) + num(state.delay));
+        var overdue = due < start;
+        if (exp < start) exp = start;
+        push(it, it.id, exp, amt, { due: due, overdue: overdue });
+      } else if (it.type === 'oneoff') {
+        push(it, it.id, parseD(it.date), it.dir === 'in' ? amt : -amt, {});
+      } else {
+        var d = parseD(it.date), guard = 0;
+        while (d < end && guard++ < 400) {
+          if (d >= start) push(it, it.id + '@' + iso(d), d, it.dir === 'in' ? amt : -amt, {});
+          d = step(d, it.freq);
+        }
+      }
+    });
+    function push(it, key, date, amount, extra) {
+      var moved = adj[key] ? parseD(adj[key]) : null;
+      var e = { key: key, item: it, date: moved || date, orig: date, amount: amount, moved: !!moved };
+      for (var k in extra) e[k] = extra[k];
+      if (e.date >= start && e.date < end) out.push(e);
+    }
+    return out;
+  }
+  function step(d, freq) {
+    if (freq === 'weekly') return addDays(d, 7);
+    if (freq === 'fortnightly') return addDays(d, 14);
+    if (freq === 'quarterly') return addMonths(d, 3);
+    return addMonths(d, 1);
+  }
+
+  function forecast(adj) {
+    var start = parseD(state.startDate), evs = events(adj), weeks = [], bal = num(state.startBalance);
+    for (var i = 0; i < state.weeks; i++) weeks.push({ start: addDays(start, i * 7), inn: 0, out: 0, open: 0, close: 0, events: [] });
+    evs.forEach(function (e) {
+      var w = weeks[Math.floor((e.date - start) / (7 * DAY))];
+      if (!w) return;
+      w.events.push(e);
+      if (e.amount >= 0) w.inn += e.amount; else w.out -= e.amount;
+    });
+    var min = { v: Infinity, i: 0 }, breach = -1, neg = -1, buf = num(state.buffer);
+    weeks.forEach(function (w, i) {
+      w.events.sort(function (a, b) { return a.date - b.date; });
+      w.open = bal; bal += w.inn - w.out; w.close = bal;
+      // the intra-week low matters too: payroll can bounce before the invoice lands
+      var run = w.open, low = w.open;
+      w.events.forEach(function (e) { run += e.amount; if (run < low) low = run; });
+      w.low = Math.min(low, w.close);
+      if (w.low < min.v) min = { v: w.low, i: i };
+      if (breach < 0 && w.low < buf) breach = i;
+      if (neg < 0 && w.low < 0) neg = i;
+    });
+    return { weeks: weeks, min: min, breach: breach, neg: neg, end: bal, events: evs };
+  }
+
+  // Greedy plan: repeatedly take the single move that lifts the lowest point the most.
+  function buildPlan() {
+    var buf = num(state.buffer), adj = {}, steps = [], f = forecast(adj), start = parseD(state.startDate);
+    var horizonEnd = addDays(start, state.weeks * 7);
+    for (var n = 0; n < 10 && f.min.v < buf; n++) {
+      var best = null;
+      f.events.forEach(function (e) {
+        if (adj[e.key] || e.date > f.weeks[f.min.i].start.getTime() + 7 * DAY) return;
+        var cand = null;
+        if (e.item.type === 'invoice') return;
+        if (e.amount < 0 && e.item.flexible) {
+          // never push a cost past the horizon: that hides it rather than solving it
+          var nd = addDays(e.date, 35);
+          if (nd < horizonEnd) cand = { kind: 'defer', date: iso(nd), e: e };
+        }
+        if (cand) consider(cand);
+      });
+      // invoices: chasing pulls the payment to its due date (or next week if already overdue)
+      f.events.forEach(function (e) {
+        if (adj[e.key] || e.item.type !== 'invoice') return;
+        var target = e.overdue ? addDays(start, 7) : e.due;
+        if (target < start) target = start;
+        if (target < e.date) consider({ kind: 'chase', date: iso(target), e: e });
+      });
+      // invoices that would land beyond the horizon are invisible to events(); include them too
+      state.items.forEach(function (it) {
+        if (it.type !== 'invoice' || !it.on || adj[it.id] || !(num(it.amount) > 0)) return;
+        if (f.events.some(function (e) { return e.key === it.id; })) return;
+        var due = parseD(it.date), target = due < start ? addDays(start, 7) : due;
+        if (target < horizonEnd) consider({ kind: 'chase', date: iso(target), e: { key: it.id, item: it, amount: num(it.amount), date: horizonEnd, due: due, overdue: due < start } });
+      });
+      if (!best) break;
+      adj[best.c.e.key] = best.c.date;
+      steps.push({ c: best.c, after: best.f.min.v });
+      f = best.f;
+    }
+    function consider(c) {
+      var trial = Object.assign({}, adj); trial[c.e.key] = c.date;
+      var tf = forecast(trial), gain = tf.min.v - f.min.v;
+      if (gain > 0.5 && (!best || gain > best.gain)) best = { c: c, f: tf, gain: gain };
+    }
+    return { steps: steps, adj: adj, final: f, gap: Math.max(0, buf - f.min.v) };
+  }
+
+  // ---------- rendering: inputs ----------
+  var $ = function (s) { return document.querySelector(s); };
+  var inputs = ['startBalance', 'buffer', 'startDate', 'weeks', 'currency', 'delay'];
+  inputs.forEach(function (k) {
+    var el = document.getElementById(k);
+    el.addEventListener('input', function () {
+      state[k] = (k === 'startDate' || k === 'currency') ? el.value : num(el.value);
+      if (k === 'startDate' && !el.value) return;
+      update();
+    });
+  });
+  function syncInputs() {
+    inputs.forEach(function (k) { document.getElementById(k).value = state[k]; });
+    $('#delayOut').textContent = state.delay;
+  }
+
+  var tabLabels = { invoice: 'invoice', recurring: 'recurring item', oneoff: 'one-off item' };
+  document.querySelectorAll('.tabs button').forEach(function (b) {
+    b.addEventListener('click', function () { state.tab = b.dataset.tab; save(); renderItems(); });
+  });
+
+  function renderItems() {
+    document.querySelectorAll('.tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === state.tab)); });
+    $('#addBtn').textContent = '+ Add ' + tabLabels[state.tab];
+    var list = $('#itemList'), items = state.items.filter(function (i) { return i.type === state.tab; });
+    list.innerHTML = '';
+    if (!items.length) {
+      list.innerHTML = '<div class="empty">' + {
+        invoice: 'No unpaid invoices. Add what clients owe you, with the due date and how late they usually pay.',
+        recurring: 'No recurring items. Add payroll, rent, subscriptions, retainers…',
+        oneoff: 'No one-off items. Add tax bills, equipment, a big deposit you expect…'
+      }[state.tab] + '</div>';
+      return;
+    }
+    var start = parseD(state.startDate);
+    items.forEach(function (it) {
+      var el = document.createElement('div');
+      el.className = 'item' + (it.on ? '' : ' off');
+      var dirPill = it.type === 'invoice' ? '<span class="pill in">IN</span>'
+        : '<select data-k="dir" style="width:auto;padding:4px 6px"><option value="out">Out</option><option value="in">In</option></select>';
+      var row2;
+      if (it.type === 'invoice') {
+        row2 = cell('Amount', '<input data-k="amount" type="number" step="any" inputmode="decimal">') +
+               cell('Due date', '<input data-k="date" type="date">') +
+               cell('Usually pays (days late)', '<input data-k="late" type="number" min="0" step="1" inputmode="numeric">');
+      } else if (it.type === 'recurring') {
+        row2 = cell('Amount', '<input data-k="amount" type="number" step="any" inputmode="decimal">') +
+               cell('Next date', '<input data-k="date" type="date">') +
+               cell('Every', '<select data-k="freq"><option value="weekly">Week</option><option value="fortnightly">2 weeks</option><option value="monthly">Month</option><option value="quarterly">Quarter</option></select>');
+      } else {
+        row2 = cell('Amount', '<input data-k="amount" type="number" step="any" inputmode="decimal">') +
+               cell('Date', '<input data-k="date" type="date">') + '<div></div>';
+      }
+      var overdue = it.type === 'invoice' && it.date && parseD(it.date) < start;
+      el.innerHTML =
+        '<div class="row1">' + dirPill + '<input data-k="name" type="text" aria-label="Name" placeholder="Name">' +
+        '<button class="ghost" data-del aria-label="Remove">✕</button></div>' +
+        '<div class="row2">' + row2 + '</div>' +
+        '<div class="flags"><label><input type="checkbox" data-k="on"> Include</label>' +
+        (it.type !== 'invoice' && it.dir !== 'in' ? '<label><input type="checkbox" data-k="flexible"> Flexible – could delay</label>' : '') +
+        (overdue ? '<span class="pill late">OVERDUE ' + Math.round((start - parseD(it.date)) / DAY) + 'd</span>' : '') +
+        '</div>';
+      el.querySelectorAll('[data-k]').forEach(function (inp) {
+        var k = inp.dataset.k;
+        if (inp.type === 'checkbox') inp.checked = !!it[k]; else inp.value = it[k] == null ? '' : it[k];
+        inp.addEventListener(inp.tagName === 'SELECT' || inp.type === 'checkbox' ? 'change' : 'input', function () {
+          it[k] = inp.type === 'checkbox' ? inp.checked : (inp.type === 'number' ? num(inp.value) : inp.value);
+          if (k === 'on' || k === 'dir' || k === 'date') { update(); renderItems(); } else update();
+        });
+      });
+      el.querySelector('[data-del]').addEventListener('click', function () {
+        state.items = state.items.filter(function (x) { return x !== it; });
+        renderItems(); update();
+      });
+      list.appendChild(el);
+    });
+    function cell(l, input) { return '<div><label>' + l + '</label>' + input + '</div>'; }
+  }
+
+  $('#addBtn').addEventListener('click', function () {
+    var start = parseD(state.startDate);
+    var base = { id: id(), type: state.tab, name: '', amount: 0, date: iso(addDays(start, 7)), on: true };
+    if (state.tab === 'invoice') base.late = 0;
+    else { base.dir = 'out'; if (state.tab === 'recurring') base.freq = 'monthly'; }
+    state.items.push(base); renderItems(); update();
+    var names = document.querySelectorAll('#itemList input[data-k="name"]');
+    if (names.length) names[names.length - 1].focus();
+  });
+  $('#sampleBtn').addEventListener('click', function () { state = sampleState(); syncInputs(); renderItems(); update(); });
+  $('#clearBtn').addEventListener('click', function () {
+    if (state.items.length && !confirm('Clear all your numbers and start blank?')) return;
+    state = blankState(); syncInputs(); renderItems(); update();
+  });
+  $('#csvBtn').addEventListener('click', function () {
+    var f = forecast(), rows = [['Week starting', 'Opening', 'Money in', 'Money out', 'Closing', 'Lowest point']];
+    f.weeks.forEach(function (w) { rows.push([iso(w.start), w.open, w.inn, w.out, w.close, w.low].map(function (v) { return typeof v === 'number' ? v.toFixed(2) : v; })); });
+    var blob = new Blob([rows.map(function (r) { return r.join(','); }).join('\n')], { type: 'text/csv' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'runway-forecast.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
+
+  // ---------- CSV import ----------
+  function parseCSV(text) {
+    text = text.replace(/^﻿/, '');
+    var sample = text.split(/\r?\n/).slice(0, 15).join('\n');
+    var delim = [',', ';', '\t'].map(function (d) { return [d, sample.split(d).length]; })
+      .sort(function (a, b) { return b[1] - a[1]; })[0][0];
+    var rows = [], row = [], f = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c;
+      } else if (c === '"') q = true;
+      else if (c === delim) { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(f); rows.push(row); row = []; f = '';
+      } else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function (r) { return r.map(function (x) { return x.trim(); }); })
+      .filter(function (r) { return r.some(function (x) { return x !== ''; }); });
+  }
+  function normH(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); }
+  function findCol(hs, exact, re) {
+    for (var i = 0; i < exact.length; i++) { var j = hs.indexOf(exact[i]); if (j >= 0) return j; }
+    if (re) for (var k = 0; k < hs.length; k++) if (re.test(hs[k])) return k;
+    return -1;
+  }
+  var MONTHS = 'janfebmaraprmayjunjulaugsepoctnovdec';
+  function dateOrder(vals) {
+    for (var i = 0; i < vals.length; i++) {
+      var m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-]\d{2,4}/.exec(vals[i] || '');
+      if (m && +m[1] > 12) return 'dmy';
+      if (m && +m[2] > 12) return 'mdy';
+    }
+    return 'dmy'; // UK default when ambiguous
+  }
+  function parseDate(s, order) {
+    s = (s || '').trim(); if (!s) return null;
+    var y, mo, d, m;
+    if ((m = /^(\d{4})[\-\/.](\d{1,2})[\-\/.](\d{1,2})/.exec(s))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else if ((m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s))) {
+      y = +m[3]; if (order === 'mdy') { mo = +m[1]; d = +m[2]; } else { d = +m[1]; mo = +m[2]; }
+    } else if ((m = /^(\d{1,2})[\s\-]+([A-Za-z]{3,})\.?[\s\-,]+(\d{2,4})/.exec(s))) {
+      d = +m[1]; mo = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()) / 3 + 1; y = +m[3];
+    } else if ((m = /^([A-Za-z]{3,})\.?\s+(\d{1,2}),?\s+(\d{4})/.exec(s))) {
+      mo = MONTHS.indexOf(m[1].slice(0, 3).toLowerCase()) / 3 + 1; d = +m[2]; y = +m[3];
+    } else return null;
+    if (y < 100) y += 2000;
+    if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31) || mo % 1) return null;
+    var dt = new Date(Date.UTC(y, mo - 1, d));
+    return dt.getUTCMonth() === mo - 1 ? dt : null;
+  }
+  function parseAmt(s) {
+    var t = String(s == null ? '' : s).trim(); if (!t) return NaN;
+    var bare = t.replace(/[£$€\s]|GBP|EUR|USD/g, '');
+    var neg = /^\(.*\)$/.test(bare) || /^-|-$/.test(bare) || /\bDR\b/i.test(t);
+    t = bare.replace(/[^0-9.,]/g, '');
+    if (/,\d{1,2}$/.test(t) && t.indexOf('.') === -1) t = t.replace(',', '.');
+    else if (/\.\d{3},\d{1,2}$/.test(t)) t = t.replace(/\./g, '').replace(',', '.');
+    else t = t.replace(/,/g, '');
+    var n = parseFloat(t);
+    return isFinite(n) ? (neg ? -Math.abs(n) : n) : NaN;
+  }
+  function median(a) { var b = a.slice().sort(function (x, y) { return x - y; }), h = b.length >> 1; return b.length % 2 ? b[h] : (b[h - 1] + b[h]) / 2; }
+
+  var NOISE = ['fp', 'dd', 'so', 'bgc', 'bp', 'card', 'pos', 'vis', 'deb', 'cr', 'dr', 'tfr', 'bacs', 'chaps', 'payment', 'to', 'from', 'ref',
+    'faster', 'direct', 'debit', 'standing', 'order', 'transfer', 'gbp', 'the', 'ltd', 'limited', 'plc', 'inc', 'llc', 'uk', 'on', 'at', 'www', 'com', 'purchase'];
+  function payeeKey(desc) {
+    return desc.toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/)
+      .filter(function (w) { return w.length > 1 && NOISE.indexOf(w) < 0; }).slice(0, 3).join(' ');
+  }
+  function prettyPayee(desc) {
+    var t = desc.replace(/\b(FP|DD|SO|BGC|BP|CARD|POS|VIS|DEB|CR|DR|TFR|BACS|CHAPS|REF)\b\.?/gi, ' ')
+      .replace(/\S*\d{3,}\S*|\*\S*/g, ' ').replace(/\s+/g, ' ').trim();
+    if (t === t.toUpperCase()) t = t.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); });
+    return (t || desc).slice(0, 40);
+  }
+
+  var FREQS = [
+    { f: 'weekly', lo: 5, hi: 9, ideal: 7, tol: 2, minN: 3, label: 'week' },
+    { f: 'fortnightly', lo: 12, hi: 16, ideal: 14, tol: 3, minN: 3, label: '2 weeks' },
+    { f: 'monthly', lo: 26, hi: 35, ideal: 30.4, tol: 5, minN: 2, label: 'month' },
+    { f: 'quarterly', lo: 84, hi: 97, ideal: 91, tol: 10, minN: 2, label: 'quarter' }
+  ];
+
+  function readBank(hs, rows, fname, out) {
+    var c = {
+      date: findCol(hs, ['date', 'transactiondate', 'posteddate', 'postingdate', 'completeddate', 'bookingdate', 'valuedate', 'starteddate'], /date/),
+      desc: findCol(hs, ['description', 'transactiondescription', 'details', 'transactiondetails', 'narrative', 'payee', 'name', 'merchant', 'counterparty', 'counterpartyname', 'memo', 'reference'], /desc|detail|payee|narrat|merchant/),
+      amt: findCol(hs, ['amount', 'value', 'amountgbp', 'transactionamount'], /^amount/),
+      inn: findCol(hs, ['paidin', 'moneyin', 'credit', 'creditamount', 'credits', 'in', 'deposits', 'receipts'], /paidin|moneyin|credit/),
+      out: findCol(hs, ['paidout', 'moneyout', 'debit', 'debitamount', 'debits', 'out', 'withdrawals', 'payments'], /paidout|moneyout|debit/),
+      bal: findCol(hs, ['balance', 'runningbalance', 'balancegbp', 'accountbalance'], /balance/),
+      dc: findCol(hs, ['creditdebitindicator', 'debitcredit', 'creditdebit', 'drcr', 'type', 'transactiontype'], null)
+    };
+    var order = dateOrder(rows.map(function (r) { return r[c.date]; }));
+    var txns = [];
+    rows.forEach(function (r) {
+      var date = parseDate(r[c.date], order); if (!date) return;
+      var a;
+      if (c.amt >= 0 && isFinite(parseAmt(r[c.amt]))) {
+        a = parseAmt(r[c.amt]);
+        if (a > 0 && c.dc >= 0 && /^(debit|dr|d|out|withdrawal)$/i.test(r[c.dc] || '')) a = -a;
+      } else {
+        var i = parseAmt(r[c.inn]), o = parseAmt(r[c.out]);
+        if (!isFinite(i) && !isFinite(o)) return;
+        a = (isFinite(i) ? Math.abs(i) : 0) - (isFinite(o) ? Math.abs(o) : 0);
+      }
+      if (!a) return;
+      txns.push({ date: date, desc: r[c.desc] || '', amount: a, bal: c.bal >= 0 ? parseAmt(r[c.bal]) : NaN });
+    });
+    if (!txns.length) { out.warnings.push(fname + ': looked like a bank statement but no transactions could be read.'); return; }
+
+    var last = txns.reduce(function (m, t) { return t.date > m ? t.date : m; }, txns[0].date);
+    out.found.push(fname + ' (' + txns.length + ' transactions)');
+
+    // closing balance: the latest-dated row, respecting the file's own ordering for same-day rows
+    var withBal = txns.filter(function (t) { return isFinite(t.bal) && t.date.getTime() === last.getTime(); });
+    if (withBal.length) {
+      var ascending = txns[0].date <= txns[txns.length - 1].date;
+      var pick = ascending ? withBal[withBal.length - 1] : withBal[0];
+      if (!out.balance || last > out.balance.date) out.balance = { value: pick.bal, date: last, file: fname, checked: true };
+    }
+
+    var groups = {};
+    txns.forEach(function (t) {
+      var k = payeeKey(t.desc); if (!k) return;
+      k += t.amount > 0 ? '|in' : '|out';
+      (groups[k] = groups[k] || []).push(t);
+    });
+    Object.keys(groups).forEach(function (k) {
+      var g = groups[k].slice().sort(function (a, b) { return a.date - b.date; });
+      g = g.filter(function (t, i) { return i === 0 || t.date.getTime() !== g[i - 1].date.getTime(); });
+      if (g.length < 2) return;
+      var gaps = [];
+      for (var i = 1; i < g.length; i++) gaps.push((g[i].date - g[i - 1].date) / DAY);
+      var med = median(gaps), fq = FREQS.filter(function (x) { return med >= x.lo && med <= x.hi; })[0];
+      if (!fq || g.length < fq.minN) return;
+      var regular = gaps.filter(function (x) { return Math.abs(x - fq.ideal) <= fq.tol; }).length / gaps.length;
+      if (regular < 0.7) return;
+      var amts = g.map(function (t) { return Math.abs(t.amount); });
+      if (Math.max.apply(null, amts) / Math.min.apply(null, amts) > 1.6) return;
+      var lastT = g[g.length - 1];
+      if ((last - lastT.date) / DAY > fq.ideal * 1.5 + 7) return; // stopped: probably cancelled
+      var amt = Math.round(median(amts) * 100) / 100;
+      out.recurring.push({
+        checked: amt >= 25,
+        item: { type: 'recurring', dir: lastT.amount > 0 ? 'in' : 'out', name: prettyPayee(lastT.desc), amount: amt,
+          freq: fq.f, date: iso(step(lastT.date, fq.f)), on: true },
+        sub: 'Every ' + fq.label + ', seen ' + g.length + ' times, last on ' + fmtD(lastT.date)
+      });
+    });
+  }
+
+  function readInvoices(hs, rows, fname, out) {
+    var c = {
+      due: findCol(hs, ['duedate', 'datedue', 'paymentduedate', 'due'], /due.*date|date.*due/),
+      name: findCol(hs, ['contactname', 'contact', 'customer', 'customername', 'client', 'clientname', 'billto', 'company', 'name'], /contact|customer|client/),
+      owed: findCol(hs, ['invoiceamountdue', 'amountdue', 'openbalance', 'balancedue', 'outstanding', 'amountoutstanding', 'dueamount', 'unpaid', 'remaining', 'balance'], /amountdue|outstanding|openbal|balancedue/),
+      total: findCol(hs, ['total', 'invoicetotal', 'grosstotal', 'totalamount', 'amount', 'value', 'totalincvat'], /total/),
+      status: findCol(hs, ['status', 'invoicestatus'], null),
+      num: findCol(hs, ['invoicenumber', 'invoiceno', 'number', 'no', 'num', 'invoice', 'reference'], null),
+      issued: findCol(hs, ['invoicedate', 'issuedate', 'date', 'dated'], null),
+      paid: findCol(hs, ['fullypaidondate', 'paiddate', 'datepaid', 'paidon', 'lastpaymentdate', 'paymentdate'], /paid.*(date|on)/),
+      type: findCol(hs, ['transactiontype', 'type'], null)
+    };
+    if (c.owed < 0 && c.total < 0) { out.warnings.push(fname + ': found due dates but no amount column.'); return; }
+    var order = dateOrder([].concat(
+      rows.map(function (r) { return r[c.due]; }), rows.map(function (r) { return r[c.issued]; }), rows.map(function (r) { return r[c.paid]; })));
+    var lateBy = {}, allLate = [], open = [];
+    rows.forEach(function (r) {
+      if (c.type >= 0 && r[c.type] && !/invoice/i.test(r[c.type])) return;
+      var status = c.status >= 0 ? (r[c.status] || '') : '';
+      if (/void|delet|draft|cancel/i.test(status)) return;
+      var due = parseDate(r[c.due], order), contact = (c.name >= 0 && r[c.name]) || '';
+      var owed = c.owed >= 0 ? parseAmt(r[c.owed]) : NaN, total = c.total >= 0 ? parseAmt(r[c.total]) : NaN;
+      if (!isFinite(owed)) owed = /paid/i.test(status) && !/part/i.test(status) ? 0 : total;
+      var paidOn = c.paid >= 0 ? parseDate(r[c.paid], order) : null;
+      if (due && paidOn && !(owed > 0)) {
+        var late = Math.max(0, Math.round((paidOn - due) / DAY)), key = contact.toLowerCase();
+        (lateBy[key] = lateBy[key] || []).push(late); allLate.push(late);
+        return;
+      }
+      if (!(owed > 0)) return;
+      if (!due) { var iss = parseDate(r[c.issued], order); if (!iss) return; due = addDays(iss, 30); }
+      open.push({ contact: contact, num: c.num >= 0 ? r[c.num] : '', due: due, owed: owed });
+    });
+    out.found.push(fname + ' (' + open.length + ' unpaid invoice' + (open.length === 1 ? '' : 's') + ')');
+    addInvoices(open, lateBy, allLate, out);
+  }
+
+  // open: [{contact, num, due: Date, owed}], lateBy: {contact: [days late]}, allLate: [days late]
+  function addInvoices(open, lateBy, allLate, out) {
+    open.forEach(function (o) {
+      var hist = lateBy[o.contact.toLowerCase()], late = 0, sub;
+      if (hist && hist.length) {
+        late = Math.round(hist.reduce(function (a, b) { return a + b; }, 0) / hist.length);
+        sub = late ? 'Usually pays ' + late + ' days late (from ' + hist.length + ' paid invoice' + (hist.length > 1 ? 's' : '') + ')' : 'Usually pays on time';
+      } else if (allLate.length >= 3) {
+        late = Math.round(median(allLate)); sub = 'No history for this client, so using your typical ' + late + ' days late';
+      } else sub = 'No payment history, so assuming on time';
+      out.invoices.push({
+        checked: true,
+        item: { type: 'invoice', name: (o.contact || 'Invoice') + (o.num ? ' · ' + o.num : ''), amount: Math.round(o.owed * 100) / 100,
+          date: iso(o.due), late: late, on: true },
+        sub: 'Due ' + fmtD(o.due) + '. ' + sub
+      });
+    });
+  }
+
+  function importTexts(files, replaceDefault) {
+    var out = { found: [], warnings: [], recurring: [], invoices: [], oneoffs: [], balance: null, replace: !!replaceDefault };
+    files.forEach(function (f) {
+      var rows = parseCSV(f.text), h = -1;
+      for (var i = 0; i < Math.min(rows.length, 25); i++) {
+        if (rows[i].filter(Boolean).length >= 2 && rows[i].some(function (x) { return /date/i.test(x); })) { h = i; break; }
+      }
+      if (h < 0) { out.warnings.push(f.name + ': couldn\'t find a header row with a date column.'); return; }
+      var hs = rows[h].map(normH), body = rows.slice(h + 1);
+      var hasDue = hs.some(function (x) { return /due/.test(x) && /date/.test(x) || x === 'due'; });
+      if (hasDue) readInvoices(hs, body, f.name, out);
+      else if (findCol(hs, ['amount', 'value', 'paidin', 'paidout', 'moneyin', 'moneyout', 'credit', 'debit'], /amount|paidin|paidout|credit|debit/) >= 0) readBank(hs, body, f.name, out);
+      else out.warnings.push(f.name + ': not recognised as a bank statement or invoice list.');
+    });
+    finishImport(out);
+  }
+
+  function reviewItems(p) { return [].concat(p.recurring, p.invoices, p.oneoffs); }
+  function finishImport(out) {
+    // flag likely duplicates of what's already entered
+    // same type, same amount, and a meaningful word in common ("Wirral Dental" vs "Retainer – Wirral Dental")
+    function words(n) {
+      return String(n || '').toLowerCase().replace(/\b(inv|invoice|bill)[-\s]*\d+/g, '').split(/[^a-z0-9]+/)
+        .filter(function (w) { return w.length > 2 && NOISE.indexOf(w) < 0 && !/^\d+$/.test(w); });
+    }
+    reviewItems(out).forEach(function (r) {
+      var w = words(r.item.name);
+      var dup = state.items.some(function (it) {
+        return it.type === r.item.type && Math.abs(num(it.amount) - r.item.amount) < 1 &&
+          words(it.name).some(function (x) { return w.indexOf(x) >= 0; });
+      });
+      // duplicates only matter when adding; replacing removes the originals
+      if (dup) { r.dup = true; r.checked = out.replace; }
+    });
+    out.recurring.sort(function (a, b) { return b.item.amount - a.item.amount; });
+    out.invoices.sort(function (a, b) { return a.item.date < b.item.date ? -1 : 1; });
+    out.oneoffs.sort(function (a, b) { return a.item.date < b.item.date ? -1 : 1; });
+    pending = out;
+    renderReview();
+  }
+
+  var pending = null;
+  function renderReview() {
+    var box = $('#review');
+    if (!pending) { box.hidden = true; box.innerHTML = ''; return; }
+    var p = pending, h = '';
+    if (p.found.length) h += '<p class="hint" style="margin:0">Read ' + esc(p.found.join(', ')) + '. Untick anything you don\'t want.</p>';
+    p.warnings.forEach(function (w) { h += '<div class="notice">' + esc(w) + '</div>'; });
+    if (p.balance) {
+      var stale = Math.round((today() - p.balance.date) / DAY);
+      h += '<h3>Bank balance</h3>' + row('bal', p.balance.checked, 'Set cash in bank to ' + money(p.balance.value),
+        (p.balance.note || 'Closing balance on ' + fmtD(p.balance.date)) + (stale > 7 ? '. That was ' + stale + ' days ago, so update it if it has changed.' : ''), '');
+    }
+    if (p.recurring.length) {
+      h += '<h3>Recurring payments spotted (' + p.recurring.length + ')</h3>';
+      p.recurring.forEach(function (r, i) {
+        h += row('rec' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''),
+          (r.item.dir === 'in' ? '+' : '−') + money(r.item.amount));
+      });
+    }
+    if (p.invoices.length) {
+      h += '<h3>Unpaid invoices (' + p.invoices.length + ')</h3>';
+      p.invoices.forEach(function (r, i) {
+        h += row('inv' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''), money(r.item.amount));
+      });
+    }
+    if (p.oneoffs.length) {
+      h += '<h3>Bills to pay (' + p.oneoffs.length + ')</h3>';
+      p.oneoffs.forEach(function (r, i) {
+        h += row('one' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''), '−' + money(r.item.amount));
+      });
+    }
+    var any = p.balance || reviewItems(p).length;
+    if (any) {
+      if (!p.fromXero) h += '<div class="notice">Statements can\'t predict one-off bills. Add VAT, corporation tax and any big purchases under <strong>One-off</strong> after importing.</div>';
+      h += '<label class="replace"><input type="checkbox" data-r="replace"' + (p.replace ? ' checked' : '') + '> Replace my current items instead of adding to them</label>';
+      h += '<div class="btnrow"><button class="primary" id="applyImport">Add selected to forecast</button><button id="cancelImport">Cancel</button></div>';
+    } else h += '<div class="btnrow" style="margin-top:8px"><button id="cancelImport">Close</button></div>';
+    box.innerHTML = h; box.hidden = false;
+    box.querySelectorAll('input[data-r]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var k = cb.dataset.r;
+        if (k === 'replace') {
+          p.replace = cb.checked;
+          reviewItems(p).forEach(function (r) { if (r.dup) r.checked = p.replace; });
+          renderReview();
+        }
+        else if (k === 'bal') p.balance.checked = cb.checked;
+        else ({ rec: p.recurring, inv: p.invoices, one: p.oneoffs })[k.slice(0, 3)][+k.slice(3)].checked = cb.checked;
+      });
+    });
+    var ap = $('#applyImport'); if (ap) ap.addEventListener('click', applyImport);
+    $('#cancelImport').addEventListener('click', function () { pending = null; renderReview(); });
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    function row(k, on, name, sub, amt) {
+      return '<label class="ritem"><input type="checkbox" data-r="' + k + '"' + (on ? ' checked' : '') + '><span class="rmain"><span class="rname">' +
+        esc(name) + '</span><br><span class="rsub">' + esc(sub) + '</span></span><span class="ramt">' + esc(amt) + '</span></label>';
+    }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+
+  function applyImport() {
+    var p = pending, added = { recurring: 0, invoice: 0, oneoff: 0 };
+    if (p.replace) state.items = [];
+    if (p.balance && p.balance.checked) state.startBalance = Math.round(p.balance.value * 100) / 100;
+    reviewItems(p).forEach(function (r) {
+      if (!r.checked) return;
+      var it = Object.assign({ id: id() }, r.item);
+      state.items.push(it); added[it.type]++;
+    });
+    if (added.invoice || added.recurring) state.tab = added.invoice >= added.recurring ? 'invoice' : 'recurring';
+    pending = null; renderReview();
+    syncInputs(); renderItems(); update();
+    document.querySelector('.layout > div:last-child').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function readFiles(list) {
+    var files = Array.prototype.slice.call(list).filter(function (f) { return /\.csv$|\.txt$/i.test(f.name) || /csv|text/.test(f.type); });
+    if (!files.length) return;
+    Promise.all(files.map(function (f) {
+      return f.text().then(function (t) { return { name: f.name, text: t }; });
+    })).then(function (texts) { importTexts(texts, false); });
+  }
+  var drop = $('#drop'), fileIn = $('#fileIn');
+  fileIn.addEventListener('change', function () { readFiles(fileIn.files); fileIn.value = ''; });
+  drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileIn.click(); } });
+  ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { if (e.dataTransfer) readFiles(e.dataTransfer.files); });
+
+  // Realistic sample exports so people can see the import without their own files
+  function sampleExports() {
+    var t = today(), tx = [];
+    function d(n) { return addDays(t, n); }
+    function dmy(dt) { return ('0' + dt.getUTCDate()).slice(-2) + '/' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + dt.getUTCFullYear(); }
+    function monthly(dom, desc, amt) {
+      for (var m = -4; m <= 0; m++) {
+        var dt = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + m, dom));
+        if (dt < t && dt >= d(-95)) tx.push([dt, desc + ' ' + (1000 + m * 7 + dom), typeof amt === 'function' ? amt(m) : amt]);
+      }
+    }
+    monthly(28, 'FP PAYROLL BUREAU LTD REF', -6200);
+    monthly(1, 'DD HARBOURSIDE ESTATES RENT', -1450);
+    monthly(15, 'CARD NOTION LABS INC', function (m) { return -[372, 380, 384, 380, 380][m + 4]; });
+    monthly(1, 'BGC WIRRAL DENTAL LTD', 3500);
+    monthly(20, 'FP MERSEY BUILD CO', 5000);
+    for (var k = 1; k <= 7; k++) tx.push([d(4 - 14 * k), 'FP J SMITH DESIGN', -900]);
+    [[-88, 23.4], [-80, 61.2], [-71, 18.75], [-66, 44.1], [-52, 9.6], [-45, 52.3], [-33, 31.0], [-19, 12.85], [-8, 27.4], [-3, 40.15]]
+      .forEach(function (x, i) { tx.push([d(x[0]), 'CARD TESCO STORES ' + (2200 + i * 13) + ' LIVERPOOL', -x[1]]); });
+    [[-77, 89.99], [-41, 23.5], [-12, 149]].forEach(function (x) { tx.push([d(x[0]), 'AMAZON MKTPLACE PMTS', -x[1]]); });
+    tx.push([d(-40), 'FP ACME LOGISTICS INV-0088', 4200]);
+    tx.push([d(-60), 'FP NORTHSIDE CAFE', 1250]);
+    tx.push([d(-30), 'FP HARBOUR HOMES LTD', 6800]);
+    tx.push([d(-58), 'DD HMRC VAT', -4300]);
+    tx.sort(function (a, b) { return a[0] - b[0]; });
+    var bal = 4200 - tx.reduce(function (s, x) { return s + x[2]; }, 0), lines = [];
+    tx.forEach(function (x) { bal += x[2]; x.push(bal); });
+    tx.reverse().forEach(function (x) {
+      lines.push([dmy(x[0]), '"' + x[1] + '"', x[2] < 0 ? (-x[2]).toFixed(2) : '', x[2] > 0 ? x[2].toFixed(2) : '', x[3].toFixed(2)].join(','));
+    });
+    var bank = 'Date,Description,Paid out,Paid in,Balance\n' + lines.join('\n');
+
+    function dm(n) { return fmtD(d(n)) + ' ' + d(n).getUTCFullYear(); }
+    var inv = [['ContactName', 'InvoiceNumber', 'InvoiceDate', 'DueDate', 'Total', 'InvoiceAmountDue', 'Status', 'FullyPaidOnDate']];
+    [['Acme Logistics', 'INV-0081', -100, -70, 3900, 0, 'PAID', -56],
+     ['Acme Logistics', 'INV-0088', -84, -54, 4200, 0, 'PAID', -40],
+     ['Northside Café', 'INV-0079', -111, -81, 1250, 0, 'PAID', -60],
+     ['Harbour Homes', 'INV-0074', -125, -95, 5200, 0, 'PAID', -65],
+     ['Harbour Homes', 'INV-0084', -90, -60, 6800, 0, 'PAID', -30],
+     ['Acme Logistics', 'INV-0093', -42, -12, 4200, 4200, 'AUTHORISED', null],
+     ['Northside Café', 'INV-0097', -25, 5, 1250, 1250, 'AUTHORISED', null],
+     ['Harbour Homes', 'INV-0099', -12, 18, 6800, 6800, 'AUTHORISED', null],
+     ['Sefton Arts Trust', 'INV-0100', -2, 28, 2400, 2400, 'AUTHORISED', null],
+     ['Bootle Fitness', 'INV-0101', 0, 30, 950, 950, 'DRAFT', null]
+    ].forEach(function (r) {
+      inv.push([r[0], r[1], dm(r[2]), dm(r[3]), r[4].toFixed(2), r[5].toFixed(2), r[6], r[7] == null ? '' : dm(r[7])]);
+    });
+    return [{ name: 'business-account-statement.csv', text: bank },
+            { name: 'invoices-export.csv', text: inv.map(function (r) { return r.join(','); }).join('\n') }];
+  }
+  $('#trySample').addEventListener('click', function () { importTexts(sampleExports(), true); });
+
+
+  // ---------- Xero sync ----------
+  // Address of the deployed connector (runway/xero-connector). Leave blank to hide the button.
+  var XERO_CONNECTOR = '';
+  var xeroBtn = $('#xeroBtn');
+  if (XERO_CONNECTOR) {
+    xeroBtn.hidden = false;
+    xeroBtn.addEventListener('click', function () {
+      save();
+      location.href = XERO_CONNECTOR.replace(/\/$/, '') + '/login?return=' + encodeURIComponent(location.href.split('#')[0]);
+    });
+  }
+
+  function fromXero(d) {
+    var out = { found: [], warnings: [], recurring: [], invoices: [], oneoffs: [], balance: null, replace: false, fromXero: true };
+    if (!d || d.error) {
+      out.warnings.push((d && d.error) || 'Xero sent back something Runway couldn\'t read.');
+      pending = out; renderReview(); return;
+    }
+    (d.warnings || []).forEach(function (w) { out.warnings.push(String(w)); });
+    var receivables = d.receivables || [], bills = d.bills || [], repeating = d.repeating || [];
+    out.found.push(String(d.org || 'Xero') + ' in Xero (' + receivables.length + ' unpaid invoices, ' + bills.length + ' bills)');
+    if (isFinite(parseFloat(d.balance))) {
+      out.balance = { value: parseFloat(d.balance), date: today(), checked: true, note: 'Total across your bank accounts in Xero. It\'s only as current as your last bank feed.' };
+    }
+    var lateBy = {}, allLate = [];
+    (d.paid || []).forEach(function (p) {
+      if (!p.due || !p.paid) return;
+      var late = Math.max(0, Math.round((parseD(p.paid) - parseD(p.due)) / DAY)), k = String(p.contact || '').toLowerCase();
+      (lateBy[k] = lateBy[k] || []).push(late); allLate.push(late);
+    });
+    addInvoices(receivables.filter(function (o) { return o.due && num(o.owed) > 0; }).map(function (o) {
+      return { contact: String(o.contact || ''), num: String(o.num || ''), due: parseD(o.due), owed: num(o.owed) };
+    }), lateBy, allLate, out);
+    bills.forEach(function (b) {
+      if (!b.due || !(num(b.owed) > 0)) return;
+      out.oneoffs.push({
+        checked: true,
+        item: { type: 'oneoff', dir: 'out', name: String(b.contact || 'Bill') + (b.num ? ' · ' + b.num : ''), amount: Math.round(num(b.owed) * 100) / 100, date: b.due, on: true },
+        sub: 'Bill due ' + fmtD(parseD(b.due))
+      });
+    });
+    var labels = { weekly: 'week', fortnightly: '2 weeks', monthly: 'month', quarterly: 'quarter' };
+    repeating.forEach(function (r) {
+      if (!labels[r.freq] || !r.next || !(num(r.amount) > 0)) return;
+      out.recurring.push({
+        checked: true,
+        item: { type: 'recurring', dir: r.dir === 'in' ? 'in' : 'out', name: String(r.contact || 'Repeating invoice'), amount: num(r.amount), freq: r.freq, date: r.next, on: true },
+        sub: 'Repeating ' + (r.dir === 'in' ? 'invoice' : 'bill') + ' in Xero, every ' + labels[r.freq] + ', next payment ' + fmtD(parseD(r.next))
+      });
+    });
+    finishImport(out);
+  }
+
+  // The connector returns data in the URL fragment, which never reaches a server
+  function checkXeroReturn() {
+    var m = /^#xero=([A-Za-z0-9_-]+)$/.exec(location.hash);
+    if (!m) return;
+    history.replaceState(null, '', location.pathname + location.search);
+    var data = null;
+    try {
+      var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+      var bin = atob(b64 + '==='.slice((b64.length + 3) % 4));
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      data = JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) { data = null; }
+    fromXero(data);
+  }
+
+  // ---------- rendering: outputs ----------
+  function update() {
+    $('#delayOut').textContent = state.delay;
+    save();
+    if (!state.startDate) return;
+    var f = forecast(), plan = buildPlan(), buf = num(state.buffer);
+    var planF = plan.steps.length ? plan.final : null;
+
+    // KPIs
+    var low = f.min.v, lw = f.weeks[f.min.i];
+    setV('#kLow', money(low), low < 0 ? 'bad' : low < buf ? 'warn' : 'ok');
+    $('#kLowWhen').textContent = lw ? 'week of ' + fmtD(lw.start) : '';
+    setV('#kBreach', f.breach < 0 ? 'None' : fmtD(f.weeks[f.breach].start), f.breach < 0 ? 'ok' : f.neg >= 0 ? 'bad' : 'warn');
+    setV('#kEnd', money(f.end), f.end < 0 ? 'bad' : f.end < buf ? 'warn' : '');
+    $('#kEndWhen').textContent = 'after ' + state.weeks + ' weeks';
+    var start = parseD(state.startDate), owed = 0, overdue = 0;
+    state.items.forEach(function (it) {
+      if (it.type === 'invoice' && it.on) { owed += num(it.amount); if (it.date && parseD(it.date) < start) overdue += num(it.amount); }
+    });
+    setV('#kOwed', money(owed), '');
+    $('#kOwedSub').textContent = overdue ? money(overdue) + ' already overdue' : 'none overdue';
+
+    // Banner
+    var b = $('#banner');
+    if (f.neg >= 0) {
+      b.className = 'banner bad';
+      b.innerHTML = 'You\'re on course to be <strong>overdrawn in the week of ' + fmtD(f.weeks[f.neg].start) + '</strong>, ' + weeksAway(f.neg) +
+        '. Lowest point: <strong>' + money(low) + '</strong>. ' + (plan.gap > 0 ? 'Follow the plan below and line up ' + money(plan.gap) + ' of funding.' : 'The plan below gets you through.');
+    } else if (f.breach >= 0) {
+      b.className = 'banner warn';
+      b.innerHTML = 'Cash dips below your ' + money(buf) + ' buffer in the <strong>week of ' + fmtD(f.weeks[f.breach].start) + '</strong>, ' + weeksAway(f.breach) +
+        '. You stay positive, but it\'s tight. Lowest point: <strong>' + money(low) + '</strong>.';
+    } else {
+      b.className = 'banner ok';
+      b.innerHTML = 'You stay above your buffer for all <strong>' + state.weeks + ' weeks</strong>. The lowest point is <strong>' + money(low) + '</strong> in the week of ' + fmtD(lw.start) + '.';
+    }
+
+    drawChart(f, planF);
+    renderPlan(plan, f);
+    renderTable(f);
+  }
+  function weeksAway(i) { return i === 0 ? 'this week' : i === 1 ? 'next week' : i + ' weeks from now'; }
+  function setV(sel, text, cls) { var el = $(sel); el.textContent = text; el.className = 'v' + (cls ? ' ' + cls : ''); }
+
+  function renderPlan(plan, f) {
+    var ol = $('#plan'), buf = num(state.buffer), start = parseD(state.startDate);
+    ol.innerHTML = '';
+    $('#planLegend').style.display = plan.steps.length ? '' : 'none';
+    if (f.min.v >= buf) {
+      $('#planHint').textContent = 'Nothing urgent. Here is how to stay ahead.';
+      var tips = [];
+      var overdueInv = state.items.filter(function (it) { return it.type === 'invoice' && it.on && it.date && parseD(it.date) < start; });
+      if (overdueInv.length) tips.push(['Chase ' + overdueInv.length + ' overdue invoice' + (overdueInv.length > 1 ? 's' : ''), 'Even when you\'re safe, late payers get later the longer you wait.']);
+      var surplus = f.min.v - buf;
+      if (surplus > 0) tips.push(['You have ' + money(surplus) + ' of headroom above your buffer at the tightest point', 'That\'s the most you could spend or invest without dipping below your safety line.']);
+      tips.push(['Re-run this every Monday', 'Update your bank balance and tick off paid invoices. Cash surprises come from stale forecasts.']);
+      tips.forEach(function (t) { li(t[0], t[1]); });
+      return;
+    }
+    $('#planHint').textContent = 'The fewest moves that keep you above your buffer, with the biggest impact first.';
+    plan.steps.forEach(function (s) {
+      var e = s.c.e, nm = e.item.name || 'Untitled';
+      if (s.c.kind === 'chase') {
+        li('Chase ' + nm + ' for ' + money(e.amount) + ' by ' + fmtD(parseD(s.c.date)),
+          (e.overdue ? 'Already overdue. ' : 'Ask for payment on the due date instead of ' + Math.round((e.date - e.due) / DAY) + ' days late. ') +
+          'Your lowest point rises to ' + money(s.after) + '.');
+      } else {
+        li('Delay ' + nm + ' (' + money(-e.amount) + ') from ' + fmtD(e.date) + ' to ' + fmtD(parseD(s.c.date)),
+          'Marked as flexible. Your lowest point rises to ' + money(s.after) + '.');
+      }
+    });
+    if (plan.gap > 0) {
+      var fb = plan.final.breach >= 0 ? plan.final.weeks[plan.final.breach].start : start;
+      li('Line up ' + money(plan.gap) + ' of short-term funding before ' + fmtD(fb),
+        'Options: an overdraft extension, invoice finance against unpaid invoices, or a client deposit. Ask now. Lenders say yes more easily before you need it.', 'fund');
+    }
+    if (!plan.steps.length && plan.gap > 0) {
+      var tip = document.createElement('li');
+      tip.innerHTML = '<div class="what">Tip: mark costs you could push back as <em>flexible</em></div><div class="effect">Runway can then work out which ones to delay.</div>';
+      ol.appendChild(tip);
+    }
+    function li(what, effect, cls) {
+      var l = document.createElement('li'); if (cls) l.className = cls;
+      l.innerHTML = '<div class="what"></div><div class="effect"></div>';
+      l.firstChild.textContent = what; l.lastChild.textContent = effect;
+      ol.appendChild(l);
+    }
+  }
+
+  function renderTable(f) {
+    var t = $('#table'), buf = num(state.buffer);
+    t.innerHTML = '<thead><tr><th>Week of</th><th>In</th><th>Out</th><th>Closing</th></tr></thead>';
+    var tb = document.createElement('tbody');
+    f.weeks.forEach(function (w) {
+      var tr = document.createElement('tr'); tr.className = 'wk';
+      var cls = w.low < 0 ? 'neg' : w.low < buf ? 'low' : '';
+      tr.innerHTML = '<td>' + fmtD(w.start) + ' <span class="muted">(' + w.events.length + ')</span></td><td>' + (w.inn ? money(w.inn) : '–') +
+        '</td><td>' + (w.out ? money(-w.out) : '–') + '</td><td class="' + cls + '">' + money(w.close) +
+        (w.low < w.close && w.low < buf ? '<div style="font-size:11px;font-weight:500">dips to ' + money(w.low) + '</div>' : '') + '</td>';
+      var det = document.createElement('tr'); det.className = 'detail'; det.hidden = true;
+      var td = document.createElement('td'); td.colSpan = 4;
+      if (w.events.length) {
+        var ul = document.createElement('ul');
+        w.events.forEach(function (e) {
+          var liEl = document.createElement('li');
+          liEl.textContent = fmtD(e.date) + ' · ' + (e.item.name || 'Untitled') + ' · ' + (e.amount >= 0 ? '+' : '') + money(e.amount) +
+            (e.overdue ? ' (overdue, expected now)' : '');
+          ul.appendChild(liEl);
+        });
+        td.appendChild(ul);
+      } else td.textContent = 'Nothing scheduled.';
+      det.appendChild(td);
+      tr.addEventListener('click', function () { det.hidden = !det.hidden; });
+      tb.appendChild(tr); tb.appendChild(det);
+    });
+    t.appendChild(tb);
+  }
+
+  function drawChart(f, planF) {
+    var svg = $('#chart'), W = 720, H = 280, pl = 58, pr = 8, pt = 12, pb = 28;
+    var buf = num(state.buffer), n = f.weeks.length;
+    var vals = f.weeks.map(function (w) { return w.close; }).concat([0, buf, num(state.startBalance)]);
+    if (planF) vals = vals.concat(planF.weeks.map(function (w) { return w.close; }));
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    var pad = (hi - lo) * 0.08 || 1000; lo -= lo < 0 ? pad : 0; hi += pad;
+    var ticks = niceTicks(lo, hi, 5); lo = ticks[0]; hi = ticks[ticks.length - 1];
+    var y = function (v) { return pt + (hi - v) / (hi - lo) * (H - pt - pb); };
+    var bw = (W - pl - pr) / n, gap = Math.max(2, bw * 0.22);
+    var s = '';
+    ticks.forEach(function (t) {
+      s += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(t) + '" y2="' + y(t) + '" stroke="var(--border)" stroke-width="1"/>';
+      s += '<text x="' + (pl - 8) + '" y="' + (y(t) + 4) + '" text-anchor="end" font-size="11" fill="var(--muted)">' + money(t, { compact: true }) + '</text>';
+    });
+    var y0 = y(0);
+    f.weeks.forEach(function (w, i) {
+      var x = pl + i * bw + gap / 2, top = Math.min(y(w.close), y0), h = Math.max(1, Math.abs(y(w.close) - y0));
+      var col = w.low < 0 ? 'var(--bar-bad)' : w.low < buf ? 'var(--bar-warn)' : 'var(--bar-ok)';
+      s += '<rect data-i="' + i + '" x="' + x + '" y="' + top + '" width="' + (bw - gap) + '" height="' + h + '" rx="3" fill="' + col + '"/>';
+      if (n <= 13 || i % 2 === 0) s += '<text x="' + (x + (bw - gap) / 2) + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11" fill="var(--muted)">' + fmtD(w.start) + '</text>';
+    });
+    s += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y0 + '" y2="' + y0 + '" stroke="var(--muted)" stroke-width="1"/>';
+    if (buf > 0) {
+      s += '<line x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(buf) + '" y2="' + y(buf) + '" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4"/>';
+      s += '<text x="' + (W - pr) + '" y="' + (y(buf) - 5) + '" text-anchor="end" font-size="11" font-weight="600" fill="var(--warn)" stroke="var(--card)" stroke-width="3" paint-order="stroke">buffer ' + money(buf, { compact: true }) + '</text>';
+    }
+    if (planF) {
+      var pts = planF.weeks.map(function (w, i) { return (pl + i * bw + bw / 2) + ',' + y(w.close); }).join(' ');
+      s += '<polyline points="' + pts + '" fill="none" stroke="var(--plan)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+      planF.weeks.forEach(function (w, i) { s += '<circle cx="' + (pl + i * bw + bw / 2) + '" cy="' + y(w.close) + '" r="3" fill="var(--plan)"/>'; });
+    }
+    // hover targets
+    f.weeks.forEach(function (w, i) { s += '<rect class="hit" data-i="' + i + '" x="' + (pl + i * bw) + '" y="' + pt + '" width="' + bw + '" height="' + (H - pt - pb) + '" fill="transparent"/>'; });
+    svg.innerHTML = s;
+
+    var tip = $('#tip'), wrap = $('#chartWrap');
+    svg.querySelectorAll('.hit').forEach(function (r) {
+      function show() {
+        var i = +r.dataset.i, w = f.weeks[i], rect = svg.getBoundingClientRect(), scale = rect.width / W;
+        tip.innerHTML = '<strong>Week of ' + fmtD(w.start) + '</strong><br>In ' + money(w.inn) + ' · Out ' + money(-w.out) +
+          '<br>Closing ' + money(w.close) + (w.low < w.close ? '<br>Dips to ' + money(w.low) + ' mid-week' : '') +
+          (planF ? '<br>With plan ' + money(planF.weeks[i].close) : '');
+        tip.style.display = 'block';
+        var left = (pl + i * bw + bw / 2) * scale;
+        tip.style.left = Math.max(80, Math.min(wrap.clientWidth - 80, left)) + 'px';
+        tip.style.top = (Math.min(y(w.close), y0) * scale - 6) + 'px';
+      }
+      r.addEventListener('mouseenter', show);
+      r.addEventListener('click', show);
+      r.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
+    });
+  }
+  function niceTicks(lo, hi, count) {
+    var span = hi - lo, stepRaw = span / count, mag = Math.pow(10, Math.floor(Math.log10(stepRaw)));
+    var st = [1, 2, 2.5, 5, 10].map(function (m) { return m * mag; }).find(function (v) { return v >= stepRaw; });
+    var a = Math.floor(lo / st) * st, out = [];
+    for (var v = a; v <= hi + st * 0.999; v += st) out.push(Math.round(v));
+    return out;
+  }
+
+  syncInputs();
+  renderItems();
+  update();
+  checkXeroReturn();
+})();
+</script>
+</body>
+</html>
