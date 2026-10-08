@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investor Academy | Mersey Investor Leads</title>
+  <meta name="description" content="Free property investing courses for Liverpool, the Wirral and Merseyside: yield, buy-to-let mortgages, below-market-value deals, landlord legal duties and refurb budgeting. From Mersey Investor Leads.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='17' font-weight='700' fill='%230ea5e9' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    /* Apply saved theme before paint to avoid a flash */
+    try { var t = localStorage.getItem('mil-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  </script>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f1f5f9;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --text: #0f172a;
+      --muted: #475569;
+      --faint: #64748b;
+      --border: #e2e8f0;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-soft: #e0f2fe;
+      --on-accent: #ffffff;
+      --success: #15803d;
+      --success-soft: #dcfce7;
+      --danger: #b91c1c;
+      --danger-soft: #fee2e2;
+      --warn-soft: #fef3c7;
+      --warn-text: #92400e;
+      --hero-bg: #0f172a;
+      --hero-text: #f8fafc;
+      --hero-muted: #cbd5e1;
+      --shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 4px 16px rgba(15, 23, 42, .06);
+      --radius: 12px;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0b1120;
+        --bg-soft: #111a2e;
+        --surface: #131c31;
+        --surface-2: #18233b;
+        --text: #e2e8f0;
+        --muted: #a5b4c8;
+        --faint: #8a9ab0;
+        --border: #263352;
+        --accent: #38bdf8;
+        --accent-hover: #7dd3fc;
+        --accent-soft: #0c2a40;
+        --on-accent: #082f49;
+        --success: #4ade80;
+        --success-soft: #0f2e1d;
+        --danger: #f87171;
+        --danger-soft: #3a1515;
+        --warn-soft: #3a2a0c;
+        --warn-text: #fcd34d;
+        --hero-bg: #050a16;
+        --hero-text: #f8fafc;
+        --hero-muted: #a5b4c8;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0b1120;
+      --bg-soft: #111a2e;
+      --surface: #131c31;
+      --surface-2: #18233b;
+      --text: #e2e8f0;
+      --muted: #a5b4c8;
+      --faint: #8a9ab0;
+      --border: #263352;
+      --accent: #38bdf8;
+      --accent-hover: #7dd3fc;
+      --accent-soft: #0c2a40;
+      --on-accent: #082f49;
+      --success: #4ade80;
+      --success-soft: #0f2e1d;
+      --danger: #f87171;
+      --danger-soft: #3a1515;
+      --warn-soft: #3a2a0c;
+      --warn-text: #fcd34d;
+      --hero-bg: #050a16;
+      --hero-text: #f8fafc;
+      --hero-muted: #a5b4c8;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .25);
+      color-scheme: dark;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    img, iframe { max-width: 100%; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 640px) { .wrap { padding: 0 24px; } }
+    .skip { position: absolute; left: -999px; top: 0; background: var(--accent); color: var(--on-accent); padding: .5rem 1rem; z-index: 200; }
+    .skip:focus { left: 8px; top: 8px; }
+
+    /* Header */
+    header.site {
+      position: sticky; top: 0; z-index: 100;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: .75rem; height: 64px; }
+    .logo { font-weight: 800; font-size: 1.05rem; color: var(--text); text-decoration: none; letter-spacing: -.02em; white-space: nowrap; }
+    .logo span { color: var(--accent); }
+    .logo small { display: block; font-size: .7rem; font-weight: 600; color: var(--faint); letter-spacing: .06em; text-transform: uppercase; }
+    nav.main { display: flex; align-items: center; gap: .25rem; }
+    nav.main a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; padding: .5rem .7rem; border-radius: 8px; }
+    nav.main a:hover, nav.main a[aria-current="page"] { color: var(--text); background: var(--bg-soft); }
+    .icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); cursor: pointer;
+    }
+    .icon-btn svg { width: 20px; height: 20px; }
+    .menu-btn { display: none; }
+    @media (max-width: 860px) {
+      .menu-btn { display: inline-flex; }
+      nav.main {
+        display: none; position: absolute; top: 64px; left: 0; right: 0;
+        flex-direction: column; align-items: stretch; gap: 0;
+        background: var(--bg); border-bottom: 1px solid var(--border); padding: .5rem 16px 1rem;
+      }
+      nav.main.open { display: flex; }
+      nav.main a { padding: .8rem .75rem; font-size: 1rem; }
+    }
+    .header-actions { display: flex; align-items: center; gap: .5rem; }
+    .header-phone { font-weight: 600; font-size: .9rem; text-decoration: none; white-space: nowrap; }
+    @media (max-width: 480px) { .header-phone { display: none; } }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: .75rem 1.25rem; border-radius: 10px; font: inherit; font-weight: 600; font-size: .95rem;
+      text-decoration: none; cursor: pointer; border: 1px solid transparent; min-height: 44px;
+      transition: background .15s, border-color .15s, color .15s;
+    }
+    .btn-primary { background: var(--accent); color: var(--on-accent); }
+    .btn-primary:hover { background: var(--accent-hover); color: var(--on-accent); }
+    .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+    .btn-success { background: var(--success-soft); color: var(--success); border-color: var(--success); }
+    .btn[disabled] { opacity: .5; cursor: not-allowed; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: .75rem; }
+
+    /* Sections */
+    section.block { padding: 64px 0; }
+    section.block.alt { background: var(--bg-soft); }
+    .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+    h1, h2, h3 { letter-spacing: -.02em; line-height: 1.2; }
+    h2.title { font-size: clamp(1.6rem, 4vw, 2.1rem); margin-bottom: .75rem; }
+    .lede { color: var(--muted); font-size: 1.05rem; max-width: 68ch; }
+
+    /* Hero */
+    .hero { background: var(--hero-bg); color: var(--hero-text); padding: 64px 0 56px; }
+    .hero h1 { font-size: clamp(2rem, 6vw, 3.1rem); max-width: 18ch; margin: .5rem 0 1rem; }
+    .hero h1 em { font-style: normal; color: #38bdf8; }
+    .hero p { color: var(--hero-muted); font-size: 1.1rem; max-width: 60ch; }
+    .hero .btn-row { margin-top: 1.75rem; }
+    .hero .btn-ghost { background: transparent; color: var(--hero-text); border-color: #334155; }
+    .hero .btn-ghost:hover { border-color: #38bdf8; }
+    .hero .btn-primary { background: #0ea5e9; color: #04253a; }
+    .hero .btn-primary:hover { background: #38bdf8; }
+    .pill { display: inline-block; font-size: .8rem; font-weight: 600; padding: .3rem .75rem; border-radius: 999px; background: rgba(56, 189, 248, .14); color: #7dd3fc; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; max-width: 560px; }
+    .stats div { border-left: 2px solid #0ea5e9; padding-left: .75rem; }
+    .stats strong { display: block; font-size: 1.5rem; color: var(--hero-text); }
+    .stats span { font-size: .85rem; color: var(--hero-muted); }
+
+    /* Cards */
+    .grid { display: grid; gap: 1.25rem; }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
+    .course-card { display: flex; flex-direction: column; gap: .75rem; }
+    .course-card h3 { font-size: 1.2rem; }
+    .course-card p { color: var(--muted); font-size: .95rem; flex: 1; }
+    .course-meta { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .8rem; color: var(--faint); }
+    .tag { font-size: .75rem; font-weight: 600; padding: .2rem .6rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+    .course-num { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; font-weight: 800; background: var(--accent-soft); color: var(--accent); }
+    .progress { height: 8px; border-radius: 999px; background: var(--bg-soft); border: 1px solid var(--border); overflow: hidden; }
+    .progress > div { height: 100%; background: var(--accent); width: 0; transition: width .3s; }
+    .progress-label { display: flex; justify-content: space-between; font-size: .8rem; color: var(--faint); margin-bottom: .35rem; }
+
+    /* Breadcrumb */
+    .crumbs { font-size: .85rem; color: var(--faint); margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+    .crumbs a { color: var(--faint); }
+
+    /* Course overview */
+    .page { padding: 40px 0 64px; }
+    .lesson-list { list-style: none; display: grid; gap: .5rem; margin: 1.5rem 0; }
+    .lesson-list a {
+      display: flex; align-items: center; gap: .75rem; padding: .9rem 1rem; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text); text-decoration: none;
+    }
+    .lesson-list a:hover { border-color: var(--accent); }
+    .lesson-list .meta { margin-left: auto; font-size: .8rem; color: var(--faint); white-space: nowrap; }
+    .tick {
+      flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+      border: 2px solid var(--border); font-size: .75rem; font-weight: 700; color: var(--faint);
+    }
+    .tick.done { background: var(--success); border-color: var(--success); color: var(--bg); }
+
+    /* Lesson layout */
+    .lesson-layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 2rem; align-items: start; }
+    .sidebar { position: sticky; top: 84px; }
+    .sidebar details { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    .sidebar summary { list-style: none; padding: 1rem; font-weight: 700; cursor: default; }
+    .sidebar summary::-webkit-details-marker { display: none; }
+    .sidebar .side-progress { padding: 0 1rem 1rem; }
+    .sidebar ol { list-style: none; border-top: 1px solid var(--border); }
+    .sidebar li a {
+      display: flex; gap: .65rem; align-items: center; padding: .7rem 1rem; text-decoration: none;
+      color: var(--muted); font-size: .9rem; border-left: 3px solid transparent;
+    }
+    .sidebar li a:hover { background: var(--bg-soft); color: var(--text); }
+    .sidebar li a[aria-current="page"] { border-left-color: var(--accent); background: var(--accent-soft); color: var(--text); font-weight: 600; }
+    .sidebar .tick { width: 22px; height: 22px; font-size: .7rem; }
+    @media (max-width: 900px) {
+      .lesson-layout { grid-template-columns: 1fr; gap: 1.25rem; }
+      .sidebar { position: static; }
+      .sidebar summary { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+      .sidebar summary::after { content: "▾"; color: var(--faint); }
+      .sidebar details[open] summary::after { content: "▴"; }
+    }
+    .video { position: relative; aspect-ratio: 16 / 9; border-radius: var(--radius); overflow: hidden; background: #020617; border: 1px solid var(--border); }
+    .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .video-placeholder { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 1.5rem; color: #cbd5e1; background: radial-gradient(circle at 30% 20%, #12304a, #020617 70%); }
+    .video-placeholder svg { width: 56px; height: 56px; margin-bottom: .5rem; color: #38bdf8; }
+    .video-placeholder p { font-size: .9rem; max-width: 42ch; }
+    .video-caption { font-size: .85rem; color: var(--faint); margin-top: .6rem; }
+    .yt-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .6rem; font-size: .9rem; font-weight: 600; }
+    .lesson-head h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: .35rem; }
+    .lesson-head .sub { color: var(--faint); font-size: .9rem; margin-bottom: 1.25rem; }
+    .notes { margin-top: 1.75rem; max-width: 72ch; }
+    .notes h3 { font-size: 1.15rem; margin: 1.5rem 0 .5rem; }
+    .notes p, .notes li { color: var(--text); }
+    .notes p { margin-bottom: .9rem; }
+    .notes ul, .notes ol { padding-left: 1.3rem; margin-bottom: 1rem; }
+    .notes li { margin-bottom: .35rem; }
+    .notes .example { background: var(--surface-2); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 10px; padding: 1rem 1.15rem; margin: 1rem 0 1.25rem; }
+    .notes .example p:last-child, .notes .example ul:last-child { margin-bottom: 0; }
+    .notes .example strong:first-child { display: block; margin-bottom: .35rem; }
+    .notes .note { background: var(--warn-soft); color: var(--warn-text); border-radius: 10px; padding: .8rem 1rem; font-size: .9rem; margin: 1rem 0; }
+    .notes table { width: 100%; border-collapse: collapse; margin: .5rem 0 1rem; font-size: .92rem; }
+    .notes th, .notes td { text-align: left; padding: .45rem .5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .notes td.num, .notes th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .notes tr.total td { font-weight: 700; border-top: 2px solid var(--border); }
+    .table-scroll { overflow-x: auto; }
+    .takeaways { background: var(--accent-soft); border-radius: 10px; padding: 1rem 1.15rem; margin-top: 1.5rem; }
+    .takeaways h3 { margin-top: 0 !important; }
+    .takeaways ul { margin-bottom: 0; }
+    .lesson-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin: 2rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .lesson-actions .spacer { flex: 1; }
+    @media (max-width: 520px) {
+      .lesson-actions .btn { flex: 1 1 100%; }
+      .lesson-actions .spacer { display: none; }
+    }
+
+    /* CTA */
+    .cta {
+      margin-top: 2.5rem; border-radius: var(--radius); padding: 1.75rem; color: var(--hero-text);
+      background: linear-gradient(135deg, #0f172a, #0c4a6e); border: 1px solid #1e3a5f;
+    }
+    .cta h2 { font-size: 1.4rem; margin-bottom: .5rem; }
+    .cta p { color: #cbd5e1; max-width: 62ch; }
+    .cta .btn-row { margin-top: 1.25rem; }
+    .cta .btn-primary { background: #0ea5e9; color: #04253a; }
+    .cta .btn-primary:hover { background: #38bdf8; }
+    .cta .btn-ghost { background: transparent; color: #f8fafc; border-color: #335070; }
+    .cta .btn-ghost:hover { border-color: #38bdf8; color: #f8fafc; }
+
+    /* Quiz */
+    .quiz { max-width: 760px; }
+    .q { margin-bottom: 1.25rem; }
+    .q fieldset { border: 0; }
+    .q legend { font-weight: 700; font-size: 1.05rem; margin-bottom: .75rem; }
+    .q legend span { color: var(--faint); font-weight: 600; margin-right: .35rem; }
+    .opt {
+      display: flex; gap: .75rem; align-items: flex-start; padding: .8rem 1rem; margin-bottom: .5rem;
+      border: 1px solid var(--border); border-radius: 10px; background: var(--surface); cursor: pointer;
+    }
+    .opt:hover { border-color: var(--accent); }
+    .opt input { margin-top: .3rem; accent-color: var(--accent); width: 18px; height: 18px; flex: none; }
+    .opt.correct { border-color: var(--success); background: var(--success-soft); }
+    .opt.wrong { border-color: var(--danger); background: var(--danger-soft); }
+    .explain { margin-top: .5rem; padding: .8rem 1rem; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border); font-size: .93rem; }
+    .explain strong.ok { color: var(--success); }
+    .explain strong.no { color: var(--danger); }
+    .score { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; }
+    .score-ring { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; font-weight: 800; flex: none; }
+    .form-error { color: var(--danger); font-weight: 600; font-size: .9rem; margin-top: .5rem; }
+
+    /* Calculator */
+    .calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; margin-top: 2rem; }
+    @media (max-width: 800px) { .calc { grid-template-columns: 1fr; } }
+    .field { display: grid; gap: .35rem; margin-bottom: 1rem; }
+    .field label { font-weight: 600; font-size: .9rem; }
+    .field .hint { font-size: .8rem; color: var(--faint); }
+    .input-wrap { position: relative; }
+    .input-wrap .pre, .input-wrap .post { position: absolute; top: 50%; transform: translateY(-50%); color: var(--faint); font-weight: 600; pointer-events: none; }
+    .input-wrap .pre { left: .85rem; }
+    .input-wrap .post { right: .85rem; }
+    input[type="number"], input[type="text"], input[type="email"], input[type="tel"], select, textarea {
+      width: 100%; font: inherit; font-size: 1rem; color: var(--text); background: var(--surface);
+      border: 1px solid var(--border); border-radius: 10px; padding: .7rem .85rem; min-height: 44px;
+    }
+    .input-wrap input.has-pre { padding-left: 1.8rem; }
+    .input-wrap input.has-post { padding-right: 2.4rem; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
+    textarea { min-height: 120px; resize: vertical; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+    @media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
+    .results { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .metric { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+    .metric.big { grid-column: 1 / -1; }
+    .metric span { display: block; font-size: .8rem; color: var(--faint); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .metric strong { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; margin-top: .15rem; }
+    .metric.big strong { font-size: 2.1rem; }
+    .metric small { color: var(--faint); font-size: .8rem; }
+    .pos { color: var(--success); }
+    .neg { color: var(--danger); }
+    .breakdown { font-size: .88rem; color: var(--muted); margin-top: 1rem; }
+    .breakdown div { display: flex; justify-content: space-between; padding: .3rem 0; border-bottom: 1px dashed var(--border); font-variant-numeric: tabular-nums; }
+
+    /* Deals */
+    .pillar h3 { font-size: 1.1rem; margin: .75rem 0 .4rem; }
+    .pillar p { color: var(--muted); font-size: .95rem; }
+    .pillar .ico { width: 44px; height: 44px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+    .pillar .ico svg { width: 22px; height: 22px; }
+    .steps { list-style: none; counter-reset: s; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 1.25rem; }
+    .steps li { counter-increment: s; position: relative; padding: 1.25rem 1.25rem 1.25rem 4rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+    .steps li::before { content: counter(s); position: absolute; left: 1.25rem; top: 1.2rem; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); font-weight: 800; }
+    .steps strong { display: block; margin-bottom: .25rem; }
+    .steps span { color: var(--muted); font-size: .93rem; }
+    .who { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+
+    /* Contact */
+    .contact-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 2rem; margin-top: 2rem; }
+    @media (max-width: 800px) { .contact-grid { grid-template-columns: 1fr; } }
+    .contact-direct a { display: flex; gap: .75rem; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); text-decoration: none; color: var(--text); margin-bottom: .75rem; word-break: break-word; }
+    .contact-direct a:hover { border-color: var(--accent); }
+    .contact-direct small { display: block; color: var(--faint); font-size: .8rem; }
+    .contact-direct svg { width: 22px; height: 22px; color: var(--accent); flex: none; }
+    .form-status { margin-top: 1rem; padding: .9rem 1rem; border-radius: 10px; font-size: .93rem; }
+    .form-status.ok { background: var(--success-soft); color: var(--text); border: 1px solid var(--success); }
+    .form-status.err { background: var(--danger-soft); color: var(--text); border: 1px solid var(--danger); }
+    .req { color: var(--danger); }
+
+    footer.site { border-top: 1px solid var(--border); padding: 2rem 0 2.5rem; font-size: .85rem; color: var(--faint); }
+    footer.site .wrap { display: grid; gap: .75rem; }
+    footer.site a { color: var(--muted); }
+    .disclaimer { max-width: 80ch; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+    .muted { color: var(--muted); }
+    .mt { margin-top: 1.25rem; }
+  </style>
+</head>
+<body>
+<a class="skip" href="#app">Skip to content</a>
+
+<header class="site">
+  <div class="wrap header-inner">
+    <a href="#/" class="logo" data-nav="home">Mersey <span>Investor Leads</span><small>Investor Academy</small></a>
+    <nav class="main" id="mainNav" aria-label="Main">
+      <a href="#/" data-nav="home">Courses</a>
+      <a href="#/section/calculator" data-nav="calculator">Yield calculator</a>
+      <a href="#/section/deals" data-nav="deals">Get deals from us</a>
+      <a href="#/section/contact" data-nav="contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a class="header-phone" href="tel:+447576618414">07576 618414</a>
+      <button class="icon-btn" id="themeBtn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mainNav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<footer class="site">
+  <div class="wrap">
+    <div><strong style="color:var(--text)">Mersey Investor Leads</strong> · Research-driven property leads across Liverpool, the Wirral and Merseyside ·
+      <a href="tel:+447576618414">07576 618414</a> · <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a></div>
+    <p class="disclaimer">Course content is general education, not financial, tax, legal or mortgage advice. Figures in examples are illustrative; rules and rates change, so check GOV.UK and take professional advice before you buy. Lesson videos are from independent YouTube creators, and their views are their own; the written notes are ours. Your course progress is saved only in this browser.</p>
+    <div>© <span id="year"></span> Mersey Investor Leads · <a href="../">Main site</a></div>
+  </div>
+</footer>
+
+<script>
+/* =====================================================================
+   COURSE DATA — edit everything here.
+   - youtubeId: the 11-character ID from a YouTube URL
+     (https://www.youtube.com/watch?v=XXXXXXXXXXX → "XXXXXXXXXXX").
+     Leave it "" to show a placeholder and a YouTube search link instead.
+   - videoTitle: optional title shown under the player (credit for the creator).
+   - youtubeQuery: optional search used for the fallback link when no ID is set.
+   - notes: plain HTML. Use <div class="example"> for worked examples,
+     <div class="note"> for warnings and <div class="takeaways"> for summaries.
+   - quiz: "answer" is the index (0-based) of the correct option.
+   ===================================================================== */
+const COURSES = [
+  {
+    id: 'basics',
+    title: 'Property Investing Basics',
+    level: 'Beginner',
+    summary: 'How property makes money, how to read yield, choosing a Merseyside area, spotting genuine below-market-value deals and what buying really costs.',
+    lessons: [
+      {
+        id: 'how-property-makes-money',
+        title: 'How property investors make money',
+        minutes: 6,
+        youtubeId: 'HLQvI3SNwvk',
+        videoTitle: 'Capital Growth Vs Rental Yield',
+        youtubeQuery: 'how property investors make money UK buy to let explained',
+        notes: `
+<p>Residential property pays you in three ways. Strong deals usually have at least two of them working at once.</p>
+<h3>1. Income (rent)</h3>
+<p>Rent minus running costs and finance is your <strong>cash flow</strong>. It pays the bills, covers repairs and is what keeps you in the game when prices are flat.</p>
+<h3>2. Capital growth</h3>
+<p>Values rising over time with the wider market. You can't control it, so treat it as a bonus, never as the reason a deal works.</p>
+<h3>3. Forced appreciation</h3>
+<p>Adding value yourself: buying a tired house, putting in a kitchen, bathroom, heating and a rewire, and making it worth more than you spent. You <em>can</em> control this, which is why renovation potential is one of the three things we check on every lead.</p>
+<h3>Why Merseyside?</h3>
+<p>Liverpool and the Wirral have historically offered some of the highest rental yields of any UK city region because purchase prices are low compared with rents. A two-up two-down terrace in Anfield (L4) or Tranmere (CH42) can cost less than a deposit on a flat in the South East yet rent for £650–£800 a month. The trade-off is that much of the stock is Victorian and Edwardian, so condition, damp and wiring need careful checks.</p>
+<h3>The risks you are paid to manage</h3>
+<ul>
+  <li><strong>Voids</strong>: months with no tenant and no rent.</li>
+  <li><strong>Repairs</strong>: boilers, roofs and damp don't wait for a good month.</li>
+  <li><strong>Interest rates</strong>: a 2% rise can wipe out thin cash flow.</li>
+  <li><strong>Regulation</strong>: licensing, safety rules and tenancy law keep changing.</li>
+</ul>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Buy for income and added value; treat market growth as a bonus.</li>
+  <li>Low Merseyside entry prices mean high yields, but older houses need more checks.</li>
+  <li>Every deal should still work if something goes wrong.</li>
+</ul></div>`
+      },
+      {
+        id: 'rental-yield',
+        title: 'Rental yield: gross vs net',
+        minutes: 8,
+        youtubeId: 'Lc6vxtTmdZY',
+        videoTitle: 'Gross Yield vs Net Yield with Property Investments',
+        youtubeQuery: 'gross yield vs net yield buy to let UK',
+        notes: `
+<p>Yield is the quickest way to compare deals. It tells you how much rent a property produces as a percentage of what it costs.</p>
+<h3>Gross yield</h3>
+<p><strong>Gross yield = annual rent ÷ purchase price × 100</strong></p>
+<div class="example"><strong>Example: two-bed terrace, Walton (L4)</strong>
+<p>Price £95,000. Rent £725 a month = £8,700 a year.<br>£8,700 ÷ £95,000 × 100 = <strong>9.2% gross</strong>.</p></div>
+<p>Gross yield ignores costs, so it flatters every deal. Use it to filter, not to decide.</p>
+<h3>Net yield</h3>
+<p><strong>Net yield = (annual rent − annual running costs) ÷ purchase price × 100</strong>. Running costs are everything except mortgage payments:</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Cost (same L4 terrace)</th><th class="num">Per year</th></tr></thead>
+  <tbody>
+    <tr><td>Letting &amp; management (12% inc. VAT)</td><td class="num">£1,044</td></tr>
+    <tr><td>Landlord insurance</td><td class="num">£350</td></tr>
+    <tr><td>Maintenance allowance</td><td class="num">£600</td></tr>
+    <tr><td>Voids (one month a year)</td><td class="num">£725</td></tr>
+    <tr><td>Gas safety, EICR, alarms (averaged)</td><td class="num">£200</td></tr>
+    <tr class="total"><td>Total running costs</td><td class="num">£2,919</td></tr>
+  </tbody>
+</table></div>
+<p>(£8,700 − £2,919) ÷ £95,000 × 100 = <strong>6.1% net</strong>.</p>
+<h3>Watch out for flats</h3>
+<div class="example"><strong>Example: one-bed flat, Seacombe (CH44)</strong>
+<p>Price £70,000, rent £550 a month = £6,600 a year: <strong>9.4% gross</strong>, which looks better than the terrace. Add a £1,200 service charge and £150 ground rent on top of normal costs and the net yield drops below the house. Always ask for the service charge history.</p></div>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Gross yield is for filtering; net yield is for deciding.</li>
+  <li>Expect running costs of roughly 25–35% of rent on a managed single let.</li>
+  <li>Try your own numbers in the <a href="#/section/calculator">yield calculator</a>.</li>
+</ul></div>`
+      },
+      {
+        id: 'choosing-an-area',
+        title: 'Choosing an area in Merseyside',
+        minutes: 9,
+        youtubeId: 'DjvM6Q8Orfw',
+        videoTitle: 'Liverpool\'s Best Investment Areas',
+        youtubeQuery: 'Liverpool Wirral property investment areas',
+        notes: `
+<p>In Liverpool and the Wirral, the street matters more than the postcode. Two roads a few hundred metres apart can have very different rents, tenants and resale values.</p>
+<h3>What drives tenant demand</h3>
+<ul>
+  <li><strong>Jobs and transport</strong>: Merseyrail stations, bus routes into the city centre, and big employers such as Aintree and Arrowe Park hospitals, the Port of Liverpool and Cammell Laird.</li>
+  <li><strong>Schools and amenities</strong> for family lets; the city centre and universities for young professionals and students.</li>
+  <li><strong>Regeneration</strong>: the new Everton stadium at Bramley-Moore Dock, the Ten Streets and Birkenhead town-centre regeneration. Headlines don't guarantee returns, so look for evidence in rents and sold prices.</li>
+</ul>
+<h3>A rough map of strategies</h3>
+<div class="table-scroll"><table>
+  <thead><tr><th>Area (examples)</th><th>Typical stock</th><th>What it suits</th></tr></thead>
+  <tbody>
+    <tr><td>Anfield, Walton, Kensington, Tuebrook (L4, L6, L7)</td><td>Victorian terraces</td><td>High yield, more refurb and management</td></tr>
+    <tr><td>Old Swan, Wavertree (L13, L15)</td><td>Terraces, some semis</td><td>Young professionals, steady demand</td></tr>
+    <tr><td>Allerton, Woolton (L18, L25)</td><td>Semis and detached houses</td><td>Lower yield, stronger growth and tenants</td></tr>
+    <tr><td>Birkenhead, Tranmere, Rock Ferry (CH41, CH42)</td><td>Terraces, conversions</td><td>Low entry price; research street by street</td></tr>
+    <tr><td>Wallasey, Seacombe, New Brighton (CH44, CH45)</td><td>Terraces, flats</td><td>Mixed; check service charges on flats</td></tr>
+    <tr><td>Prenton, Oxton, Bebington (CH43, CH63)</td><td>Semis</td><td>Family lets, balanced yield and growth</td></tr>
+  </tbody>
+</table></div>
+<h3>Your area checklist</h3>
+<ol>
+  <li>Sold prices for the same house type on the same street (HM Land Registry).</li>
+  <li>Current rents for similar properties, and how quickly they let.</li>
+  <li>Selective licensing: is the street in a licensed area? (see the Buy-to-Let course)</li>
+  <li>Crime data (police.uk) and flood risk (GOV.UK).</li>
+  <li>Walk the street on a weekday evening and a Saturday morning.</li>
+</ol>
+<div class="note">The highest yields are often in the areas with the most management work. Choose the strategy you can actually run.</div>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Research the street, not just the postcode.</li>
+  <li>High yield and easy management rarely come together, so pick your trade-off.</li>
+</ul></div>`
+      },
+      {
+        id: 'below-market-value',
+        title: 'Below-market-value (BMV) deals explained',
+        minutes: 9,
+        youtubeId: 'Flwn8Bu0eZs',
+        videoTitle: 'How to Find REAL Below Market Value (BMV) Property Deals [Step-by-Step Guide]',
+        youtubeQuery: 'below market value property deals UK how to check comparables',
+        notes: `
+<p>A below-market-value deal is one where you buy for less than the property is <em>really</em> worth in its current condition. That value comes from evidence (what similar homes have actually sold for), not from the asking price or a sourcer's headline.</p>
+<h3>Why would anyone sell below value?</h3>
+<ul>
+  <li><strong>Speed</strong>: probate, divorce, relocation or a broken chain.</li>
+  <li><strong>Condition</strong>: no working kitchen or bathroom, so most buyers can't get a mortgage on it.</li>
+  <li><strong>Tired landlords</strong> leaving the market and wanting a clean sale, sometimes with a tenant in place.</li>
+  <li><strong>Auction</strong> lots with low guide prices to attract interest.</li>
+</ul>
+<h3>How to test a "BMV" claim</h3>
+<ol>
+  <li>Pull Land Registry sold prices for the same street and the streets around it, over the last 12–24 months.</li>
+  <li>Compare like with like: house type, bedrooms, floor area (from the EPC register) and parking.</li>
+  <li>Adjust for condition. A refurbished house next door is not a comparable for a wreck.</li>
+  <li>Value it twice: <strong>as-is value</strong> and <strong>end value after works</strong>.</li>
+</ol>
+<div class="example"><strong>Example: three-bed terrace, Tranmere (CH42)</strong>
+<p>Listed at £110,000 and advertised as "£20k BMV". Recent sales on the same street:</p>
+<ul><li>£128,000, fully refurbished</li><li>£132,000, refurbished with a loft room</li><li>£105,000, needed modernising</li></ul>
+<p>As-is it's worth about £105,000–£110,000, so it is <strong>not</strong> below value today. The opportunity is the end value: spend about £12,000 and it's worth about £128,000. That is a renovation deal, so price it as one and don't pay a BMV premium.</p></div>
+<h3>Buying from deal sourcers</h3>
+<p>Anyone selling deals to investors for a fee in England should belong to a government-approved property redress scheme and be registered with HMRC for anti-money-laundering supervision. Ask for both before you pay anything.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>A price drop doesn't make a deal BMV. Only sold-price evidence does.</li>
+  <li>Always work out both the as-is value and the end value.</li>
+</ul></div>`
+      },
+      {
+        id: 'buying-costs',
+        title: 'Buying costs and your first-deal checklist',
+        minutes: 7,
+        youtubeId: 'RDk6LKlen_E',
+        videoTitle: 'SDLT Surcharge Increases: What 5% Stamp Duty Means for Second Homes & Landlords',
+        youtubeQuery: 'buy to let buying costs stamp duty surcharge UK',
+        notes: `
+<p>The price on the listing is only part of what you'll pay. New investors are most often caught out by these costs:</p>
+<h3>Stamp Duty Land Tax (SDLT)</h3>
+<p>In England, buying an additional residential property (such as a buy-to-let while you own your home) adds a <strong>5% surcharge</strong> on top of standard rates. Since April 2025 the standard rate is 0% up to £125,000, so on cheaper Merseyside terraces most of the bill is the surcharge. Purchases under £40,000 don't pay the surcharge.</p>
+<div class="example"><strong>Example: £95,000 terrace bought as an additional property</strong>
+<p>Standard rate: 0% on £95,000 = £0. Surcharge: 5% × £95,000 = <strong>£4,750</strong>.</p></div>
+<div class="note">Rates change, so always check with HMRC's SDLT calculator on GOV.UK before you make an offer.</div>
+<h3>Other costs</h3>
+<div class="table-scroll"><table>
+  <thead><tr><th>Item</th><th class="num">Typical range</th></tr></thead>
+  <tbody>
+    <tr><td>Conveyancing solicitor (inc. searches)</td><td class="num">£1,200–£2,000</td></tr>
+    <tr><td>Survey (Level 2 or 3)</td><td class="num">£400–£900</td></tr>
+    <tr><td>Mortgage arrangement and valuation fees</td><td class="num">£0–£2,000+</td></tr>
+    <tr><td>Broker fee</td><td class="num">£0–£500</td></tr>
+    <tr><td>Safety certificates before letting</td><td class="num">£150–£300</td></tr>
+    <tr><td>Cash reserve (recommended)</td><td class="num">3–6 months' rent</td></tr>
+  </tbody>
+</table></div>
+<h3>First-deal checklist</h3>
+<ol>
+  <li>Sold-price comparables show the price is fair as-is.</li>
+  <li>The rent is backed by two or more local letting agents.</li>
+  <li>Net yield and monthly cash flow work after <em>all</em> costs.</li>
+  <li>You know the refurb scope, with quotes and a contingency.</li>
+  <li>A broker has confirmed it's mortgageable (or you have cash or bridging finance).</li>
+  <li>You've checked licensing, EPC rating and any leasehold terms.</li>
+  <li>The deal still works if rates rise 2% or it sits empty for two months.</li>
+</ol>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Budget for SDLT, legal fees, survey and a cash reserve from day one.</li>
+  <li>Use the checklist on every deal, including the ones we send you.</li>
+</ul></div>`
+      }
+    ],
+    quiz: [
+      { q: 'A Liverpool terrace costs £100,000 and rents for £750 a month. What is its gross yield?',
+        options: ['7.5%', '9%', '10%', '12%'], answer: 1,
+        explain: '£750 × 12 = £9,000 a year. £9,000 ÷ £100,000 × 100 = 9% gross.' },
+      { q: 'What is the best evidence of a property\'s current market value?',
+        options: ['The asking price', 'The highest price on the street in the last 10 years', 'Recent Land Registry sold prices for similar homes nearby, adjusted for condition', 'The deal sourcer\'s valuation'], answer: 2,
+        explain: 'Value comes from what comparable homes have actually sold for recently, adjusted for size and condition. Asking prices and sourcer claims aren\'t evidence.' },
+      { q: 'Why is net yield lower than gross yield?',
+        options: ['It deducts running costs such as management, insurance, repairs and voids', 'It includes Stamp Duty', 'It uses the end value instead of the price', 'It only counts 11 months of rent'], answer: 0,
+        explain: 'Net yield takes annual running costs off the rent before dividing by the price, so it shows what the property really earns before finance.' },
+      { q: 'A three-bed in Tranmere is listed at £110,000. Refurbished houses on the street sold for £128–132k and an unmodernised one for £105k. Which is true?',
+        options: ['It\'s £20k below market value', 'It\'s roughly at its as-is value; the opportunity is adding value through refurbishment', 'It\'s overpriced by £25k', 'You can\'t tell without the asking price history'], answer: 1,
+        explain: 'Compare like with like. The unmodernised comparable (£105k) is the as-is benchmark, so £110k is around value. The refurbished sales show the end value after works.' },
+      { q: 'Using 2025 rates in England, roughly how much SDLT would an investor pay on a £95,000 additional property?',
+        options: ['£0', '£1,900', '£4,750', '£9,500'], answer: 2,
+        explain: 'The standard rate is 0% below £125,000, but the 5% surcharge for additional dwellings applies to the full price: 5% × £95,000 = £4,750.' }
+    ]
+  },
+  {
+    id: 'buy-to-let',
+    title: 'Buy-to-Let for Landlords',
+    level: 'Intermediate',
+    summary: 'Buy-to-let mortgages and stress tests, your legal and safety duties, deposits and the Renters\' Rights Act, Liverpool and Wirral licensing, and running costs and tax.',
+    lessons: [
+      {
+        id: 'btl-mortgages',
+        title: 'How buy-to-let mortgages work',
+        minutes: 9,
+        youtubeId: 'wKKIoeUVQcE',
+        videoTitle: 'How Lenders \'Stress Test\' Your Buy to Let Property Rent',
+        youtubeQuery: 'buy to let mortgage interest coverage ratio explained UK',
+        notes: `
+<p>Buy-to-let (BTL) lenders care mainly about two things: your deposit and whether the <strong>rent</strong> covers the mortgage with room to spare.</p>
+<h3>The basics</h3>
+<ul>
+  <li><strong>Deposit</strong>: usually 25% (75% loan-to-value). Some lenders go to 80–85% LTV at higher rates.</li>
+  <li><strong>Interest-only</strong> is the norm for investors. Your monthly payment is interest only and the loan is repaid when you sell or refinance.</li>
+  <li><strong>Minimum property value</strong>: many lenders won't lend below £50,000–£75,000, which matters for the cheapest Merseyside terraces.</li>
+  <li><strong>Mortgageable condition</strong>: no working kitchen or bathroom usually means no mortgage. You'll need cash or bridging finance until it's refurbished.</li>
+</ul>
+<h3>The rental stress test (ICR)</h3>
+<p>Lenders check that the rent covers the interest by a set ratio, called the interest coverage ratio (ICR), calculated at a "stress" rate that is often higher than what you'll actually pay. Typical ratios are <strong>125%</strong> for basic-rate taxpayers and limited companies, and <strong>145%</strong> for higher-rate taxpayers.</p>
+<div class="example"><strong>Example: £120,000 semi, Wallasey (CH44)</strong>
+<p>75% loan = £90,000. Stress rate 5.5% → annual interest £4,950.</p>
+<ul>
+  <li>At 125% ICR: £4,950 × 1.25 = £6,187.50 a year → minimum rent <strong>about £516 a month</strong>.</li>
+  <li>At 145% ICR: £4,950 × 1.45 = £7,177.50 a year → minimum rent <strong>about £598 a month</strong>.</li>
+</ul>
+<p>If the street rents for £650 a month, the deal passes both tests.</p></div>
+<h3>Personal name or limited company?</h3>
+<p>Because of Section 24 (covered in lesson 5), many higher-rate taxpayers now buy through a limited company (SPV). Company mortgages are widely available but often cost slightly more. This is a tax decision, so get advice from a property accountant before you buy.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Plan for a 25% deposit and a rent that passes a 125–145% stress test.</li>
+  <li>Check mortgageability before you offer, not after.</li>
+  <li>A whole-of-market broker is worth it, especially for cheaper or unusual properties.</li>
+</ul></div>`
+      },
+      {
+        id: 'safety-duties',
+        title: 'Landlord legal and safety duties',
+        minutes: 10,
+        youtubeId: 'f0dRsHOfZ3E',
+        videoTitle: 'New Landlord? 5 Documents You Need Before Renting Out a Property',
+        youtubeQuery: 'landlord legal requirements England gas safety EICR smoke alarms',
+        notes: `
+<p>These are the main safety duties for private landlords in England. Missing them can mean fines, losing the right to evict, or worse: someone getting hurt.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Duty</th><th>What you must do</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Gas safety</strong></td><td>Annual check by a Gas Safe registered engineer. Give tenants the record within 28 days, and to new tenants before they move in.</td></tr>
+    <tr><td><strong>Electrical safety (EICR)</strong></td><td>Inspection at least every 5 years by a qualified electrician. Give tenants a copy within 28 days and fix anything urgent within 28 days or sooner.</td></tr>
+    <tr><td><strong>Smoke alarms</strong></td><td>At least one on every storey used as living accommodation, tested at the start of each tenancy.</td></tr>
+    <tr><td><strong>Carbon monoxide alarms</strong></td><td>In any room with a fixed combustion appliance (except gas cookers), e.g. a gas boiler or wood burner.</td></tr>
+    <tr><td><strong>EPC</strong></td><td>A valid Energy Performance Certificate, rated E or above to let. Expect the minimum to rise, so factor upgrades into refurbs.</td></tr>
+    <tr><td><strong>Legionella</strong></td><td>Assess the risk from the water system (a simple assessment is fine for most houses).</td></tr>
+    <tr><td><strong>Fitness for habitation</strong></td><td>The home must be free of serious hazards (HHSRS), including damp and mould, and kept in repair.</td></tr>
+  </tbody>
+</table></div>
+<h3>Damp and mould: a Merseyside priority</h3>
+<p>Solid-wall Victorian terraces in places like Kensington or Birkenhead are prone to damp, especially with poor ventilation. Councils are enforcing harder, and the government has signalled that Awaab's Law (strict time limits for fixing hazards, already in force for social housing) will be extended to private rentals. Budget for extractor fans, proper damp treatment and insulation at refurb stage. It's cheaper than enforcement.</p>
+<div class="example"><strong>Example: pre-let costs on a two-bed terrace in L6</strong>
+<p>Gas safety £70 · EICR £150–£200 · EPC £60–£90 · Alarms £60–£120 fitted. Allow about <strong>£400</strong>, plus any remedial work the EICR finds. Older wiring often fails, so a rewire could be £4,000+.</p></div>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Gas every 12 months, electrics every 5 years, alarms on every storey.</li>
+  <li>Keep dated copies of every certificate and when you gave it to the tenant.</li>
+  <li>Treat damp and mould as a top priority on older stock.</li>
+</ul></div>`
+      },
+      {
+        id: 'tenancies-deposits',
+        title: 'Tenancies, deposits and the Renters\' Rights Act',
+        minutes: 10,
+        youtubeId: 'pdZ8uiPxAnU',
+        videoTitle: 'The Renters\' Rights Act 2025 - Overview of the Assured Periodic Tenancy',
+        youtubeQuery: 'Renters Rights Act landlords explained section 21 abolished',
+        notes: `
+<h3>Before the tenant moves in</h3>
+<ul>
+  <li><strong>Right to Rent</strong>: check every adult tenant's immigration status and keep copies.</li>
+  <li><strong>Deposit</strong>: capped at 5 weeks' rent (where annual rent is under £50,000). Protect it in a government scheme (DPS, mydeposits or TDS) <strong>within 30 days</strong> and give the tenant the prescribed information.</li>
+  <li>Hand over the gas safety record, EICR, EPC and the government's current tenant information.</li>
+</ul>
+<h3>The Renters' Rights Act 2025</h3>
+<p>The biggest change to renting in England in decades. The main tenancy reforms took effect on <strong>1 May 2026</strong>:</p>
+<ul>
+  <li><strong>Section 21 "no-fault" evictions are abolished.</strong> To regain possession you must use a Section 8 ground, such as rent arrears, antisocial behaviour, or wanting to sell or move in (generally not within the first 12 months of a tenancy).</li>
+  <li><strong>Periodic tenancies</strong>: fixed-term ASTs are replaced by rolling tenancies. Tenants can leave with two months' notice.</li>
+  <li><strong>Rent increases</strong>: once a year, using the statutory Section 13 process, at market rate. Tenants can challenge them at tribunal.</li>
+  <li><strong>No rental bidding</strong>: you can't accept offers above the advertised rent.</li>
+  <li><strong>No blanket bans</strong> on tenants with children or on benefits. Tenants can ask to keep a pet, and you can't unreasonably refuse.</li>
+  <li>A <strong>landlord database</strong> and a <strong>landlord ombudsman</strong> are being phased in, so watch for registration deadlines.</li>
+</ul>
+<div class="note">Details and dates are being phased in. Check GOV.UK guidance for private landlords before you start any new tenancy or notice.</div>
+<h3>What it means for deal analysis</h3>
+<p>Choosing good tenants and keeping a good relationship with them matters more than ever, because you can't easily end a tenancy without a reason. Professional referencing, a well-presented property and a reliable local letting agent all lower your risk. Allow realistic time and legal costs for possession in your stress test.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Protect deposits within 30 days, always.</li>
+  <li>Section 21 has gone, so possession now needs a valid Section 8 ground.</li>
+  <li>Rent reviews are annual and must reflect the market.</li>
+</ul></div>`
+      },
+      {
+        id: 'licensing',
+        title: 'Licensing in Liverpool and the Wirral',
+        minutes: 7,
+        youtubeId: 'IsameZGxYDU',
+        videoTitle: 'Selective Licensing Explained',
+        youtubeQuery: 'Liverpool selective licensing landlords',
+        notes: `
+<p>Whether a property needs a licence affects your costs, your conditions and whether you can legally let it at all. Check before you offer.</p>
+<h3>The three types of licence</h3>
+<ul>
+  <li><strong>Mandatory HMO licence</strong>: required everywhere in England for houses in multiple occupation with 5 or more people from 2 or more households.</li>
+  <li><strong>Additional HMO licensing</strong>: councils can extend licensing to smaller HMOs (e.g. 3–4 sharers) in chosen areas.</li>
+  <li><strong>Selective licensing</strong>: councils can require a licence for <em>all</em> privately rented homes, including ordinary single lets, in designated areas.</li>
+</ul>
+<h3>Liverpool</h3>
+<p>Liverpool City Council's selective licensing scheme started on 1 April 2022 and covers a large share of the city's privately rented homes, including many of the terraced areas investors target. The current designation runs for five years, so check its status and any renewal on the council's website when you buy.</p>
+<h3>The Wirral</h3>
+<p>Wirral Council runs selective licensing in specific neighbourhoods rather than borough-wide, historically including parts of Birkenhead, Seacombe, Tranmere and Rock Ferry. Check the exact street on the council's online map.</p>
+<div class="example"><strong>How to put licensing into your numbers</strong>
+<p>If a licence costs £600–£900 for five years, add about £150 a year to running costs. Include any conditions too, such as fire doors, inspections or minimum room sizes in HMOs.</p></div>
+<h3>Penalties</h3>
+<p>Letting without a required licence is a criminal offence. Councils can impose large civil penalties (the Renters' Rights Act raised the maximum for some offences to £40,000) and tenants can apply for <strong>rent repayment orders</strong> of up to 12 months' rent. You also can't use certain possession routes while unlicensed.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Check HMO, additional and selective licensing for the exact address.</li>
+  <li>Add licence fees and conditions to your running costs.</li>
+  <li>Never let an unlicensed property in a licensed area.</li>
+</ul></div>`
+      },
+      {
+        id: 'costs-and-tax',
+        title: 'Running costs and tax basics',
+        minutes: 8,
+        youtubeId: 'L1qGNq3Smio',
+        videoTitle: 'Section 24 - BTL - Buy To Let Tax Changes Explained',
+        youtubeQuery: 'section 24 landlord tax explained UK',
+        notes: `
+<h3>Typical annual running costs (single let)</h3>
+<ul>
+  <li>Letting/management: 10–15% of rent plus VAT (or your own time if you self-manage)</li>
+  <li>Landlord insurance: £250–£450</li>
+  <li>Maintenance: 5–10% of rent, more on older houses</li>
+  <li>Voids: allow at least two to four weeks a year</li>
+  <li>Certificates, licensing and ground rent or service charges where they apply</li>
+</ul>
+<h3>Section 24 (individual landlords)</h3>
+<p>If you own in your own name, you can't deduct mortgage interest from rental income as an expense. Instead you get a <strong>tax credit of 20%</strong> of the interest. Basic-rate taxpayers are mostly unaffected; higher-rate taxpayers can pay tax on profit they don't actually have.</p>
+<div class="example"><strong>Example: higher-rate taxpayer, Birkenhead terrace</strong>
+<p>Rent £8,400, running costs £2,500, mortgage interest £3,000. Taxable profit = £5,900 (interest not deducted). Tax at 40% (assuming all of it falls in the higher-rate band) = £2,360, minus 20% credit on interest (£600) = <strong>£1,760 tax</strong> on real cash profit of £2,900.</p></div>
+<h3>Allowable expenses vs improvements</h3>
+<p>Repairs and like-for-like replacements are generally deductible against rent. Improvements (an extension, or adding a bathroom that wasn't there) are capital costs, added to your base cost for Capital Gains Tax when you sell. Keep every invoice.</p>
+<h3>Other tax points</h3>
+<ul>
+  <li><strong>Making Tax Digital</strong> for Income Tax applies from April 2026 to landlords and sole traders with qualifying income over £50,000, dropping to £30,000 from April 2027. That means digital records and quarterly updates.</li>
+  <li><strong>Capital Gains Tax</strong> on residential property is 18% or 24% depending on your income. Report and pay within 60 days of completion.</li>
+  <li><strong>Limited companies</strong> pay Corporation Tax on profit (mortgage interest is deductible), but taking money out has its own tax.</li>
+</ul>
+<div class="note">Tax depends on your whole situation. Use these notes to ask better questions, and get a property accountant to give the answers.</div>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Budget running costs at roughly a quarter to a third of the rent.</li>
+  <li>Section 24 can turn a good deal into a poor one for higher-rate taxpayers.</li>
+  <li>Keep digital records from day one.</li>
+</ul></div>`
+      }
+    ],
+    quiz: [
+      { q: 'How long do you have to protect a tenant\'s deposit in a government-approved scheme?',
+        options: ['7 days', '14 days', '30 days', '3 months'], answer: 2,
+        explain: 'You must protect the deposit and give the prescribed information within 30 days of receiving it.' },
+      { q: 'How often must a gas safety check be carried out?',
+        options: ['Every 12 months', 'Every 2 years', 'Every 5 years', 'Only at the start of each tenancy'], answer: 0,
+        explain: 'An annual check by a Gas Safe registered engineer is required, with a copy given to tenants within 28 days.' },
+      { q: 'A lender stress-tests at 5.5% with a 125% ICR. The loan is £90,000. What\'s the minimum monthly rent?',
+        options: ['About £413', 'About £516', 'About £598', 'About £750'], answer: 1,
+        explain: '£90,000 × 5.5% = £4,950 interest. × 1.25 = £6,187.50 a year ÷ 12 ≈ £516 a month. (£598 would be the 145% figure.)' },
+      { q: 'After the Renters\' Rights Act reforms took effect, how can a landlord in England regain possession?',
+        options: ['Serve a Section 21 notice with two months\' notice', 'Wait for the fixed term to end', 'Use a valid Section 8 ground, such as arrears or intending to sell', 'Give 4 weeks\' notice by text message'], answer: 2,
+        explain: 'Section 21 no-fault evictions were abolished and tenancies became periodic. Possession now requires a valid Section 8 ground.' },
+      { q: 'Under Section 24, how is mortgage interest treated for landlords who own in their own name?',
+        options: ['Fully deductible from rental income', 'Not relievable at all', 'Replaced by a 20% tax credit on the interest', 'Deductible only for higher-rate taxpayers'], answer: 2,
+        explain: 'Individuals can\'t deduct mortgage interest as an expense. They get a basic-rate (20%) tax credit instead, which hits higher-rate taxpayers hardest.' }
+    ]
+  },
+  {
+    id: 'deal-analysis',
+    title: 'Deal Analysis',
+    level: 'Intermediate',
+    summary: 'Value a property using guide price vs local sold prices, budget a refurb properly, run the full numbers, stress-test them and understand auctions and BRRR.',
+    lessons: [
+      {
+        id: 'comparables',
+        title: 'Guide price vs local sold prices',
+        minutes: 9,
+        youtubeId: 'diMWA26i5dU',
+        videoTitle: 'How To Value A House Quickly',
+        youtubeQuery: 'how to value property using comparables sold prices UK investor',
+        notes: `
+<p>The first number we check on every lead is how the guide or asking price compares with what similar homes nearby have <em>actually sold for</em>. Here's how to do it yourself.</p>
+<h3>Step by step</h3>
+<ol>
+  <li><strong>Pull sold prices</strong> from HM Land Registry (or the sold-prices tools on property portals) for the same street and the streets next to it.</li>
+  <li><strong>Filter</strong> to the same type and bedrooms, sold within 6–18 months. Older sales need adjusting for market movement.</li>
+  <li><strong>Check size</strong>: the EPC register shows floor area, so you can compare price per square metre.</li>
+  <li><strong>Grade condition</strong> from old listing photos: needs work, average or refurbished.</li>
+  <li><strong>Set two values</strong>: as-is value (from "needs work" comparables) and end value (from "refurbished" ones).</li>
+</ol>
+<div class="example"><strong>Example: three-bed terrace at auction, Tuebrook (L6)</strong>
+<p>Guide price £85,000. It needs a full refurbishment.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Comparable</th><th>Condition</th><th class="num">Sold</th></tr></thead>
+  <tbody>
+    <tr><td>Same street, 3-bed terrace, 4 months ago</td><td>Refurbished</td><td class="num">£112,000</td></tr>
+    <tr><td>Next street, 3-bed with loft room, 9 months ago</td><td>Refurbished</td><td class="num">£118,000</td></tr>
+    <tr><td>Same street, 3-bed terrace, 7 months ago</td><td>Needed updating</td><td class="num">£92,000</td></tr>
+  </tbody>
+</table></div>
+<p>As-is value: about <strong>£90,000</strong>. End value (no loft room): about <strong>£112,000–£115,000</strong>.</p></div>
+<h3>Guide prices aren't sale prices</h3>
+<p>Auction guide prices are set to attract bidders. The reserve (the minimum the seller will accept) can be above the guide, and popular lots often sell well above it. Decide your maximum bid from your comparables and costs before the auction, and stick to it.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Value from sold prices, never from asking or guide prices.</li>
+  <li>Always set an as-is value and an end value.</li>
+  <li>Your maximum price comes from the numbers, not the excitement in the room.</li>
+</ul></div>`
+      },
+      {
+        id: 'refurb-budget',
+        title: 'Refurb budgeting',
+        minutes: 10,
+        youtubeId: 'HPljYsGcJF4',
+        videoTitle: 'How Much Does It REALLY Cost to Renovate a Victorian Terraced House?',
+        youtubeQuery: 'refurbishment cost guide UK terraced house renovation budget',
+        notes: `
+<p>Refurb overspend is the most common reason a good deal turns bad. Build your budget room by room, add a contingency, and don't forget the costs of holding the property while the work happens.</p>
+<h3>Ballpark costs: two- or three-bed Merseyside terrace</h3>
+<div class="table-scroll"><table>
+  <thead><tr><th>Work</th><th class="num">Typical range</th></tr></thead>
+  <tbody>
+    <tr><td>Full rewire</td><td class="num">£4,000–£6,500</td></tr>
+    <tr><td>New combi boiler</td><td class="num">£2,500–£4,000</td></tr>
+    <tr><td>Full central heating (boiler, pipes, radiators)</td><td class="num">£5,000–£7,500</td></tr>
+    <tr><td>Kitchen, budget range, fitted</td><td class="num">£4,000–£8,000</td></tr>
+    <tr><td>Bathroom, fitted</td><td class="num">£3,500–£6,000</td></tr>
+    <tr><td>Damp treatment and replastering</td><td class="num">£1,500–£4,000</td></tr>
+    <tr><td>Replaster, per room</td><td class="num">£600–£1,200</td></tr>
+    <tr><td>Decoration throughout</td><td class="num">£2,500–£4,500</td></tr>
+    <tr><td>Flooring throughout</td><td class="num">£2,000–£3,500</td></tr>
+    <tr><td>Roof repairs</td><td class="num">£500–£8,000+</td></tr>
+  </tbody>
+</table></div>
+<div class="note">These are illustrative ranges for planning. Always get at least two or three written quotes from local trades, and check whether prices include VAT.</div>
+<h3>Contingency</h3>
+<p>Add <strong>10–20%</strong> on top. Use the higher end for pre-1919 houses, anything with damp, or where you haven't seen under the floors or in the loft. Something always turns up when you strip a Victorian terrace back.</p>
+<h3>Holding costs</h3>
+<p>While the house is empty you still pay finance or bridging interest, council tax (empty-property premiums may apply), unoccupied-property insurance and utilities. Allow for them every month the works run.</p>
+<div class="example"><strong>Example budget: the Tuebrook (L6) terrace</strong>
+<div class="table-scroll"><table><tbody>
+  <tr><td>Rewire</td><td class="num">£5,000</td></tr>
+  <tr><td>Central heating</td><td class="num">£6,000</td></tr>
+  <tr><td>Kitchen</td><td class="num">£5,500</td></tr>
+  <tr><td>Bathroom</td><td class="num">£4,500</td></tr>
+  <tr><td>Damp and plastering</td><td class="num">£3,000</td></tr>
+  <tr><td>Decoration and flooring</td><td class="num">£5,000</td></tr>
+  <tr><td>Subtotal</td><td class="num">£29,000</td></tr>
+  <tr><td>Contingency 15%</td><td class="num">£4,350</td></tr>
+  <tr class="total"><td>Total refurb budget</td><td class="num">£33,350</td></tr>
+</tbody></table></div>
+<p>A full refurb like this is why the guide price must sit well below the end value.</p></div>
+<h3>Order of works</h3>
+<ol><li>Structure, roof and damp</li><li>First-fix electrics and plumbing</li><li>Plastering</li><li>Kitchen and bathroom</li><li>Second fix, decoration, flooring</li></ol>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Budget room by room, then add 10–20% contingency.</li>
+  <li>Include holding costs for the full length of the works.</li>
+  <li>Get a survey before you commit, especially on older houses.</li>
+</ul></div>`
+      },
+      {
+        id: 'running-the-numbers',
+        title: 'Running the numbers: yield, cash flow and ROI',
+        minutes: 10,
+        youtubeId: 'CP_3xZlfejA',
+        videoTitle: 'How to Calculate Gross Yield, Net Yield, and Return on Investment',
+        youtubeQuery: 'buy to let return on investment cash flow calculation UK',
+        notes: `
+<p>Let's put it all together on one deal. Three numbers matter: <strong>net yield</strong> (how good is the asset?), <strong>monthly cash flow</strong> (does it pay you?) and <strong>return on cash invested</strong> (is it a good use of your money?).</p>
+<div class="example"><strong>Example: two-bed terrace, Birkenhead (CH41)</strong>
+<p>Bought for £78,000 with a 75% BTL mortgage at 5.25% interest-only, after a light refurb. Rent £700 a month.</p>
+<div class="table-scroll"><table>
+  <thead><tr><th>Money in</th><th class="num"></th></tr></thead>
+  <tbody>
+    <tr><td>Deposit (25%)</td><td class="num">£19,500</td></tr>
+    <tr><td>SDLT (5% surcharge)</td><td class="num">£3,900</td></tr>
+    <tr><td>Legal and survey</td><td class="num">£2,000</td></tr>
+    <tr><td>Refurb inc. contingency</td><td class="num">£14,000</td></tr>
+    <tr class="total"><td>Total cash invested</td><td class="num">£39,400</td></tr>
+  </tbody>
+</table></div>
+<div class="table-scroll"><table>
+  <thead><tr><th>Annual income and costs</th><th class="num"></th></tr></thead>
+  <tbody>
+    <tr><td>Rent (£700 × 12)</td><td class="num">£8,400</td></tr>
+    <tr><td>Management 12% inc. VAT</td><td class="num">−£1,008</td></tr>
+    <tr><td>Insurance</td><td class="num">−£320</td></tr>
+    <tr><td>Maintenance</td><td class="num">−£500</td></tr>
+    <tr><td>Voids (two weeks)</td><td class="num">−£350</td></tr>
+    <tr><td>Certificates and licence</td><td class="num">−£350</td></tr>
+    <tr><td>Net operating income</td><td class="num">£5,872</td></tr>
+    <tr><td>Mortgage interest (£58,500 × 5.25%)</td><td class="num">−£3,071</td></tr>
+    <tr class="total"><td>Annual cash flow (pre-tax)</td><td class="num">£2,801</td></tr>
+  </tbody>
+</table></div>
+<ul>
+  <li><strong>Gross yield</strong>: £8,400 ÷ £78,000 = 10.8%</li>
+  <li><strong>Net yield</strong>: £5,872 ÷ £78,000 = 7.5%</li>
+  <li><strong>Monthly cash flow</strong>: £2,801 ÷ 12 ≈ <strong>£233</strong></li>
+  <li><strong>Return on cash invested (ROI)</strong>: £2,801 ÷ £39,400 = <strong>7.1%</strong></li>
+</ul></div>
+<h3>What "good" looks like</h3>
+<p>There's no single right answer, but many Merseyside single-let investors look for net yields of 6%+ and at least £150–£200 a month cash flow per property after all costs. ROI is the number to compare against other uses of your money. Remember it's pre-tax and excludes any capital growth.</p>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Count every pound of cash in, including SDLT, fees and refurb.</li>
+  <li>Net yield judges the property; ROI judges your use of cash.</li>
+  <li>Check any deal quickly in the <a href="#/section/calculator">yield calculator</a>.</li>
+</ul></div>`
+      },
+      {
+        id: 'stress-testing',
+        title: 'Stress-testing a deal',
+        minutes: 7,
+        youtubeId: 'NGpY0MWry0A',
+        videoTitle: 'Managing CASH FLOW on your BUY TO LET investments?',
+        youtubeQuery: 'stress test buy to let deal interest rates voids',
+        notes: `
+<p>A deal that only works if everything goes right isn't a deal. Before you offer, run the numbers again with things going wrong.</p>
+<h3>The three standard stress tests</h3>
+<ol>
+  <li><strong>Interest rates +2%</strong>: what happens when your fixed rate ends?</li>
+  <li><strong>Two months' void a year</strong>: a slow re-let or a tenant leaving at a bad time.</li>
+  <li><strong>A big repair</strong>: a £3,000 boiler or roof bill in year one.</li>
+</ol>
+<div class="example"><strong>Stress-testing the Birkenhead terrace (base case £233 a month)</strong>
+<div class="table-scroll"><table>
+  <thead><tr><th>Scenario</th><th class="num">Annual</th><th class="num">Monthly</th></tr></thead>
+  <tbody>
+    <tr><td>Base case (5.25%, two weeks' void)</td><td class="num">£2,801</td><td class="num">£233</td></tr>
+    <tr><td>Rate up to 7.25% (interest £4,241)</td><td class="num">£1,631</td><td class="num">£136</td></tr>
+    <tr><td>Two months' void (extra £1,050 lost)</td><td class="num">£1,751</td><td class="num">£146</td></tr>
+    <tr><td>Both together</td><td class="num">£581</td><td class="num">£48</td></tr>
+  </tbody>
+</table></div>
+<p>Even in the worst combined case the property still covers itself. That's what makes it a robust deal. A £3,000 repair in the same year would push it into a small loss, which is exactly why you keep a cash reserve.</p></div>
+<h3>Your exit routes</h3>
+<p>Before you buy, know at least two ways out:</p>
+<ul>
+  <li>Sell on the open market (is there owner-occupier demand on this street?)</li>
+  <li>Sell with the tenant in place to another investor</li>
+  <li>Refinance to release equity once value has been added</li>
+  <li>Change strategy, e.g. family let to professional let</li>
+</ul>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>Test rates +2%, two months' void and a big repair.</li>
+  <li>Keep a cash reserve of 3–6 months' rent per property.</li>
+  <li>Know your exit before you enter.</li>
+</ul></div>`
+      },
+      {
+        id: 'auctions-brrr',
+        title: 'Buying at auction and the BRRR strategy',
+        minutes: 10,
+        youtubeId: 'AD-27Pf7WIk',
+        videoTitle: 'Buying Property At UK Auctions and Creating Immediate Value - A Beginners Guide',
+        youtubeQuery: 'property auction UK beginners legal pack BRRR strategy',
+        notes: `
+<h3>Traditional auction</h3>
+<ul>
+  <li>When the hammer falls, contracts are exchanged and you're legally committed.</li>
+  <li>You pay a <strong>10% deposit</strong> on the day (often with a minimum such as £3,000–£5,000).</li>
+  <li>Completion is usually within <strong>28 days</strong>, too fast for most mortgages, so line up cash or bridging finance first.</li>
+  <li>Expect a buyer's admin fee (often £1,000–£2,000 + VAT), sometimes a buyer's premium, and extra costs listed in the special conditions.</li>
+</ul>
+<h3>Modern method of auction</h3>
+<p>You pay a non-refundable <strong>reservation fee</strong> (often around 4.5% + VAT, with a minimum of several thousand pounds) and typically have 56 days to complete. The fee usually doesn't count towards the price, so add it to your costs.</p>
+<h3>Read the legal pack, always</h3>
+<p>Have a solicitor review it <em>before</em> you bid: title, searches, special conditions, leasehold terms, any arrears or costs passed to the buyer, and whether there's a tenant in place.</p>
+<h3>BRRR: Buy, Refurbish, Refinance, Rent</h3>
+<p>Buy below end value, add value through refurbishment, then refinance on the new, higher valuation to take some or all of your cash back out.</p>
+<div class="example"><strong>Example: the Tuebrook (L6) terrace</strong>
+<ul>
+  <li>Bought at auction: £90,000</li>
+  <li>Buying costs (SDLT, fees, legal): £8,000</li>
+  <li>Refurb (lighter scope than the full budget): £18,000</li>
+  <li><strong>Total in: £116,000</strong></li>
+</ul>
+<p>Revalued after works at £115,000. A new 75% BTL mortgage = <strong>£86,250</strong>. Cash left in the deal: £116,000 − £86,250 = <strong>£29,750</strong>.</p>
+<p>A good outcome, but not "all money out". To take all your cash back out with a 75% refinance, your all-in cost (purchase, fees and refurb) needs to be no more than about 75% of the end value. That's why finding the right deal matters so much.</p></div>
+<div class="note">Many lenders want you to have owned the property for 6 months before refinancing at the new value. Check with your broker before you buy.</div>
+<div class="takeaways"><h3>Key takeaways</h3><ul>
+  <li>At auction you're committed on the hammer, so have finance and legal checks done beforehand.</li>
+  <li>Include auction fees or reservation fees in your costs.</li>
+  <li>BRRR works when the purchase price is well below end value.</li>
+</ul></div>`
+      }
+    ],
+    quiz: [
+      { q: 'You\'re valuing an unmodernised two-bed terrace in L6. Which is the best comparable?',
+        options: ['A refurbished two-bed on the same street sold last month', 'An unmodernised two-bed on the same or next street sold in the last year', 'A three-bed semi in the same postcode', 'The average price for Liverpool'], answer: 1,
+        explain: 'Match type, size, location and condition. Refurbished sales tell you the end value, not the as-is value.' },
+      { q: 'What contingency is sensible on a refurb budget for a pre-1919 terrace with damp?',
+        options: ['None if you have quotes', '2–5%', '10–20%, towards the higher end', '50%'], answer: 2,
+        explain: 'Older houses with damp often hide extra work. 10–20% is standard, and you\'d lean towards the top of that range here.' },
+      { q: 'You put £40,000 of cash into a deal that makes £2,800 a year in pre-tax cash flow. What\'s your return on cash invested?',
+        options: ['2.8%', '7%', '14%', '28%'], answer: 1,
+        explain: '£2,800 ÷ £40,000 × 100 = 7%.' },
+      { q: 'At a traditional property auction, what usually happens when the hammer falls?',
+        options: ['You can still withdraw within 14 days', 'Contracts exchange, you pay about 10% deposit and must usually complete within about 28 days', 'You pay a reservation fee and have 56 days', 'Nothing is binding until your mortgage offer arrives'], answer: 1,
+        explain: 'In a traditional auction you\'re legally committed at the fall of the hammer, so finance and legal checks must be done in advance.' },
+      { q: 'A BRRR project costs £116,000 all-in and is revalued at £115,000. With a 75% LTV refinance, how much cash is left in?',
+        options: ['£0', '£1,000', '£29,750', '£86,250'], answer: 2,
+        explain: '75% × £115,000 = £86,250 new loan. £116,000 − £86,250 = £29,750 left in the deal.' }
+    ]
+  }
+];
+
+/* Optional: set to a form endpoint (e.g. a Formspree URL) to send enquiries without opening email. Leave blank to use mailto. */
+const FORM_ENDPOINT = '';
+const CONTACT = { phone: '07576 618414', tel: '+447576618414', email: 'jonathansmallbone889@gmail.com' };
+
+/* ===================================================================== */
+
+const STORE_KEY = 'mil-academy-v1';
+const app = document.getElementById('app');
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (raw && typeof raw === 'object') return { completed: raw.completed || {}, quiz: raw.quiz || {} };
+  } catch (e) {}
+  return { completed: {}, quiz: {} };
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+function isDone(courseId, lessonId) { return (state.completed[courseId] || []).includes(lessonId); }
+function setDone(courseId, lessonId, done) {
+  const list = new Set(state.completed[courseId] || []);
+  done ? list.add(lessonId) : list.delete(lessonId);
+  state.completed[courseId] = [...list];
+  saveState();
+}
+function courseProgress(course) {
+  const done = course.lessons.filter(l => isDone(course.id, l.id)).length;
+  return { done, total: course.lessons.length, pct: Math.round(done / course.lessons.length * 100) };
+}
+const getCourse = id => COURSES.find(c => c.id === id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const gbp = (n, dp = 0) => (n < 0 ? '−' : '') + '£' + Math.abs(n).toLocaleString('en-GB', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+
+const ICONS = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg>',
+  scale: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0L5 7zm14 0l-3 7a4 4 0 0 0 6 0l-3-7zM8 21h8"/></svg>',
+  hammer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h8M7 21V10M4 10h6l1-4-4-3-4 3 1 4zM14 10l7 7-2 2-7-7"/></svg>',
+  chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18M7 15l4-4 3 3 6-6"/></svg>',
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 6l-10 7L2 6"/></svg>'
+};
+
+function progressBar(p, label) {
+  return `<div class="progress-label"><span>${label || 'Progress'}</span><span>${p.done}/${p.total} lessons · ${p.pct}%</span></div>
+    <div class="progress" role="progressbar" aria-label="${esc(label || 'Course progress')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p.pct}"><div style="width:${p.pct}%"></div></div>`;
+}
+
+function ctaBlock(course) {
+  return `<aside class="cta" aria-label="Get deals from Mersey Investor Leads">
+    <div class="eyebrow" style="color:#7dd3fc">Ready to put ${course ? esc(course.title.toLowerCase()) : 'this'} into practice?</div>
+    <h2>Get research-backed Merseyside deals sent to you</h2>
+    <p>We find investor-friendly properties across Liverpool, the Wirral and Merseyside, check the guide price against local sold prices, cost the renovation and work out the yield. Then we refer you to the agent or auctioneer.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#/section/contact">Enquire about deals</a>
+      <a class="btn btn-ghost" href="#/section/deals">How our leads work</a>
+      <a class="btn btn-ghost" href="tel:${CONTACT.tel}">Call ${CONTACT.phone}</a>
+    </div>
+  </aside>`;
+}
+
+/* ---------------- Views ---------------- */
+
+function viewHome() {
+  const totalLessons = COURSES.reduce((n, c) => n + c.lessons.length, 0);
+  return `
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill">Free · Liverpool, the Wirral &amp; Merseyside</span>
+      <h1>Learn to find and judge <em>Merseyside</em> property deals</h1>
+      <p>Free short courses for local investors, from Mersey Investor Leads. Learn yield, buy-to-let mortgages, below-market-value deals, landlord duties and refurb budgets, with worked examples from Liverpool and Wirral streets.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="${continueHref()}">${hasProgress() ? 'Continue learning' : 'Start the first course'}</a>
+        <a class="btn btn-ghost" href="#/section/deals">Get deals from us</a>
+      </div>
+      <div class="stats">
+        <div><strong>${COURSES.length}</strong><span>free courses</span></div>
+        <div><strong>${totalLessons}</strong><span>video lessons</span></div>
+        <div><strong>${COURSES.length}</strong><span>quizzes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="courses" aria-labelledby="courses-h">
+    <div class="wrap">
+      <div class="eyebrow">Course catalogue</div>
+      <h2 class="title" id="courses-h">Start with the basics or go straight to deal analysis</h2>
+      <p class="lede">Each course has short video lessons with written notes and ends with a quiz. Your progress is saved in this browser automatically.</p>
+      <div class="grid grid-3 mt">
+        ${COURSES.map((c, i) => {
+          const p = courseProgress(c);
+          const best = state.quiz[c.id];
+          return `<article class="card course-card">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="course-num" aria-hidden="true">${i + 1}</div><span class="tag">${esc(c.level)}</span>
+            </div>
+            <h3>${esc(c.title)}</h3>
+            <p>${esc(c.summary)}</p>
+            <div class="course-meta"><span>${c.lessons.length} lessons</span><span>·</span><span>${c.lessons.reduce((n, l) => n + l.minutes, 0)} min</span><span>·</span><span>${c.quiz.length}-question quiz${best ? ` (best ${best.best}/${c.quiz.length})` : ''}</span></div>
+            ${progressBar(p)}
+            <a class="btn ${p.done ? 'btn-ghost' : 'btn-primary'}" href="#/course/${c.id}">${p.done === p.total ? 'Review course' : p.done ? 'Continue' : 'View course'}</a>
+          </article>`;
+        }).join('')}
+      </div>
+    </div>
+  </section>
+
+  ${viewCalculatorSection()}
+  ${viewDealsSection()}
+  ${viewContactSection()}`;
+}
+
+function hasProgress() { return Object.values(state.completed).some(a => a.length); }
+function continueHref() {
+  for (const c of COURSES) {
+    const idx = c.lessons.findIndex(l => !isDone(c.id, l.id));
+    if (idx !== -1 && (hasProgress() || c === COURSES[0])) return `#/course/${c.id}/lesson/${idx + 1}`;
+  }
+  return `#/course/${COURSES[0].id}/lesson/1`;
+}
+
+function viewCourse(course) {
+  const p = courseProgress(course);
+  const next = course.lessons.findIndex(l => !isDone(course.id, l.id));
+  const best = state.quiz[course.id];
+  return `<div class="page"><div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Courses</a><span>›</span><span>${esc(course.title)}</span></nav>
+    <div class="eyebrow">${esc(course.level)} course</div>
+    <h1 class="title" style="font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:.5rem">${esc(course.title)}</h1>
+    <p class="lede">${esc(course.summary)}</p>
+    <div class="card mt">
+      ${progressBar(p, 'Your progress')}
+      <div class="btn-row mt">
+        <a class="btn btn-primary" href="#/course/${course.id}/lesson/${next === -1 ? 1 : next + 1}">${next === -1 ? 'Review from lesson 1' : next === 0 ? 'Start lesson 1' : `Continue: lesson ${next + 1}`}</a>
+        <a class="btn btn-ghost" href="#/course/${course.id}/quiz">Take the quiz${best ? ` (best ${best.best}/${course.quiz.length})` : ''}</a>
+      </div>
+    </div>
+    <h2 class="mt" style="font-size:1.2rem;margin-top:2rem">Lessons</h2>
+    <ol class="lesson-list">
+      ${course.lessons.map((l, i) => `<li><a href="#/course/${course.id}/lesson/${i + 1}">
+        <span class="tick ${isDone(course.id, l.id) ? 'done' : ''}" aria-hidden="true">${isDone(course.id, l.id) ? '✓' : i + 1}</span>
+        <span>${esc(l.title)}<span class="sr-only">${isDone(course.id, l.id) ? ' (completed)' : ''}</span></span>
+        <span class="meta">${l.minutes} min</span></a></li>`).join('')}
+      <li><a href="#/course/${course.id}/quiz"><span class="tick ${best ? 'done' : ''}" aria-hidden="true">${best ? '✓' : '?'}</span><span>Course quiz: ${course.quiz.length} questions</span><span class="meta">${best ? `Best ${best.best}/${course.quiz.length}` : '5 min'}</span></a></li>
+    </ol>
+    ${ctaBlock(course)}
+  </div></div>`;
+}
+
+function sidebar(course, activeIdx, quizActive) {
+  const p = courseProgress(course);
+  return `<aside class="sidebar">
+    <details id="lessonNav" ${window.innerWidth > 900 ? 'open' : ''}>
+      <summary>${esc(course.title)}</summary>
+      <div class="side-progress">${progressBar(p, 'Course progress')}</div>
+      <ol>
+        ${course.lessons.map((l, i) => `<li><a href="#/course/${course.id}/lesson/${i + 1}" ${i === activeIdx ? 'aria-current="page"' : ''}>
+          <span class="tick ${isDone(course.id, l.id) ? 'done' : ''}" aria-hidden="true">${isDone(course.id, l.id) ? '✓' : i + 1}</span>
+          <span>${esc(l.title)}<span class="sr-only">${isDone(course.id, l.id) ? ' (completed)' : ''}</span></span></a></li>`).join('')}
+        <li><a href="#/course/${course.id}/quiz" ${quizActive ? 'aria-current="page"' : ''}><span class="tick ${state.quiz[course.id] ? 'done' : ''}" aria-hidden="true">${state.quiz[course.id] ? '✓' : '?'}</span><span>Course quiz</span></a></li>
+      </ol>
+    </details>
+  </aside>`;
+}
+
+function videoBlock(lesson) {
+  const watchUrl = lesson.youtubeId
+    ? `https://www.youtube.com/watch?v=${encodeURIComponent(lesson.youtubeId)}`
+    : `https://www.youtube.com/results?search_query=${encodeURIComponent(lesson.youtubeQuery || lesson.title)}`;
+  const player = lesson.youtubeId
+    ? `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(lesson.youtubeId)}?rel=0" title="${esc(lesson.title)} (video)" loading="lazy"
+         allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
+    : `<div class="video-placeholder"><div>${ICONS.play}<p><strong>Video coming soon.</strong><br>The written notes below cover the full lesson. In the meantime you can watch related videos on YouTube.</p></div></div>`;
+  const caption = lesson.youtubeId && lesson.videoTitle ? `<p class="video-caption">Video: “${esc(lesson.videoTitle)}”, from an independent YouTube creator.</p>` : '';
+  return `<div class="video">${player}</div>${caption}
+    <a class="yt-link" href="${watchUrl}" target="_blank" rel="noopener">${lesson.youtubeId ? 'Watch on YouTube' : 'Watch related videos on YouTube'} ↗</a>`;
+}
+
+function viewLesson(course, idx) {
+  const lesson = course.lessons[idx];
+  const done = isDone(course.id, lesson.id);
+  const isLast = idx === course.lessons.length - 1;
+  const nextHref = isLast ? `#/course/${course.id}/quiz` : `#/course/${course.id}/lesson/${idx + 2}`;
+  return `<div class="page"><div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Courses</a><span>›</span><a href="#/course/${course.id}">${esc(course.title)}</a><span>›</span><span>Lesson ${idx + 1}</span></nav>
+    <div class="lesson-layout">
+      ${sidebar(course, idx)}
+      <article>
+        <div class="lesson-head">
+          <div class="eyebrow">Lesson ${idx + 1} of ${course.lessons.length}</div>
+          <h1 id="pageTitle" tabindex="-1">${esc(lesson.title)}</h1>
+          <div class="sub">${lesson.minutes} min · ${esc(course.title)}</div>
+        </div>
+        ${videoBlock(lesson)}
+        <div class="notes">${lesson.notes}</div>
+        <div class="lesson-actions">
+          ${idx > 0 ? `<a class="btn btn-ghost" href="#/course/${course.id}/lesson/${idx}">← Previous</a>` : ''}
+          <span class="spacer"></span>
+          <button type="button" class="btn ${done ? 'btn-success' : 'btn-ghost'}" id="completeBtn" aria-pressed="${done}">${done ? '✓ Completed' : 'Mark complete'}</button>
+          <a class="btn btn-primary" id="nextBtn" href="${nextHref}">${isLast ? 'Take the quiz →' : 'Next lesson →'}</a>
+        </div>
+        ${isLast ? ctaBlock(course) : ''}
+      </article>
+    </div>
+  </div></div>`;
+}
+
+function viewQuiz(course) {
+  return `<div class="page"><div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Courses</a><span>›</span><a href="#/course/${course.id}">${esc(course.title)}</a><span>›</span><span>Quiz</span></nav>
+    <div class="lesson-layout">
+      ${sidebar(course, -1, true)}
+      <article class="quiz">
+        <div class="eyebrow">Course quiz</div>
+        <h1 id="pageTitle" tabindex="-1" style="font-size:clamp(1.5rem,4vw,2rem);margin-bottom:.35rem">${esc(course.title)}: test yourself</h1>
+        <p class="muted" style="margin-bottom:1.5rem">${course.quiz.length} multiple-choice questions. You'll see your score and an explanation for every answer.</p>
+        <div id="quizResult"></div>
+        <form id="quizForm" novalidate>
+          ${course.quiz.map((q, qi) => `<div class="card q" id="q${qi}"><fieldset>
+            <legend><span>Q${qi + 1}.</span>${esc(q.q)}</legend>
+            ${q.options.map((o, oi) => `<label class="opt"><input type="radio" name="q${qi}" value="${oi}"><span>${esc(o)}</span></label>`).join('')}
+            <div class="explain-slot"></div>
+          </fieldset></div>`).join('')}
+          <div id="quizError" class="form-error" role="alert"></div>
+          <div class="btn-row mt"><button class="btn btn-primary" type="submit">Check my answers</button></div>
+        </form>
+        ${ctaBlock(course)}
+      </article>
+    </div>
+  </div></div>`;
+}
+
+function viewCalculatorSection() {
+  return `<section class="block alt" id="calculator" aria-labelledby="calc-h">
+    <div class="wrap">
+      <div class="eyebrow">Free tool</div>
+      <h2 class="title" id="calc-h">Rental yield calculator</h2>
+      <p class="lede">Enter a purchase price, rent and costs to see gross yield, net yield and monthly cash flow. The mortgage is calculated as interest-only, as most buy-to-let loans are.</p>
+      <div class="calc">
+        <form class="card" id="calcForm" onsubmit="return false">
+          <div class="field"><label for="cPrice">Purchase price</label>
+            <div class="input-wrap"><span class="pre">£</span><input class="has-pre" type="number" id="cPrice" inputmode="decimal" min="0" step="500" value="95000"></div></div>
+          <div class="field"><label for="cRent">Monthly rent</label>
+            <div class="input-wrap"><span class="pre">£</span><input class="has-pre" type="number" id="cRent" inputmode="decimal" min="0" step="5" value="725"></div></div>
+          <div class="field"><label for="cCosts">Monthly running costs</label>
+            <div class="input-wrap"><span class="pre">£</span><input class="has-pre" type="number" id="cCosts" inputmode="decimal" min="0" step="5" value="245"></div>
+            <span class="hint">Management, insurance, maintenance, voids, certificates and licensing. Exclude the mortgage.</span></div>
+          <div class="two">
+            <div class="field"><label for="cDeposit">Deposit</label>
+              <div class="input-wrap"><input class="has-post" type="number" id="cDeposit" inputmode="decimal" min="0" max="100" step="5" value="25"><span class="post">%</span></div>
+              <span class="hint">Use 100 for a cash buy.</span></div>
+            <div class="field"><label for="cRate">Mortgage rate</label>
+              <div class="input-wrap"><input class="has-post" type="number" id="cRate" inputmode="decimal" min="0" max="25" step="0.05" value="5.5"><span class="post">%</span></div></div>
+          </div>
+        </form>
+        <div class="card" aria-live="polite">
+          <div class="results">
+            <div class="metric"><span>Gross yield</span><strong id="rGross">–</strong><small>Annual rent ÷ price</small></div>
+            <div class="metric"><span>Net yield</span><strong id="rNet">–</strong><small>(Rent − costs) ÷ price</small></div>
+            <div class="metric big"><span>Monthly cash flow</span><strong id="rCash">–</strong><small id="rCashNote">Rent − costs − mortgage interest</small></div>
+          </div>
+          <div class="breakdown">
+            <div><span>Annual rent</span><span id="bRent"></span></div>
+            <div><span>Annual running costs</span><span id="bCosts"></span></div>
+            <div><span>Loan amount</span><span id="bLoan"></span></div>
+            <div><span>Monthly mortgage interest</span><span id="bMort"></span></div>
+            <div><span>Annual cash flow</span><span id="bAnnual"></span></div>
+          </div>
+          <p class="hint muted" style="font-size:.8rem;margin-top:1rem">Pre-tax, and excludes buying costs such as SDLT, fees and refurb. For return on cash invested, see <a href="#/course/deal-analysis/lesson/3">Running the numbers</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function viewDealsSection() {
+  return `<section class="block" id="deals" aria-labelledby="deals-h">
+    <div class="wrap">
+      <div class="eyebrow">Get deals from us</div>
+      <h2 class="title" id="deals-h">Research-driven leads, not guesswork</h2>
+      <p class="lede">Mersey Investor Leads finds undervalued, investor-friendly residential properties across Liverpool, the Wirral and surrounding Merseyside, and refers them to estate agents, auctioneers and investors. Every lead is checked against the same three tests you've learned in these courses.</p>
+      <div class="grid grid-3 mt">
+        <div class="card pillar"><div class="ico">${ICONS.scale}</div><h3>Guide price vs local sold prices</h3>
+          <p>We compare the asking or guide price with recent Land Registry sales of similar homes on the same and nearby streets, adjusted for condition. You can see where the value is.</p></div>
+        <div class="card pillar"><div class="ico">${ICONS.hammer}</div><h3>Renovation potential</h3>
+          <p>We look at what work is needed, give a realistic budget range and estimate the end value from refurbished comparables, so you know the upside before you view.</p></div>
+        <div class="card pillar"><div class="ico">${ICONS.chart}</div><h3>Yield</h3>
+          <p>We check achievable local rents and work out the gross and net yield, so you can judge income and cash flow at a glance.</p></div>
+      </div>
+      <h3 style="margin-top:2.5rem;font-size:1.25rem">Our simple referral process</h3>
+      <ol class="steps">
+        <li><strong>Tell us what you want</strong><span>Areas, budget, strategy (single let, HMO, BRRR, flip) and whether you buy with cash or a mortgage.</span></li>
+        <li><strong>We research and send matching leads</strong><span>Each lead comes with a short summary of the comparables, renovation scope and yield numbers.</span></li>
+        <li><strong>You decide, we connect you</strong><span>If you like it, we refer you to the selling agent or auctioneer so you can view and make your offer. You stay in control.</span></li>
+      </ol>
+      <div class="who" aria-label="Who we work with"><span class="tag">Investors</span><span class="tag">Estate agents</span><span class="tag">Auctioneers</span><span class="tag">Liverpool</span><span class="tag">The Wirral</span><span class="tag">Merseyside</span></div>
+      <div class="btn-row mt"><a class="btn btn-primary" href="#/section/contact">Tell us what you're looking for</a><a class="btn btn-ghost" href="tel:${CONTACT.tel}">Call ${CONTACT.phone}</a></div>
+      <p class="muted mt" style="font-size:.85rem">Always do your own due diligence and take independent advice. Our numbers are research to help you decide, not a guarantee.</p>
+    </div>
+  </section>`;
+}
+
+function viewContactSection() {
+  return `<section class="block alt" id="contact" aria-labelledby="contact-h">
+    <div class="wrap">
+      <div class="eyebrow">Contact</div>
+      <h2 class="title" id="contact-h">Enquire about deals</h2>
+      <p class="lede">Tell us what you're looking for and we'll be in touch. No obligation. Prefer to talk? Call or email directly.</p>
+      <div class="contact-grid">
+        <div class="contact-direct">
+          <a href="tel:${CONTACT.tel}">${ICONS.phone}<span><small>Phone</small><strong>${CONTACT.phone}</strong></span></a>
+          <a href="mailto:${CONTACT.email}">${ICONS.mail}<span><small>Email</small><strong>${CONTACT.email}</strong></span></a>
+          <p class="muted" style="font-size:.9rem">Working with investors, estate agents and auctioneers across Liverpool, the Wirral and Merseyside.</p>
+        </div>
+        <form class="card" id="contactForm" novalidate>
+          <div class="two">
+            <div class="field"><label for="fName">Name <span class="req" aria-hidden="true">*</span></label><input type="text" id="fName" name="name" autocomplete="name" required></div>
+            <div class="field"><label for="fEmail">Email <span class="req" aria-hidden="true">*</span></label><input type="email" id="fEmail" name="email" autocomplete="email" required></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="fPhone">Phone</label><input type="tel" id="fPhone" name="phone" autocomplete="tel"></div>
+            <div class="field"><label for="fRole">I am a…</label>
+              <select id="fRole" name="role"><option>Investor</option><option>Landlord</option><option>Estate agent</option><option>Auctioneer</option><option>Other</option></select></div>
+          </div>
+          <div class="two">
+            <div class="field"><label for="fAreas">Areas of interest</label><input type="text" id="fAreas" name="areas" placeholder="e.g. L4, L6, Birkenhead"></div>
+            <div class="field"><label for="fBudget">Budget</label><input type="text" id="fBudget" name="budget" placeholder="e.g. up to £120k"></div>
+          </div>
+          <div class="field"><label for="fMsg">Message <span class="req" aria-hidden="true">*</span></label><textarea id="fMsg" name="message" required placeholder="What kind of deals are you looking for?"></textarea></div>
+          <button class="btn btn-primary" type="submit">Send enquiry</button>
+          <div id="formStatus" role="status"></div>
+        </form>
+      </div>
+    </div>
+  </section>`;
+}
+
+function viewNotFound() {
+  return `<div class="page"><div class="wrap"><h1 id="pageTitle" tabindex="-1">Page not found</h1><p class="mt"><a class="btn btn-primary" href="#/">Back to courses</a></p></div></div>`;
+}
+
+/* ---------------- Behaviour ---------------- */
+
+function bindLesson(course, idx) {
+  const lesson = course.lessons[idx];
+  document.getElementById('completeBtn').addEventListener('click', () => {
+    setDone(course.id, lesson.id, !isDone(course.id, lesson.id));
+    const y = window.scrollY;
+    render();
+    window.scrollTo(0, y);
+  });
+  // "Next lesson" marks the current lesson complete too
+  document.getElementById('nextBtn').addEventListener('click', () => setDone(course.id, lesson.id, true));
+}
+
+function bindQuiz(course) {
+  const form = document.getElementById('quizForm');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const answers = course.quiz.map((_, qi) => {
+      const sel = form.querySelector(`input[name="q${qi}"]:checked`);
+      return sel ? Number(sel.value) : null;
+    });
+    const missing = answers.findIndex(a => a === null);
+    const err = document.getElementById('quizError');
+    if (missing !== -1) {
+      err.textContent = `Please answer question ${missing + 1} before checking.`;
+      document.getElementById('q' + missing).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    err.textContent = '';
+    let score = 0;
+    course.quiz.forEach((q, qi) => {
+      const box = document.getElementById('q' + qi);
+      const ok = answers[qi] === q.answer;
+      if (ok) score++;
+      box.querySelectorAll('.opt').forEach((lab, oi) => {
+        lab.classList.toggle('correct', oi === q.answer);
+        lab.classList.toggle('wrong', oi === answers[qi] && !ok);
+        lab.querySelector('input').disabled = true;
+      });
+      box.querySelector('.explain-slot').innerHTML = `<div class="explain"><strong class="${ok ? 'ok' : 'no'}">${ok ? '✓ Correct.' : '✗ Not quite.'}</strong> ${esc(q.explain)}</div>`;
+    });
+    const prev = state.quiz[course.id];
+    state.quiz[course.id] = { best: Math.max(score, prev ? prev.best : 0), last: score };
+    saveState();
+    const pct = Math.round(score / course.quiz.length * 100);
+    const colour = pct >= 80 ? 'var(--success)' : pct >= 50 ? 'var(--accent)' : 'var(--danger)';
+    const msg = pct === 100 ? 'Perfect score. You\'re ready to analyse real deals.' : pct >= 80 ? 'Great work. Review the explanations below for anything you missed.' : pct >= 50 ? 'A solid start. Read the explanations, revisit the lessons and try again.' : 'Worth another look. Revisit the lessons, then retake the quiz.';
+    const res = document.getElementById('quizResult');
+    res.innerHTML = `<div class="card score" style="margin-bottom:1.5rem">
+      <div class="score-ring" style="border:6px solid ${colour};color:${colour}">${score}/${course.quiz.length}</div>
+      <div style="flex:1;min-width:200px"><h2 style="font-size:1.25rem;margin-bottom:.25rem" tabindex="-1" id="scoreH">You scored ${pct}%</h2><p class="muted">${msg}</p>
+      <div class="btn-row" style="margin-top:.75rem"><button type="button" class="btn btn-ghost" id="retryBtn">Retake quiz</button>${nextCourseLink(course)}</div></div></div>`;
+    document.getElementById('retryBtn').addEventListener('click', () => { render(); window.scrollTo(0, 0); });
+    form.querySelector('button[type="submit"]').disabled = true;
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('scoreH').focus({ preventScroll: true });
+    // refresh sidebar tick
+    const side = document.querySelector('.sidebar');
+    if (side) side.outerHTML = sidebar(course, -1, true);
+  });
+}
+
+function nextCourseLink(course) {
+  const i = COURSES.indexOf(course);
+  const next = COURSES[i + 1];
+  return next ? `<a class="btn btn-primary" href="#/course/${next.id}">Next course: ${esc(next.title)}</a>` : `<a class="btn btn-primary" href="#/section/deals">Get deals from us</a>`;
+}
+
+function bindCalculator() {
+  const ids = ['cPrice', 'cRent', 'cCosts', 'cDeposit', 'cRate'];
+  const num = id => { const v = parseFloat(document.getElementById(id).value); return isFinite(v) && v >= 0 ? v : 0; };
+  const set = (id, v) => { document.getElementById(id).textContent = v; };
+  function calc() {
+    const price = num('cPrice'), rent = num('cRent'), costs = num('cCosts');
+    const deposit = Math.min(num('cDeposit'), 100), rate = num('cRate');
+    const annualRent = rent * 12, annualCosts = costs * 12;
+    const loan = price * (1 - deposit / 100);
+    const mortgageMonthly = loan * rate / 100 / 12;
+    const cashMonthly = rent - costs - mortgageMonthly;
+    if (price > 0) {
+      set('rGross', (annualRent / price * 100).toFixed(2) + '%');
+      set('rNet', ((annualRent - annualCosts) / price * 100).toFixed(2) + '%');
+    } else { set('rGross', '–'); set('rNet', '–'); }
+    const cashEl = document.getElementById('rCash');
+    cashEl.textContent = gbp(cashMonthly);
+    cashEl.className = cashMonthly >= 0 ? 'pos' : 'neg';
+    set('rCashNote', cashMonthly >= 0 ? 'Rent − costs − mortgage interest, per month' : 'Negative: costs exceed rent at these figures');
+    set('bRent', gbp(annualRent));
+    set('bCosts', gbp(annualCosts));
+    set('bLoan', gbp(loan));
+    set('bMort', gbp(mortgageMonthly, 2));
+    set('bAnnual', gbp(cashMonthly * 12));
+  }
+  ids.forEach(id => document.getElementById(id).addEventListener('input', calc));
+  calc();
+}
+
+function bindContact() {
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('formStatus');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form).entries());
+    const problems = [];
+    if (!d.name.trim()) problems.push('your name');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email.trim())) problems.push('a valid email');
+    if (!d.message.trim()) problems.push('a message');
+    if (problems.length) {
+      status.className = 'form-status err';
+      status.textContent = 'Please add ' + problems.join(', ') + '.';
+      return;
+    }
+    const subject = `Deal enquiry from ${d.name.trim()} (${d.role})`;
+    const body = `Name: ${d.name}\nEmail: ${d.email}\nPhone: ${d.phone || '-'}\nI am a: ${d.role}\nAreas: ${d.areas || '-'}\nBudget: ${d.budget || '-'}\n\n${d.message}`;
+    if (FORM_ENDPOINT) {
+      try {
+        const r = await fetch(FORM_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ ...d, _subject: subject }) });
+        if (!r.ok) throw new Error(r.status);
+        status.className = 'form-status ok';
+        status.textContent = 'Thanks, your enquiry has been sent. We\'ll be in touch shortly.';
+        form.reset();
+        return;
+      } catch (err) { /* fall through to mailto */ }
+    }
+    const href = `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    status.className = 'form-status ok';
+    status.innerHTML = `Your email app should open with your enquiry ready to send. If it doesn't, <a href="${href}">click here</a>, email <a href="mailto:${CONTACT.email}">${CONTACT.email}</a> or call <a href="tel:${CONTACT.tel}">${CONTACT.phone}</a>.`;
+    window.location.href = href;
+  });
+}
+
+/* ---------------- Router ---------------- */
+
+function parseRoute() {
+  const parts = (location.hash.replace(/^#\/?/, '') || '').split('/').filter(Boolean);
+  if (!parts.length) return { name: 'home' };
+  if (parts[0] === 'section') return { name: 'home', section: parts[1] };
+  if (parts[0] === 'course') {
+    const course = getCourse(parts[1]);
+    if (!course) return { name: '404' };
+    if (!parts[2]) return { name: 'course', course };
+    if (parts[2] === 'quiz') return { name: 'quiz', course };
+    if (parts[2] === 'lesson') {
+      const idx = parseInt(parts[3], 10) - 1;
+      if (idx >= 0 && idx < course.lessons.length) return { name: 'lesson', course, idx };
+    }
+  }
+  return { name: '404' };
+}
+
+let lastRouteKey = '';
+function render() {
+  const r = parseRoute();
+  let title = 'Investor Academy | Mersey Investor Leads';
+  if (r.name === 'home') {
+    app.innerHTML = viewHome(); bindCalculator(); bindContact();
+  } else if (r.name === 'course') {
+    app.innerHTML = viewCourse(r.course); title = `${r.course.title} | Investor Academy`;
+  } else if (r.name === 'lesson') {
+    app.innerHTML = viewLesson(r.course, r.idx); bindLesson(r.course, r.idx); title = `${r.course.lessons[r.idx].title} | ${r.course.title}`;
+  } else if (r.name === 'quiz') {
+    app.innerHTML = viewQuiz(r.course); bindQuiz(r.course); title = `Quiz: ${r.course.title} | Investor Academy`;
+  } else {
+    app.innerHTML = viewNotFound();
+  }
+  document.title = title;
+  document.querySelectorAll('nav.main a').forEach(a => {
+    const nav = a.dataset.nav;
+    const active = (r.name === 'home' && ((r.section || 'home') === nav)) || (nav === 'home' && ['course', 'lesson', 'quiz'].includes(r.name));
+    active ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
+  });
+  return r;
+}
+
+function onRoute() {
+  const key = location.hash;
+  const r = render();
+  closeMenu();
+  if (r.section) {
+    const el = document.getElementById(r.section);
+    if (el) { el.scrollIntoView(); const h = el.querySelector('h2'); if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); } }
+  } else if (key !== lastRouteKey) {
+    window.scrollTo(0, 0);
+    const h = document.getElementById('pageTitle');
+    if (h && lastRouteKey !== '') h.focus({ preventScroll: true });
+  }
+  lastRouteKey = key;
+}
+
+/* ---------------- Chrome: theme + menu ---------------- */
+
+const menuBtn = document.getElementById('menuBtn');
+const mainNav = document.getElementById('mainNav');
+function closeMenu() { mainNav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
+menuBtn.addEventListener('click', () => {
+  const open = mainNav.classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', String(open));
+});
+document.getElementById('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const next = current === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  try { localStorage.setItem('mil-theme', next); } catch (e) {}
+});
+// Clicking a section link when already on that hash should still scroll
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[href^="#/"]');
+  if (a && a.getAttribute('href') === location.hash) { e.preventDefault(); onRoute(); }
+});
+
+document.getElementById('year').textContent = new Date().getFullYear();
+window.addEventListener('hashchange', onRoute);
+onRoute();
+</script>
+</body>
+</html>
