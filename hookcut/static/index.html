@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HookCut</title>
+<meta name="description" content="Paste a YouTube, TikTok, Instagram, X or podcast link. HookCut finds the most viral moments, ranks them, and renders vertical clips with animated captions and trending hashtags.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232448ff'/%3E%3Cpath d='M10 7h4v7h4V7h4v18h-4v-7h-4v7h-4z' fill='%23ffd23f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Layout: a single-column studio: link bar on top, then a project's ranked clip grid. */
+  :root {
+    --bg: #f3f4f7; --surface: #ffffff; --sunk: #eceef3; --ink: #12141b; --muted: #5d6272; --line: #dde0e8;
+    --accent: #2448ff; --accent-hover: #1a37d6; --on-accent: #ffffff; --hot: #ffd23f; --on-hot: #1c1600;
+    --good: #0f8a4f; --bad: #c62d22; --warn: #a35f00;
+    --display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+    --body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+    --radius: 14px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0b0d12; --surface: #141720; --sunk: #10131a; --ink: #eceef4; --muted: #9aa0b2; --line: #252a36;
+      --accent: #7088ff; --accent-hover: #8fa1ff; --on-accent: #0b0d12; --good: #34c77b; --bad: #ff6b5e; --warn: #f0a935;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0b0d12; --surface: #141720; --sunk: #10131a; --ink: #eceef4; --muted: #9aa0b2; --line: #252a36;
+    --accent: #7088ff; --accent-hover: #8fa1ff; --on-accent: #0b0d12; --good: #34c77b; --bad: #ff6b5e; --warn: #f0a935;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font: 16px/1.55 var(--body); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; }
+  a { color: var(--accent); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  h1, h2, h3 { font-family: var(--display); letter-spacing: -0.02em; text-wrap: balance; }
+
+  header.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font: 800 1.2rem var(--display); color: var(--ink); text-decoration: none; }
+  .brand i { width: 28px; height: 28px; border-radius: 8px; background: var(--accent); display: grid; place-items: center; font-style: normal; color: var(--hot); font-size: .95rem; }
+  .top nav { display: flex; gap: 8px; align-items: center; }
+  .icon-btn { background: none; border: 1px solid var(--line); border-radius: 9px; height: 36px; padding: 0 12px; cursor: pointer; color: var(--muted); font-size: .9rem; }
+  .icon-btn:hover { color: var(--ink); }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 11px; padding: 12px 20px; font-weight: 600; cursor: pointer; text-decoration: none; background: var(--accent); color: var(--on-accent); transition: background .15s; white-space: nowrap; }
+  .btn:hover { background: var(--accent-hover); }
+  .btn:disabled { opacity: .55; cursor: progress; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn.ghost:hover { background: var(--sunk); }
+  .btn.sm { padding: 7px 12px; font-size: .88rem; border-radius: 9px; }
+
+  /* Hero / link bar */
+  .hero { padding-block: 56px 28px; }
+  .hero h1 { font-size: clamp(2rem, 5.4vw, 3.5rem); line-height: 1.04; font-weight: 800; max-width: 15ch; }
+  .hero h1 mark { background: var(--hot); color: var(--on-hot); padding: 0 .12em; border-radius: 6px; }
+  .hero p.lede { color: var(--muted); font-size: 1.1rem; max-width: 60ch; margin-top: 14px; }
+  .linkbar { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 10px; display: flex; gap: 10px; box-shadow: 0 10px 30px -18px rgba(18, 20, 27, .35); }
+  .linkbar input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 12px 10px; font-size: 1.05rem; }
+  .linkbar input:focus-visible { outline: none; }
+  .linkbar:focus-within { border-color: var(--accent); }
+  .sources { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; color: var(--muted); font-size: .88rem; align-items: center; }
+  .link-btn { background: none; border: 0; color: var(--accent); cursor: pointer; font-weight: 600; padding: 0; }
+
+  .opts { display: flex; flex-wrap: wrap; gap: 14px 22px; margin-top: 20px; align-items: flex-end; }
+  .opt label, .opt .lbl { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  .seg { display: inline-flex; background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 3px; flex-wrap: wrap; }
+  .seg button { border: 0; background: none; padding: 6px 11px; border-radius: 7px; cursor: pointer; font-size: .9rem; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.12); font-weight: 600; }
+  select, input[type=number], input[type=text].field, textarea { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; }
+  .check { display: inline-flex; gap: 8px; align-items: center; font-size: .92rem; padding-bottom: 8px; cursor: pointer; }
+  .check input { width: 17px; height: 17px; accent-color: var(--accent); }
+  details.tx { margin-top: 16px; }
+  details.tx summary { cursor: pointer; color: var(--muted); font-size: .92rem; }
+  details.tx textarea { width: 100%; min-height: 120px; margin-top: 10px; font-size: .9rem; }
+  .form-error { color: var(--bad); margin-top: 12px; font-size: .95rem; }
+
+  .banner { margin-top: 18px; border: 1px solid var(--line); border-left: 4px solid var(--warn); background: var(--surface); padding: 12px 14px; border-radius: 10px; font-size: .92rem; color: var(--muted); }
+  .banner b { color: var(--ink); }
+  .banner.ok { border-left-color: var(--good); }
+
+  .perks { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; padding-block: 28px 8px; }
+  .perk { border-top: 2px solid var(--ink); padding-top: 10px; }
+  .perk h3 { font-size: 1rem; margin-bottom: 4px; }
+  .perk p { color: var(--muted); font-size: .92rem; }
+
+  /* Project */
+  section.project { padding-block: 28px 40px; }
+  .proj-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .proj-head h2 { font-size: clamp(1.4rem, 3.4vw, 2rem); line-height: 1.15; max-width: 40ch; overflow-wrap: anywhere; }
+  .meta { color: var(--muted); font-size: .92rem; margin-top: 4px; overflow-wrap: anywhere; }
+  .progress-card { margin-top: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  .bar { height: 8px; background: var(--sunk); border-radius: 99px; overflow: hidden; margin: 12px 0 16px; }
+  .bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .5s; }
+  .stages { list-style: none; display: grid; gap: 8px; }
+  .stages li { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: .95rem; }
+  .stages li::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); flex-shrink: 0; }
+  .stages li.active { color: var(--ink); font-weight: 600; }
+  .stages li.active::before { border-color: var(--accent); border-top-color: transparent; animation: spin 0.8s linear infinite; }
+  .stages li.done::before { background: var(--good); border-color: var(--good); }
+  .stages li.error { color: var(--bad); }
+  .stages li.error::before { background: var(--bad); border-color: var(--bad); }
+  .stages li.skipped { text-decoration: line-through; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .stages li.active::before { animation: none; } }
+  .detail { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+  .error-box { margin-top: 16px; border: 1px solid var(--bad); color: var(--bad); border-radius: 10px; padding: 12px 14px; }
+  .notes { margin-top: 14px; display: grid; gap: 6px; }
+  .notes p { font-size: .88rem; color: var(--muted); }
+
+  .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .toolbar h3 { font-size: 1.15rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; margin-top: 14px; }
+  .clip { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+  .clip .stage { position: relative; background: #000; aspect-ratio: 9 / 16; max-height: 560px; max-width: 100%; }
+  .clip video, .clip .stage img { width: 100%; height: 100%; object-fit: contain; display: block; background: #000; }
+  .rank { position: absolute; top: 10px; left: 10px; font: 800 1rem var(--display); background: var(--hot); color: var(--on-hot); border-radius: 8px; padding: 2px 9px; }
+  .overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,.55); color: #fff; font-family: var(--mono); font-size: .85rem; text-align: center; padding: 16px; }
+  .clip .body { padding: 14px 16px 16px; display: grid; gap: 10px; }
+  .score-row { display: flex; align-items: center; gap: 12px; }
+  .score { font: 800 2rem/1 var(--display); font-variant-numeric: tabular-nums; }
+  .score small { display: block; font: 600 .7rem var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-top: 3px; }
+  .score.s-high { color: var(--good); } .score.s-mid { color: var(--accent); } .score.s-low { color: var(--muted); }
+  .clip h4 { font: 700 1.05rem/1.3 var(--display); overflow-wrap: anywhere; }
+  .when { font-family: var(--mono); font-size: .8rem; color: var(--muted); }
+  .why { font-size: .9rem; color: var(--muted); }
+  .bd { display: grid; grid-template-columns: auto 1fr auto; gap: 3px 8px; align-items: center; font-size: .75rem; color: var(--muted); }
+  .bd span.track { height: 5px; background: var(--sunk); border-radius: 9px; overflow: hidden; }
+  .bd span.track i { display: block; height: 100%; background: var(--accent); }
+  .bd b { font-family: var(--mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .post { background: var(--sunk); border-radius: 10px; padding: 10px 12px; font-size: .9rem; overflow-wrap: anywhere; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+  .tag { font-size: .8rem; border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 2px 9px; }
+  .tag.trend { border-color: var(--hot); background: color-mix(in srgb, var(--hot) 22%, var(--surface)); font-weight: 600; }
+  .tag.trend::after { content: " ↑"; color: var(--warn); }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  details.edit summary { cursor: pointer; font-size: .9rem; color: var(--accent); font-weight: 600; }
+  .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .edit-grid label { font-size: .75rem; color: var(--muted); display: grid; gap: 3px; }
+  .edit-grid .full { grid-column: 1 / -1; }
+  .edit-grid input, .edit-grid select { width: 100%; min-width: 0; }
+
+  .history { padding-block: 10px 50px; }
+  .history h2 { font-size: 1.3rem; margin-bottom: 12px; }
+  .hist-list { display: grid; gap: 8px; }
+  .hist { display: flex; justify-content: space-between; gap: 12px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; text-decoration: none; color: var(--ink); min-width: 0; }
+  .hist span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .hist span:last-child { color: var(--muted); font-size: .85rem; flex-shrink: 0; }
+  .empty { color: var(--muted); font-size: .92rem; }
+  footer { border-top: 1px solid var(--line); padding-block: 20px; color: var(--muted); font-size: .85rem; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: .9rem; z-index: 50; }
+
+  @media (max-width: 560px) {
+    .linkbar { flex-direction: column; }
+    .linkbar .btn { width: 100%; }
+    .edit-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" id="homeLink"><i>H</i>HookCut</a>
+    <nav>
+      <a class="icon-btn" href="#history" style="display:grid;place-items:center;text-decoration:none">Projects</a>
+      <button class="icon-btn" id="themeBtn" aria-label="Switch light or dark theme">Theme</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap" id="start">
+    <h1>Long videos in. <mark>Viral clips</mark> out.</h1>
+    <p class="lede">Paste a link to a podcast, interview, stream or video. HookCut finds the moments most likely to go viral, ranks them best to worst, and renders vertical clips with animated captions, a hook title and hashtags trending this week.</p>
+
+    <form id="linkForm" novalidate>
+      <div class="linkbar">
+        <input id="url" type="url" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=…" aria-label="Video link">
+        <button class="btn" id="goBtn" type="submit">Get viral clips</button>
+      </div>
+      <div class="sources">
+        <span>YouTube · TikTok · Instagram · X · Facebook · Twitch VODs · Vimeo · podcasts</span>
+        <span>or <button type="button" class="link-btn" id="uploadBtn">upload a file</button></span>
+        <input type="file" id="file" accept="video/*,audio/*,.mkv" hidden>
+      </div>
+
+      <div class="opts">
+        <div class="opt"><span class="lbl">Clip length</span>
+          <div class="seg" data-opt="length">
+            <button type="button" data-v="auto" aria-pressed="true">Auto</button>
+            <button type="button" data-v="short">&lt;30s</button>
+            <button type="button" data-v="medium">30–60s</button>
+            <button type="button" data-v="long">60–90s</button>
+          </div>
+        </div>
+        <div class="opt"><span class="lbl">Captions</span>
+          <div class="seg" data-opt="style">
+            <button type="button" data-v="bold" aria-pressed="true">Bold pop</button>
+            <button type="button" data-v="karaoke">Karaoke</button>
+            <button type="button" data-v="clean">Clean</button>
+            <button type="button" data-v="none">Off</button>
+          </div>
+        </div>
+        <div class="opt"><span class="lbl">Framing</span>
+          <div class="seg" data-opt="layout">
+            <button type="button" data-v="auto" aria-pressed="true">Auto</button>
+            <button type="button" data-v="crop">Face crop</button>
+            <button type="button" data-v="blur">Fit + blur</button>
+          </div>
+        </div>
+        <div class="opt"><label for="maxClips">Clips</label>
+          <select id="maxClips"><option>5</option><option selected>8</option><option>12</option><option>16</option></select>
+        </div>
+        <label class="check"><input type="checkbox" id="hookOverlay" checked> Hook title</label>
+      </div>
+
+      <details class="tx">
+        <summary>Have a transcript already? Paste it (optional, skips transcription)</summary>
+        <textarea id="transcript" placeholder="SRT, VTT, or lines like “0:12 What nobody tells you about…”"></textarea>
+      </details>
+      <p class="form-error" id="formError" role="alert" hidden></p>
+    </form>
+
+    <div class="banner" id="aiBanner" hidden></div>
+
+    <div class="perks">
+      <div class="perk"><h3>Ranked, with reasons</h3><p>Every clip gets a virality score and a breakdown: hook, standalone sense, emotion, takeaway, payoff, pacing.</p></div>
+      <div class="perk"><h3>Hashtags trending now</h3><p>Claude searches this week's trends for your niche and marks which tags are actually rising.</p></div>
+      <div class="perk"><h3>Face-aware framing</h3><p>Crops to the speaker, or fits wide shots over a blurred background so nothing important is cut off.</p></div>
+      <div class="perk"><h3>Edit and re-render</h3><p>Trim, rewrite the hook, swap caption style. Download MP4 and SRT for any platform.</p></div>
+    </div>
+  </section>
+
+  <section class="project wrap" id="project" hidden>
+    <div class="proj-head">
+      <div>
+        <h2 id="projTitle">Working…</h2>
+        <div class="meta" id="projMeta"></div>
+      </div>
+      <button class="btn ghost sm" id="newBtn" type="button">New project</button>
+    </div>
+
+    <div class="progress-card" id="progressCard">
+      <div class="detail" id="detail">Starting…</div>
+      <div class="bar"><i id="barFill"></i></div>
+      <ul class="stages" id="stages"></ul>
+      <div class="error-box" id="errorBox" hidden></div>
+    </div>
+    <div class="notes" id="notes"></div>
+
+    <div id="results" hidden>
+      <div class="toolbar">
+        <h3 id="resultsTitle">Clips, most viral first</h3>
+        <button class="btn ghost sm" id="copyAllBtn" type="button">Copy all captions</button>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <section class="history wrap" id="history">
+    <h2>Recent projects</h2>
+    <div class="hist-list" id="histList"><p class="empty">No projects yet. Paste a link above to start.</p></div>
+  </section>
+</main>
+
+<footer><div class="wrap">HookCut · Only clip videos you own or have permission to use.</div></footer>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmt = (t) => { t = Math.max(0, t || 0); const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = Math.floor(t % 60); return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+  const STAGE_LABELS = { download: 'Fetch video', transcribe: 'Transcribe speech', find: 'Find viral moments', hashtags: 'Research trending hashtags', render: 'Render vertical clips' };
+  const BD_LABELS = { hook: 'Hook', standalone: 'Standalone', emotion: 'Emotion', value: 'Takeaway', payoff: 'Payoff', pacing: 'Pacing' };
+  const opts = { length: 'auto', style: 'bold', layout: 'auto' };
+  let current = null, pollTimer = null, lastJob = null;
+
+  // Theme
+  try { const t = localStorage.getItem('hookcut.theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  $('themeBtn').addEventListener('click', () => {
+    const r = document.documentElement;
+    const dark = r.dataset.theme ? r.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    r.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('hookcut.theme', r.dataset.theme); } catch (e) {}
+  });
+
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2200);
+  }
+  async function copy(text) {
+    try { await navigator.clipboard.writeText(text); toast('Copied'); }
+    catch (e) {
+      const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast('Copied'); } catch (_) { toast('Copy failed. Select the text manually.'); }
+      ta.remove();
+    }
+  }
+  async function api(path, init) {
+    const res = await fetch(path, init);
+    let data = null; try { data = await res.json(); } catch (e) {}
+    if (!res.ok) {
+      const d = data && data.detail;
+      throw new Error(typeof d === 'string' ? d : Array.isArray(d) ? d.map((x) => x.msg).join('; ') : 'Request failed (' + res.status + ')');
+    }
+    return data;
+  }
+
+  // Option segments
+  document.querySelectorAll('.seg').forEach((seg) => {
+    seg.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      seg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      opts[seg.dataset.opt] = b.dataset.v;
+    });
+  });
+  const currentOptions = () => ({
+    length: opts.length, style: opts.style, layout: opts.layout,
+    max_clips: Number($('maxClips').value), hook_overlay: $('hookOverlay').checked,
+    transcript: $('transcript').value
+  });
+  function formError(msg) { $('formError').textContent = msg; $('formError').hidden = !msg; }
+
+  // Config banner
+  api('/api/config').then((c) => {
+    const b = $('aiBanner'); b.hidden = false;
+    if (c.ai) { b.className = 'banner ok'; b.innerHTML = '<b>Claude is on.</b> Clips are ranked by Claude, and hashtags come from a live search of what is trending now.'; }
+    else { b.innerHTML = '<b>Running on built-in scoring.</b> Set <code>ANTHROPIC_API_KEY</code> on the server for Claude ranking and live trending hashtags.'; }
+  }).catch(() => {});
+
+  // Submit link
+  $('linkForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const url = $('url').value.trim();
+    if (!/^https?:\/\/\S+$/i.test(url)) { formError('Paste a full link, starting with https://'); $('url').focus(); return; }
+    formError(''); $('goBtn').disabled = true;
+    try {
+      const { id } = await api('/api/jobs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ url, ...currentOptions() }) });
+      location.hash = id;
+    } catch (err) { formError(err.message); }
+    finally { $('goBtn').disabled = false; }
+  });
+
+  // Upload
+  $('uploadBtn').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', () => {
+    const f = $('file').files[0]; if (!f) return;
+    formError('');
+    const fd = new FormData(); fd.append('file', f);
+    Object.entries(currentOptions()).forEach(([k, v]) => fd.append(k, String(v)));
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/upload');
+    $('goBtn').disabled = true;
+    xhr.upload.onprogress = (ev) => { if (ev.lengthComputable) formError('Uploading ' + f.name + '… ' + Math.round(ev.loaded / ev.total * 100) + '%'); };
+    xhr.onload = () => {
+      $('goBtn').disabled = false; $('file').value = '';
+      let data = {}; try { data = JSON.parse(xhr.responseText); } catch (e) {}
+      if (xhr.status >= 200 && xhr.status < 300) { formError(''); location.hash = data.id; }
+      else formError(typeof data.detail === 'string' ? data.detail : 'Upload failed (' + xhr.status + ').');
+    };
+    xhr.onerror = () => { $('goBtn').disabled = false; formError('Upload failed. Check your connection and try again.'); };
+    xhr.send(fd);
+  });
+
+  // Routing: #<jobId> opens a project
+  function route() {
+    const id = location.hash.slice(1);
+    clearTimeout(pollTimer);
+    if (/^[a-f0-9]{12}$/.test(id)) {
+      current = id; lastJob = null;
+      $('start').hidden = true; $('project').hidden = false;
+      $('grid').innerHTML = ''; $('results').hidden = true;
+      poll();
+      window.scrollTo(0, 0);
+    } else {
+      current = null;
+      $('start').hidden = false; $('project').hidden = true;
+      loadHistory();
+    }
+  }
+  window.addEventListener('hashchange', route);
+  $('newBtn').addEventListener('click', () => { location.hash = ''; });
+  $('homeLink').addEventListener('click', (e) => { e.preventDefault(); location.hash = ''; });
+
+  async function poll() {
+    const id = current;
+    try {
+      const job = await api('/api/jobs/' + id);
+      if (id !== current) return;
+      renderJob(job);
+      const busy = job.status === 'queued' || job.status === 'running' || job.status === 'done' && (job.clips || []).some((c) => c.status === 'rendering' || c.status === 'queued');
+      if (busy) pollTimer = setTimeout(poll, 1500);
+    } catch (err) {
+      $('projTitle').textContent = 'Project not found';
+      $('errorBox').hidden = false; $('errorBox').textContent = err.message;
+    }
+  }
+
+  function renderJob(job) {
+    const v = job.video || {};
+    $('projTitle').textContent = v.title || job.source || 'Your video';
+    $('projMeta').innerHTML = [
+      v.uploader ? esc(v.uploader) : null,
+      v.duration ? fmt(v.duration) + ' long' : null,
+      job.transcript_source ? 'Transcript: ' + esc(job.transcript_source) : null,
+      v.url && /^https?:/.test(v.url) ? '<a href="' + esc(v.url) + '" target="_blank" rel="noopener">Original ↗</a>' : null
+    ].filter(Boolean).join(' · ');
+
+    const done = job.status === 'done';
+    $('progressCard').hidden = done && !job.error;
+    $('detail').textContent = job.status === 'queued' ? 'Waiting in queue…' : (job.detail || '');
+    $('barFill').style.width = (job.progress || 0) + '%';
+    $('stages').innerHTML = Object.keys(STAGE_LABELS).map((s) =>
+      '<li class="' + (job.stages[s] || 'pending') + '">' + STAGE_LABELS[s] + (job.stages[s] === 'skipped' ? ' (needs Claude)' : '') + '</li>').join('');
+    $('errorBox').hidden = !job.error;
+    $('errorBox').textContent = job.error || '';
+    $('notes').innerHTML = (job.notes || []).map((n) => '<p>' + esc(n) + '</p>').join('');
+
+    const clips = job.clips || [];
+    const showClips = clips.length && (done || job.stage === 'render');
+    $('results').hidden = !showClips;
+    if (!showClips) return;
+    $('resultsTitle').textContent = clips.length + ' clips, most viral first';
+    renderClips(job, clips);
+    lastJob = job;
+  }
+
+  function scoreClass(s) { return s >= 80 ? 's-high' : s >= 60 ? 's-mid' : 's-low'; }
+  function captionText(c) { return (c.post_caption || c.title) + '\n\n' + (c.hashtags || []).map((h) => h.tag).join(' '); }
+
+  function clipKey(c, job) { return [c.status, c.file, c.error, job.status, (c.hashtags || []).length].join('|'); }
+
+  function renderClips(job, clips) {
+    const grid = $('grid');
+    clips.forEach((c, i) => {
+      let card = grid.children[i];
+      const key = clipKey(c, job);
+      if (card && card.dataset.key === key) return; // unchanged: keep the playing video and open editor
+      const html = clipHTML(job, c, i);
+      if (card) { card.outerHTML = html; } else { grid.insertAdjacentHTML('beforeend', html); }
+      grid.children[i].dataset.key = key;
+    });
+    while (grid.children.length > clips.length) grid.lastElementChild.remove();
+  }
+
+  function clipHTML(job, c, i) {
+    const base = '/media/' + job.id + '/';
+    let stage;
+    if (c.file && c.status === 'ready') {
+      stage = '<video controls playsinline preload="none" poster="' + base + esc(c.thumb) + '" src="' + base + esc(c.file) + '"></video>';
+    } else {
+      stage = (c.thumb ? '<img alt="" src="' + base + esc(c.thumb) + '">' : '') +
+        '<div class="overlay">' + (c.status === 'error' ? 'Render failed: ' + esc(c.error || '') : c.status === 'rendering' ? 'Rendering…' : 'Queued for rendering') + '</div>';
+    }
+    const bd = c.breakdown ? '<div class="bd">' + Object.keys(BD_LABELS).filter((k) => k in c.breakdown).map((k) =>
+      '<span>' + BD_LABELS[k] + '</span><span class="track"><i style="width:' + Math.max(0, Math.min(100, c.breakdown[k])) + '%"></i></span><b>' + c.breakdown[k] + '</b>').join('') + '</div>' : '';
+    const tags = (c.hashtags || []).map((h) => '<span class="tag' + (h.trending ? ' trend' : '') + '"' + (h.note ? ' title="' + esc(h.note) + '"' : '') + '>' + esc(h.tag) + '</span>').join('');
+    const ready = c.status === 'ready';
+    const opt = (list, val) => list.map(([v, l]) => '<option value="' + v + '"' + (v === val ? ' selected' : '') + '>' + l + '</option>').join('');
+    return '<article class="clip" data-i="' + i + '">' +
+      '<div class="stage">' + stage + '<span class="rank">#' + (i + 1) + '</span></div>' +
+      '<div class="body">' +
+        '<div class="score-row"><div class="score ' + scoreClass(c.score) + '">' + c.score + '<small>Viral score</small></div>' +
+          '<div><h4>' + esc(c.title) + '</h4><div class="when">' + fmt(c.start) + '–' + fmt(c.end) + ' · ' + Math.round(c.end - c.start) + 's</div></div></div>' +
+        (c.reason ? '<p class="why">' + esc(c.reason) + '</p>' : '') + bd +
+        '<div class="post">' + esc(c.post_caption || c.title) + '<div class="tags">' + tags + '</div></div>' +
+        '<div class="actions">' +
+          '<button class="btn sm" data-act="copy" type="button">Copy caption + tags</button>' +
+          (ready ? '<a class="btn ghost sm" href="' + base + esc(c.file) + '?download=1">MP4</a><a class="btn ghost sm" href="' + base + esc(c.srt) + '?download=1">SRT</a>' : '') +
+        '</div>' +
+        (job.status === 'done' ? '<details class="edit"><summary>Edit and re-render</summary><div class="edit-grid">' +
+          '<label>Start (s)<input type="number" step="0.1" min="0" name="start" value="' + c.start.toFixed(1) + '"></label>' +
+          '<label>End (s)<input type="number" step="0.1" min="0" name="end" value="' + c.end.toFixed(1) + '"></label>' +
+          '<label class="full">Hook title<input type="text" class="field" name="hook" maxlength="120" value="' + esc(c.hook || '') + '"></label>' +
+          '<label>Captions<select name="style">' + opt([['bold', 'Bold pop'], ['karaoke', 'Karaoke'], ['clean', 'Clean'], ['none', 'Off']], c.style || job.options.style) + '</select></label>' +
+          '<label>Framing<select name="layout">' + opt([['auto', 'Auto'], ['crop', 'Face crop'], ['blur', 'Fit + blur'], ['fill', 'Fill']], c.layout || job.options.layout) + '</select></label>' +
+          '<div class="full"><button class="btn sm" data-act="rerender" type="button"' + (ready || c.status === 'error' ? '' : ' disabled') + '>Re-render clip</button></div>' +
+        '</div></details>' : '') +
+      '</div></article>';
+  }
+
+  $('grid').addEventListener('click', async (e) => {
+    const btn = e.target.closest('button[data-act]'); if (!btn || !lastJob) return;
+    const card = btn.closest('.clip'); const i = Number(card.dataset.i); const c = lastJob.clips[i];
+    if (btn.dataset.act === 'copy') return copy(captionText(c));
+    if (btn.dataset.act === 'rerender') {
+      const val = (n) => card.querySelector('[name="' + n + '"]').value;
+      const body = { start: Number(val('start')), end: Number(val('end')), hook: val('hook'), style: val('style'), layout: val('layout') };
+      if (!(body.end > body.start)) return toast('End must be after start.');
+      btn.disabled = true;
+      try {
+        await api('/api/jobs/' + current + '/clips/' + i, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+        toast('Re-rendering clip #' + (i + 1)); clearTimeout(pollTimer); poll();
+      } catch (err) { toast(err.message); btn.disabled = false; }
+    }
+  });
+  $('copyAllBtn').addEventListener('click', () => {
+    if (!lastJob) return;
+    copy(lastJob.clips.map((c, i) => '#' + (i + 1) + ' ' + c.title + ' (' + fmt(c.start) + '–' + fmt(c.end) + ')\n' + captionText(c)).join('\n\n---\n\n'));
+  });
+
+  async function loadHistory() {
+    try {
+      const list = await api('/api/jobs');
+      $('histList').innerHTML = list.length ? list.map((j) =>
+        '<a class="hist" href="#' + j.id + '"><span>' + esc((j.video && j.video.title) || j.source) + '</span><span>' +
+        (j.status === 'done' ? j.clips + ' clips' : j.status === 'error' ? 'Failed' : 'In progress') + ' · ' + new Date(j.created * 1000).toLocaleDateString() + '</span></a>').join('')
+        : '<p class="empty">No projects yet. Paste a link above to start.</p>';
+    } catch (e) {}
+  }
+
+  route();
+})();
+</script>
+</body>
+</html>
