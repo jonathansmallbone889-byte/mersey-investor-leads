@@ -243,7 +243,7 @@
             <input type="file" id="fileIn" accept=".csv,text/csv" multiple hidden>
             <strong>Choose CSV files</strong> or drag them here
           </label>
-          <div class="btnrow" style="margin-top:10px"><button id="trySample">Try it with sample exports</button></div>
+          <div class="btnrow" style="margin-top:10px"><button id="xeroBtn" class="primary" hidden>Sync from Xero</button><button id="trySample">Try it with sample exports</button></div>
           <details class="howto">
             <summary>Where do I find these files?</summary>
             <ul>
@@ -802,6 +802,11 @@
       open.push({ contact: contact, num: c.num >= 0 ? r[c.num] : '', due: due, owed: owed });
     });
     out.found.push(fname + ' (' + open.length + ' unpaid invoice' + (open.length === 1 ? '' : 's') + ')');
+    addInvoices(open, lateBy, allLate, out);
+  }
+
+  // open: [{contact, num, due: Date, owed}], lateBy: {contact: [days late]}, allLate: [days late]
+  function addInvoices(open, lateBy, allLate, out) {
     open.forEach(function (o) {
       var hist = lateBy[o.contact.toLowerCase()], late = 0, sub;
       if (hist && hist.length) {
@@ -820,7 +825,7 @@
   }
 
   function importTexts(files, replaceDefault) {
-    var out = { found: [], warnings: [], recurring: [], invoices: [], balance: null, replace: !!replaceDefault };
+    var out = { found: [], warnings: [], recurring: [], invoices: [], oneoffs: [], balance: null, replace: !!replaceDefault };
     files.forEach(function (f) {
       var rows = parseCSV(f.text), h = -1;
       for (var i = 0; i < Math.min(rows.length, 25); i++) {
@@ -833,17 +838,29 @@
       else if (findCol(hs, ['amount', 'value', 'paidin', 'paidout', 'moneyin', 'moneyout', 'credit', 'debit'], /amount|paidin|paidout|credit|debit/) >= 0) readBank(hs, body, f.name, out);
       else out.warnings.push(f.name + ': not recognised as a bank statement or invoice list.');
     });
+    finishImport(out);
+  }
+
+  function reviewItems(p) { return [].concat(p.recurring, p.invoices, p.oneoffs); }
+  function finishImport(out) {
     // flag likely duplicates of what's already entered
-    [].concat(out.recurring, out.invoices).forEach(function (r) {
-      var w = r.item.name.toLowerCase().split(/[\s·]+/)[0];
+    // same type, same amount, and a meaningful word in common ("Wirral Dental" vs "Retainer – Wirral Dental")
+    function words(n) {
+      return String(n || '').toLowerCase().replace(/\b(inv|invoice|bill)[-\s]*\d+/g, '').split(/[^a-z0-9]+/)
+        .filter(function (w) { return w.length > 2 && NOISE.indexOf(w) < 0 && !/^\d+$/.test(w); });
+    }
+    reviewItems(out).forEach(function (r) {
+      var w = words(r.item.name);
       var dup = state.items.some(function (it) {
-        return it.type === r.item.type && Math.abs(num(it.amount) - r.item.amount) < 1 && (it.name || '').toLowerCase().split(/[\s·]+/)[0] === w;
+        return it.type === r.item.type && Math.abs(num(it.amount) - r.item.amount) < 1 &&
+          words(it.name).some(function (x) { return w.indexOf(x) >= 0; });
       });
       // duplicates only matter when adding; replacing removes the originals
       if (dup) { r.dup = true; r.checked = out.replace; }
     });
     out.recurring.sort(function (a, b) { return b.item.amount - a.item.amount; });
     out.invoices.sort(function (a, b) { return a.item.date < b.item.date ? -1 : 1; });
+    out.oneoffs.sort(function (a, b) { return a.item.date < b.item.date ? -1 : 1; });
     pending = out;
     renderReview();
   }
@@ -858,7 +875,7 @@
     if (p.balance) {
       var stale = Math.round((today() - p.balance.date) / DAY);
       h += '<h3>Bank balance</h3>' + row('bal', p.balance.checked, 'Set cash in bank to ' + money(p.balance.value),
-        'Closing balance on ' + fmtD(p.balance.date) + (stale > 7 ? '. That was ' + stale + ' days ago, so update it if it has changed.' : ''), '');
+        (p.balance.note || 'Closing balance on ' + fmtD(p.balance.date)) + (stale > 7 ? '. That was ' + stale + ' days ago, so update it if it has changed.' : ''), '');
     }
     if (p.recurring.length) {
       h += '<h3>Recurring payments spotted (' + p.recurring.length + ')</h3>';
@@ -873,9 +890,15 @@
         h += row('inv' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''), money(r.item.amount));
       });
     }
-    var any = p.balance || p.recurring.length || p.invoices.length;
+    if (p.oneoffs.length) {
+      h += '<h3>Bills to pay (' + p.oneoffs.length + ')</h3>';
+      p.oneoffs.forEach(function (r, i) {
+        h += row('one' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''), '−' + money(r.item.amount));
+      });
+    }
+    var any = p.balance || reviewItems(p).length;
     if (any) {
-      h += '<div class="notice">Statements can\'t predict one-off bills. Add VAT, corporation tax and any big purchases under <strong>One-off</strong> after importing.</div>';
+      if (!p.fromXero) h += '<div class="notice">Statements can\'t predict one-off bills. Add VAT, corporation tax and any big purchases under <strong>One-off</strong> after importing.</div>';
       h += '<label class="replace"><input type="checkbox" data-r="replace"' + (p.replace ? ' checked' : '') + '> Replace my current items instead of adding to them</label>';
       h += '<div class="btnrow"><button class="primary" id="applyImport">Add selected to forecast</button><button id="cancelImport">Cancel</button></div>';
     } else h += '<div class="btnrow" style="margin-top:8px"><button id="cancelImport">Close</button></div>';
@@ -885,12 +908,11 @@
         var k = cb.dataset.r;
         if (k === 'replace') {
           p.replace = cb.checked;
-          [].concat(p.recurring, p.invoices).forEach(function (r) { if (r.dup) r.checked = p.replace; });
+          reviewItems(p).forEach(function (r) { if (r.dup) r.checked = p.replace; });
           renderReview();
         }
         else if (k === 'bal') p.balance.checked = cb.checked;
-        else if (k.indexOf('rec') === 0) p.recurring[+k.slice(3)].checked = cb.checked;
-        else p.invoices[+k.slice(3)].checked = cb.checked;
+        else ({ rec: p.recurring, inv: p.invoices, one: p.oneoffs })[k.slice(0, 3)][+k.slice(3)].checked = cb.checked;
       });
     });
     var ap = $('#applyImport'); if (ap) ap.addEventListener('click', applyImport);
@@ -904,10 +926,10 @@
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
 
   function applyImport() {
-    var p = pending, added = { recurring: 0, invoice: 0 };
+    var p = pending, added = { recurring: 0, invoice: 0, oneoff: 0 };
     if (p.replace) state.items = [];
     if (p.balance && p.balance.checked) state.startBalance = Math.round(p.balance.value * 100) / 100;
-    [].concat(p.recurring, p.invoices).forEach(function (r) {
+    reviewItems(p).forEach(function (r) {
       if (!r.checked) return;
       var it = Object.assign({ id: id() }, r.item);
       state.items.push(it); added[it.type]++;
@@ -983,6 +1005,76 @@
             { name: 'invoices-export.csv', text: inv.map(function (r) { return r.join(','); }).join('\n') }];
   }
   $('#trySample').addEventListener('click', function () { importTexts(sampleExports(), true); });
+
+
+  // ---------- Xero sync ----------
+  // Address of the deployed connector (runway/xero-connector). Leave blank to hide the button.
+  var XERO_CONNECTOR = '';
+  var xeroBtn = $('#xeroBtn');
+  if (XERO_CONNECTOR) {
+    xeroBtn.hidden = false;
+    xeroBtn.addEventListener('click', function () {
+      save();
+      location.href = XERO_CONNECTOR.replace(/\/$/, '') + '/login?return=' + encodeURIComponent(location.href.split('#')[0]);
+    });
+  }
+
+  function fromXero(d) {
+    var out = { found: [], warnings: [], recurring: [], invoices: [], oneoffs: [], balance: null, replace: false, fromXero: true };
+    if (!d || d.error) {
+      out.warnings.push((d && d.error) || 'Xero sent back something Runway couldn\'t read.');
+      pending = out; renderReview(); return;
+    }
+    (d.warnings || []).forEach(function (w) { out.warnings.push(String(w)); });
+    var receivables = d.receivables || [], bills = d.bills || [], repeating = d.repeating || [];
+    out.found.push(String(d.org || 'Xero') + ' in Xero (' + receivables.length + ' unpaid invoices, ' + bills.length + ' bills)');
+    if (isFinite(parseFloat(d.balance))) {
+      out.balance = { value: parseFloat(d.balance), date: today(), checked: true, note: 'Total across your bank accounts in Xero. It\'s only as current as your last bank feed.' };
+    }
+    var lateBy = {}, allLate = [];
+    (d.paid || []).forEach(function (p) {
+      if (!p.due || !p.paid) return;
+      var late = Math.max(0, Math.round((parseD(p.paid) - parseD(p.due)) / DAY)), k = String(p.contact || '').toLowerCase();
+      (lateBy[k] = lateBy[k] || []).push(late); allLate.push(late);
+    });
+    addInvoices(receivables.filter(function (o) { return o.due && num(o.owed) > 0; }).map(function (o) {
+      return { contact: String(o.contact || ''), num: String(o.num || ''), due: parseD(o.due), owed: num(o.owed) };
+    }), lateBy, allLate, out);
+    bills.forEach(function (b) {
+      if (!b.due || !(num(b.owed) > 0)) return;
+      out.oneoffs.push({
+        checked: true,
+        item: { type: 'oneoff', dir: 'out', name: String(b.contact || 'Bill') + (b.num ? ' · ' + b.num : ''), amount: Math.round(num(b.owed) * 100) / 100, date: b.due, on: true },
+        sub: 'Bill due ' + fmtD(parseD(b.due))
+      });
+    });
+    var labels = { weekly: 'week', fortnightly: '2 weeks', monthly: 'month', quarterly: 'quarter' };
+    repeating.forEach(function (r) {
+      if (!labels[r.freq] || !r.next || !(num(r.amount) > 0)) return;
+      out.recurring.push({
+        checked: true,
+        item: { type: 'recurring', dir: r.dir === 'in' ? 'in' : 'out', name: String(r.contact || 'Repeating invoice'), amount: num(r.amount), freq: r.freq, date: r.next, on: true },
+        sub: 'Repeating ' + (r.dir === 'in' ? 'invoice' : 'bill') + ' in Xero, every ' + labels[r.freq] + ', next payment ' + fmtD(parseD(r.next))
+      });
+    });
+    finishImport(out);
+  }
+
+  // The connector returns data in the URL fragment, which never reaches a server
+  function checkXeroReturn() {
+    var m = /^#xero=([A-Za-z0-9_-]+)$/.exec(location.hash);
+    if (!m) return;
+    history.replaceState(null, '', location.pathname + location.search);
+    var data = null;
+    try {
+      var b64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+      var bin = atob(b64 + '==='.slice((b64.length + 3) % 4));
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      data = JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) { data = null; }
+    fromXero(data);
+  }
 
   // ---------- rendering: outputs ----------
   function update() {
@@ -1166,6 +1258,7 @@
   syncInputs();
   renderItems();
   update();
+  checkXeroReturn();
 })();
 </script>
 </body>

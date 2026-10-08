@@ -1,0 +1,10 @@
+name = "runway-xero"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://jonathansmallbone889-byte.github.io"
+
+# Set these as secrets, never here:
+#   npx wrangler secret put XERO_CLIENT_ID
+#   npx wrangler secret put XERO_CLIENT_SECRET
