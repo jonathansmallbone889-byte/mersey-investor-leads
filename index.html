@@ -88,6 +88,10 @@
       color: var(--accent);
     }
 
+    .courses-link {
+      white-space: nowrap;
+    }
+
     .phone-link {
       display: inline-flex;
       align-items: center;
@@ -592,9 +596,20 @@
       }
     }
 
-    @media (max-width: 350px) {
+    @media (max-width: 640px) {
+      .header-contact {
+        gap: 0.75rem;
+      }
+
+      .courses-link {
+        font-size: 0.82rem;
+      }
+    }
+
+    @media (max-width: 400px) {
       .logo {
         white-space: normal;
+        line-height: 1.2;
       }
     }
   </style>
@@ -605,6 +620,7 @@
     <div class="header-inner">
       <a href="#" class="logo">Mersey <span>Investor Leads</span></a>
       <div class="header-contact">
+        <a href="learn/" class="courses-link">Free courses</a>
         <a href="mailto:jonathansmallbone889@gmail.com" class="email-link">jonathansmallbone889@gmail.com</a>
         <a href="tel:+447576618414" class="phone-link">07576 618414</a>
       </div>
@@ -731,6 +747,7 @@
     <div class="footer-inner">
       <p>© 2026 Mersey Investor Leads · Serving landlords across Liverpool &amp; the Wirral</p>
       <div class="footer-contact">
+        <a href="learn/">Free investor courses</a>
         <a href="tel:+447576618414">07576 618414</a>
         <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a>
       </div>
