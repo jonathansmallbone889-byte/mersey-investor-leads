@@ -149,6 +149,28 @@
     .pill.late { background: var(--warn-soft); color: var(--warn); }
     .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 14px; border: 1px dashed var(--border); border-radius: 10px; }
 
+    .drop {
+      display: block; text-align: center; padding: 18px 12px; border: 1.5px dashed var(--border); border-radius: 10px;
+      color: var(--muted); font-size: 14px; font-weight: 500; cursor: pointer; margin: 0; background: var(--bg);
+    }
+    .drop strong { color: var(--accent); }
+    .drop:hover, .drop:focus, .drop.over { border-color: var(--accent); background: var(--accent-soft); outline: none; }
+    .howto { margin-top: 12px; font-size: 13px; color: var(--muted); }
+    .howto summary { cursor: pointer; font-weight: 600; }
+    .howto ul { margin: 8px 0 0; padding-left: 18px; }
+    .howto li { margin-bottom: 4px; }
+    #review { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; }
+    #review h3 { font-size: 13px; margin: 14px 0 6px; }
+    #review h3:first-child { margin-top: 0; }
+    .ritem { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--border); margin: 0; font-size: 13px; font-weight: 400; color: var(--text); cursor: pointer; }
+    .ritem:last-child { border-bottom: 0; }
+    .ritem input { flex: none; margin-top: 2px; }
+    .ritem .rmain { flex: 1; min-width: 0; }
+    .ritem .rname { font-weight: 600; overflow-wrap: anywhere; }
+    .ritem .rsub { color: var(--muted); font-size: 12px; }
+    .ritem .ramt { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .notice { font-size: 12px; color: var(--warn); background: var(--warn-soft); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+    .replace { display: flex; gap: 8px; align-items: center; font-size: 13px; font-weight: 500; color: var(--text); margin: 12px 0; }
     .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
     @media (max-width: 640px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .kpi { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: var(--shadow); }
@@ -214,6 +236,24 @@
     <div class="layout">
       <!-- Inputs -->
       <div>
+        <section class="card" id="importCard">
+          <h2>Import from your bank or accounting software</h2>
+          <p class="hint">Add a bank statement export (the last 3 months works best) and/or your unpaid invoice list. Runway reads them in your browser. Nothing is uploaded, and you review everything before it's added.</p>
+          <label class="drop" id="drop" tabindex="0">
+            <input type="file" id="fileIn" accept=".csv,text/csv" multiple hidden>
+            <strong>Choose CSV files</strong> or drag them here
+          </label>
+          <div class="btnrow" style="margin-top:10px"><button id="trySample">Try it with sample exports</button></div>
+          <details class="howto">
+            <summary>Where do I find these files?</summary>
+            <ul>
+              <li><strong>Bank statement:</strong> in online banking, open your business account, choose the last 3 months of transactions and download or export as CSV. Every major UK bank, plus Monzo, Starling, Tide and Revolut, offers this.</li>
+              <li><strong>Unpaid invoices:</strong> in Xero, QuickBooks, FreeAgent, Zoho or Sage, open your invoice list and export it as CSV. Include paid invoices too if you can, so Runway can learn how late each client pays.</li>
+            </ul>
+          </details>
+          <div id="review" hidden></div>
+        </section>
+
         <section class="card">
           <h2>Starting point</h2>
           <p class="hint">Your bank balance today and the minimum you never want to drop below.</p>
@@ -572,6 +612,377 @@
     var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'runway-forecast.csv';
     document.body.appendChild(a); a.click(); a.remove();
   });
+
+  // ---------- CSV import ----------
+  function parseCSV(text) {
+    text = text.replace(/^﻿/, '');
+    var sample = text.split(/\r?\n/).slice(0, 15).join('\n');
+    var delim = [',', ';', '\t'].map(function (d) { return [d, sample.split(d).length]; })
+      .sort(function (a, b) { return b[1] - a[1]; })[0][0];
+    var rows = [], row = [], f = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c;
+      } else if (c === '"') q = true;
+      else if (c === delim) { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(f); rows.push(row); row = []; f = '';
+      } else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    return rows.map(function (r) { return r.map(function (x) { return x.trim(); }); })
+      .filter(function (r) { return r.some(function (x) { return x !== ''; }); });
+  }
+  function normH(h) { return h.toLowerCase().replace(/[^a-z]/g, ''); }
+  function findCol(hs, exact, re) {
+    for (var i = 0; i < exact.length; i++) { var j = hs.indexOf(exact[i]); if (j >= 0) return j; }
+    if (re) for (var k = 0; k < hs.length; k++) if (re.test(hs[k])) return k;
+    return -1;
+  }
+  var MONTHS = 'janfebmaraprmayjunjulaugsepoctnovdec';
+  function dateOrder(vals) {
+    for (var i = 0; i < vals.length; i++) {
+      var m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-]\d{2,4}/.exec(vals[i] || '');
+      if (m && +m[1] > 12) return 'dmy';
+      if (m && +m[2] > 12) return 'mdy';
+    }
+    return 'dmy'; // UK default when ambiguous
+  }
+  function parseDate(s, order) {
+    s = (s || '').trim(); if (!s) return null;
+    var y, mo, d, m;
+    if ((m = /^(\d{4})[\-\/.](\d{1,2})[\-\/.](\d{1,2})/.exec(s))) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+    else if ((m = /^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/.exec(s))) {
+      y = +m[3]; if (order === 'mdy') { mo = +m[1]; d = +m[2]; } else { d = +m[1]; mo = +m[2]; }
+    } else if ((m = /^(\d{1,2})[\s\-]+([A-Za-z]{3,})\.?[\s\-,]+(\d{2,4})/.exec(s))) {
+      d = +m[1]; mo = MONTHS.indexOf(m[2].slice(0, 3).toLowerCase()) / 3 + 1; y = +m[3];
+    } else if ((m = /^([A-Za-z]{3,})\.?\s+(\d{1,2}),?\s+(\d{4})/.exec(s))) {
+      mo = MONTHS.indexOf(m[1].slice(0, 3).toLowerCase()) / 3 + 1; d = +m[2]; y = +m[3];
+    } else return null;
+    if (y < 100) y += 2000;
+    if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31) || mo % 1) return null;
+    var dt = new Date(Date.UTC(y, mo - 1, d));
+    return dt.getUTCMonth() === mo - 1 ? dt : null;
+  }
+  function parseAmt(s) {
+    var t = String(s == null ? '' : s).trim(); if (!t) return NaN;
+    var bare = t.replace(/[£$€\s]|GBP|EUR|USD/g, '');
+    var neg = /^\(.*\)$/.test(bare) || /^-|-$/.test(bare) || /\bDR\b/i.test(t);
+    t = bare.replace(/[^0-9.,]/g, '');
+    if (/,\d{1,2}$/.test(t) && t.indexOf('.') === -1) t = t.replace(',', '.');
+    else if (/\.\d{3},\d{1,2}$/.test(t)) t = t.replace(/\./g, '').replace(',', '.');
+    else t = t.replace(/,/g, '');
+    var n = parseFloat(t);
+    return isFinite(n) ? (neg ? -Math.abs(n) : n) : NaN;
+  }
+  function median(a) { var b = a.slice().sort(function (x, y) { return x - y; }), h = b.length >> 1; return b.length % 2 ? b[h] : (b[h - 1] + b[h]) / 2; }
+
+  var NOISE = ['fp', 'dd', 'so', 'bgc', 'bp', 'card', 'pos', 'vis', 'deb', 'cr', 'dr', 'tfr', 'bacs', 'chaps', 'payment', 'to', 'from', 'ref',
+    'faster', 'direct', 'debit', 'standing', 'order', 'transfer', 'gbp', 'the', 'ltd', 'limited', 'plc', 'inc', 'llc', 'uk', 'on', 'at', 'www', 'com', 'purchase'];
+  function payeeKey(desc) {
+    return desc.toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/)
+      .filter(function (w) { return w.length > 1 && NOISE.indexOf(w) < 0; }).slice(0, 3).join(' ');
+  }
+  function prettyPayee(desc) {
+    var t = desc.replace(/\b(FP|DD|SO|BGC|BP|CARD|POS|VIS|DEB|CR|DR|TFR|BACS|CHAPS|REF)\b\.?/gi, ' ')
+      .replace(/\S*\d{3,}\S*|\*\S*/g, ' ').replace(/\s+/g, ' ').trim();
+    if (t === t.toUpperCase()) t = t.toLowerCase().replace(/\b[a-z]/g, function (c) { return c.toUpperCase(); });
+    return (t || desc).slice(0, 40);
+  }
+
+  var FREQS = [
+    { f: 'weekly', lo: 5, hi: 9, ideal: 7, tol: 2, minN: 3, label: 'week' },
+    { f: 'fortnightly', lo: 12, hi: 16, ideal: 14, tol: 3, minN: 3, label: '2 weeks' },
+    { f: 'monthly', lo: 26, hi: 35, ideal: 30.4, tol: 5, minN: 2, label: 'month' },
+    { f: 'quarterly', lo: 84, hi: 97, ideal: 91, tol: 10, minN: 2, label: 'quarter' }
+  ];
+
+  function readBank(hs, rows, fname, out) {
+    var c = {
+      date: findCol(hs, ['date', 'transactiondate', 'posteddate', 'postingdate', 'completeddate', 'bookingdate', 'valuedate', 'starteddate'], /date/),
+      desc: findCol(hs, ['description', 'transactiondescription', 'details', 'transactiondetails', 'narrative', 'payee', 'name', 'merchant', 'counterparty', 'counterpartyname', 'memo', 'reference'], /desc|detail|payee|narrat|merchant/),
+      amt: findCol(hs, ['amount', 'value', 'amountgbp', 'transactionamount'], /^amount/),
+      inn: findCol(hs, ['paidin', 'moneyin', 'credit', 'creditamount', 'credits', 'in', 'deposits', 'receipts'], /paidin|moneyin|credit/),
+      out: findCol(hs, ['paidout', 'moneyout', 'debit', 'debitamount', 'debits', 'out', 'withdrawals', 'payments'], /paidout|moneyout|debit/),
+      bal: findCol(hs, ['balance', 'runningbalance', 'balancegbp', 'accountbalance'], /balance/),
+      dc: findCol(hs, ['creditdebitindicator', 'debitcredit', 'creditdebit', 'drcr', 'type', 'transactiontype'], null)
+    };
+    var order = dateOrder(rows.map(function (r) { return r[c.date]; }));
+    var txns = [];
+    rows.forEach(function (r) {
+      var date = parseDate(r[c.date], order); if (!date) return;
+      var a;
+      if (c.amt >= 0 && isFinite(parseAmt(r[c.amt]))) {
+        a = parseAmt(r[c.amt]);
+        if (a > 0 && c.dc >= 0 && /^(debit|dr|d|out|withdrawal)$/i.test(r[c.dc] || '')) a = -a;
+      } else {
+        var i = parseAmt(r[c.inn]), o = parseAmt(r[c.out]);
+        if (!isFinite(i) && !isFinite(o)) return;
+        a = (isFinite(i) ? Math.abs(i) : 0) - (isFinite(o) ? Math.abs(o) : 0);
+      }
+      if (!a) return;
+      txns.push({ date: date, desc: r[c.desc] || '', amount: a, bal: c.bal >= 0 ? parseAmt(r[c.bal]) : NaN });
+    });
+    if (!txns.length) { out.warnings.push(fname + ': looked like a bank statement but no transactions could be read.'); return; }
+
+    var last = txns.reduce(function (m, t) { return t.date > m ? t.date : m; }, txns[0].date);
+    out.found.push(fname + ' (' + txns.length + ' transactions)');
+
+    // closing balance: the latest-dated row, respecting the file's own ordering for same-day rows
+    var withBal = txns.filter(function (t) { return isFinite(t.bal) && t.date.getTime() === last.getTime(); });
+    if (withBal.length) {
+      var ascending = txns[0].date <= txns[txns.length - 1].date;
+      var pick = ascending ? withBal[withBal.length - 1] : withBal[0];
+      if (!out.balance || last > out.balance.date) out.balance = { value: pick.bal, date: last, file: fname, checked: true };
+    }
+
+    var groups = {};
+    txns.forEach(function (t) {
+      var k = payeeKey(t.desc); if (!k) return;
+      k += t.amount > 0 ? '|in' : '|out';
+      (groups[k] = groups[k] || []).push(t);
+    });
+    Object.keys(groups).forEach(function (k) {
+      var g = groups[k].slice().sort(function (a, b) { return a.date - b.date; });
+      g = g.filter(function (t, i) { return i === 0 || t.date.getTime() !== g[i - 1].date.getTime(); });
+      if (g.length < 2) return;
+      var gaps = [];
+      for (var i = 1; i < g.length; i++) gaps.push((g[i].date - g[i - 1].date) / DAY);
+      var med = median(gaps), fq = FREQS.filter(function (x) { return med >= x.lo && med <= x.hi; })[0];
+      if (!fq || g.length < fq.minN) return;
+      var regular = gaps.filter(function (x) { return Math.abs(x - fq.ideal) <= fq.tol; }).length / gaps.length;
+      if (regular < 0.7) return;
+      var amts = g.map(function (t) { return Math.abs(t.amount); });
+      if (Math.max.apply(null, amts) / Math.min.apply(null, amts) > 1.6) return;
+      var lastT = g[g.length - 1];
+      if ((last - lastT.date) / DAY > fq.ideal * 1.5 + 7) return; // stopped: probably cancelled
+      var amt = Math.round(median(amts) * 100) / 100;
+      out.recurring.push({
+        checked: amt >= 25,
+        item: { type: 'recurring', dir: lastT.amount > 0 ? 'in' : 'out', name: prettyPayee(lastT.desc), amount: amt,
+          freq: fq.f, date: iso(step(lastT.date, fq.f)), on: true },
+        sub: 'Every ' + fq.label + ', seen ' + g.length + ' times, last on ' + fmtD(lastT.date)
+      });
+    });
+  }
+
+  function readInvoices(hs, rows, fname, out) {
+    var c = {
+      due: findCol(hs, ['duedate', 'datedue', 'paymentduedate', 'due'], /due.*date|date.*due/),
+      name: findCol(hs, ['contactname', 'contact', 'customer', 'customername', 'client', 'clientname', 'billto', 'company', 'name'], /contact|customer|client/),
+      owed: findCol(hs, ['invoiceamountdue', 'amountdue', 'openbalance', 'balancedue', 'outstanding', 'amountoutstanding', 'dueamount', 'unpaid', 'remaining', 'balance'], /amountdue|outstanding|openbal|balancedue/),
+      total: findCol(hs, ['total', 'invoicetotal', 'grosstotal', 'totalamount', 'amount', 'value', 'totalincvat'], /total/),
+      status: findCol(hs, ['status', 'invoicestatus'], null),
+      num: findCol(hs, ['invoicenumber', 'invoiceno', 'number', 'no', 'num', 'invoice', 'reference'], null),
+      issued: findCol(hs, ['invoicedate', 'issuedate', 'date', 'dated'], null),
+      paid: findCol(hs, ['fullypaidondate', 'paiddate', 'datepaid', 'paidon', 'lastpaymentdate', 'paymentdate'], /paid.*(date|on)/),
+      type: findCol(hs, ['transactiontype', 'type'], null)
+    };
+    if (c.owed < 0 && c.total < 0) { out.warnings.push(fname + ': found due dates but no amount column.'); return; }
+    var order = dateOrder([].concat(
+      rows.map(function (r) { return r[c.due]; }), rows.map(function (r) { return r[c.issued]; }), rows.map(function (r) { return r[c.paid]; })));
+    var lateBy = {}, allLate = [], open = [];
+    rows.forEach(function (r) {
+      if (c.type >= 0 && r[c.type] && !/invoice/i.test(r[c.type])) return;
+      var status = c.status >= 0 ? (r[c.status] || '') : '';
+      if (/void|delet|draft|cancel/i.test(status)) return;
+      var due = parseDate(r[c.due], order), contact = (c.name >= 0 && r[c.name]) || '';
+      var owed = c.owed >= 0 ? parseAmt(r[c.owed]) : NaN, total = c.total >= 0 ? parseAmt(r[c.total]) : NaN;
+      if (!isFinite(owed)) owed = /paid/i.test(status) && !/part/i.test(status) ? 0 : total;
+      var paidOn = c.paid >= 0 ? parseDate(r[c.paid], order) : null;
+      if (due && paidOn && !(owed > 0)) {
+        var late = Math.max(0, Math.round((paidOn - due) / DAY)), key = contact.toLowerCase();
+        (lateBy[key] = lateBy[key] || []).push(late); allLate.push(late);
+        return;
+      }
+      if (!(owed > 0)) return;
+      if (!due) { var iss = parseDate(r[c.issued], order); if (!iss) return; due = addDays(iss, 30); }
+      open.push({ contact: contact, num: c.num >= 0 ? r[c.num] : '', due: due, owed: owed });
+    });
+    out.found.push(fname + ' (' + open.length + ' unpaid invoice' + (open.length === 1 ? '' : 's') + ')');
+    open.forEach(function (o) {
+      var hist = lateBy[o.contact.toLowerCase()], late = 0, sub;
+      if (hist && hist.length) {
+        late = Math.round(hist.reduce(function (a, b) { return a + b; }, 0) / hist.length);
+        sub = late ? 'Usually pays ' + late + ' days late (from ' + hist.length + ' paid invoice' + (hist.length > 1 ? 's' : '') + ')' : 'Usually pays on time';
+      } else if (allLate.length >= 3) {
+        late = Math.round(median(allLate)); sub = 'No history for this client, so using your typical ' + late + ' days late';
+      } else sub = 'No payment history, so assuming on time';
+      out.invoices.push({
+        checked: true,
+        item: { type: 'invoice', name: (o.contact || 'Invoice') + (o.num ? ' · ' + o.num : ''), amount: Math.round(o.owed * 100) / 100,
+          date: iso(o.due), late: late, on: true },
+        sub: 'Due ' + fmtD(o.due) + '. ' + sub
+      });
+    });
+  }
+
+  function importTexts(files, replaceDefault) {
+    var out = { found: [], warnings: [], recurring: [], invoices: [], balance: null, replace: !!replaceDefault };
+    files.forEach(function (f) {
+      var rows = parseCSV(f.text), h = -1;
+      for (var i = 0; i < Math.min(rows.length, 25); i++) {
+        if (rows[i].filter(Boolean).length >= 2 && rows[i].some(function (x) { return /date/i.test(x); })) { h = i; break; }
+      }
+      if (h < 0) { out.warnings.push(f.name + ': couldn\'t find a header row with a date column.'); return; }
+      var hs = rows[h].map(normH), body = rows.slice(h + 1);
+      var hasDue = hs.some(function (x) { return /due/.test(x) && /date/.test(x) || x === 'due'; });
+      if (hasDue) readInvoices(hs, body, f.name, out);
+      else if (findCol(hs, ['amount', 'value', 'paidin', 'paidout', 'moneyin', 'moneyout', 'credit', 'debit'], /amount|paidin|paidout|credit|debit/) >= 0) readBank(hs, body, f.name, out);
+      else out.warnings.push(f.name + ': not recognised as a bank statement or invoice list.');
+    });
+    // flag likely duplicates of what's already entered
+    [].concat(out.recurring, out.invoices).forEach(function (r) {
+      var w = r.item.name.toLowerCase().split(/[\s·]+/)[0];
+      var dup = state.items.some(function (it) {
+        return it.type === r.item.type && Math.abs(num(it.amount) - r.item.amount) < 1 && (it.name || '').toLowerCase().split(/[\s·]+/)[0] === w;
+      });
+      // duplicates only matter when adding; replacing removes the originals
+      if (dup) { r.dup = true; r.checked = out.replace; }
+    });
+    out.recurring.sort(function (a, b) { return b.item.amount - a.item.amount; });
+    out.invoices.sort(function (a, b) { return a.item.date < b.item.date ? -1 : 1; });
+    pending = out;
+    renderReview();
+  }
+
+  var pending = null;
+  function renderReview() {
+    var box = $('#review');
+    if (!pending) { box.hidden = true; box.innerHTML = ''; return; }
+    var p = pending, h = '';
+    if (p.found.length) h += '<p class="hint" style="margin:0">Read ' + esc(p.found.join(', ')) + '. Untick anything you don\'t want.</p>';
+    p.warnings.forEach(function (w) { h += '<div class="notice">' + esc(w) + '</div>'; });
+    if (p.balance) {
+      var stale = Math.round((today() - p.balance.date) / DAY);
+      h += '<h3>Bank balance</h3>' + row('bal', p.balance.checked, 'Set cash in bank to ' + money(p.balance.value),
+        'Closing balance on ' + fmtD(p.balance.date) + (stale > 7 ? '. That was ' + stale + ' days ago, so update it if it has changed.' : ''), '');
+    }
+    if (p.recurring.length) {
+      h += '<h3>Recurring payments spotted (' + p.recurring.length + ')</h3>';
+      p.recurring.forEach(function (r, i) {
+        h += row('rec' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''),
+          (r.item.dir === 'in' ? '+' : '−') + money(r.item.amount));
+      });
+    }
+    if (p.invoices.length) {
+      h += '<h3>Unpaid invoices (' + p.invoices.length + ')</h3>';
+      p.invoices.forEach(function (r, i) {
+        h += row('inv' + i, r.checked, r.item.name, r.sub + (r.dup && !p.replace ? '. Looks like one you already have.' : ''), money(r.item.amount));
+      });
+    }
+    var any = p.balance || p.recurring.length || p.invoices.length;
+    if (any) {
+      h += '<div class="notice">Statements can\'t predict one-off bills. Add VAT, corporation tax and any big purchases under <strong>One-off</strong> after importing.</div>';
+      h += '<label class="replace"><input type="checkbox" data-r="replace"' + (p.replace ? ' checked' : '') + '> Replace my current items instead of adding to them</label>';
+      h += '<div class="btnrow"><button class="primary" id="applyImport">Add selected to forecast</button><button id="cancelImport">Cancel</button></div>';
+    } else h += '<div class="btnrow" style="margin-top:8px"><button id="cancelImport">Close</button></div>';
+    box.innerHTML = h; box.hidden = false;
+    box.querySelectorAll('input[data-r]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var k = cb.dataset.r;
+        if (k === 'replace') {
+          p.replace = cb.checked;
+          [].concat(p.recurring, p.invoices).forEach(function (r) { if (r.dup) r.checked = p.replace; });
+          renderReview();
+        }
+        else if (k === 'bal') p.balance.checked = cb.checked;
+        else if (k.indexOf('rec') === 0) p.recurring[+k.slice(3)].checked = cb.checked;
+        else p.invoices[+k.slice(3)].checked = cb.checked;
+      });
+    });
+    var ap = $('#applyImport'); if (ap) ap.addEventListener('click', applyImport);
+    $('#cancelImport').addEventListener('click', function () { pending = null; renderReview(); });
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    function row(k, on, name, sub, amt) {
+      return '<label class="ritem"><input type="checkbox" data-r="' + k + '"' + (on ? ' checked' : '') + '><span class="rmain"><span class="rname">' +
+        esc(name) + '</span><br><span class="rsub">' + esc(sub) + '</span></span><span class="ramt">' + esc(amt) + '</span></label>';
+    }
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+
+  function applyImport() {
+    var p = pending, added = { recurring: 0, invoice: 0 };
+    if (p.replace) state.items = [];
+    if (p.balance && p.balance.checked) state.startBalance = Math.round(p.balance.value * 100) / 100;
+    [].concat(p.recurring, p.invoices).forEach(function (r) {
+      if (!r.checked) return;
+      var it = Object.assign({ id: id() }, r.item);
+      state.items.push(it); added[it.type]++;
+    });
+    if (added.invoice || added.recurring) state.tab = added.invoice >= added.recurring ? 'invoice' : 'recurring';
+    pending = null; renderReview();
+    syncInputs(); renderItems(); update();
+    document.querySelector('.layout > div:last-child').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function readFiles(list) {
+    var files = Array.prototype.slice.call(list).filter(function (f) { return /\.csv$|\.txt$/i.test(f.name) || /csv|text/.test(f.type); });
+    if (!files.length) return;
+    Promise.all(files.map(function (f) {
+      return f.text().then(function (t) { return { name: f.name, text: t }; });
+    })).then(function (texts) { importTexts(texts, false); });
+  }
+  var drop = $('#drop'), fileIn = $('#fileIn');
+  fileIn.addEventListener('change', function () { readFiles(fileIn.files); fileIn.value = ''; });
+  drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileIn.click(); } });
+  ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { if (e.dataTransfer) readFiles(e.dataTransfer.files); });
+
+  // Realistic sample exports so people can see the import without their own files
+  function sampleExports() {
+    var t = today(), tx = [];
+    function d(n) { return addDays(t, n); }
+    function dmy(dt) { return ('0' + dt.getUTCDate()).slice(-2) + '/' + ('0' + (dt.getUTCMonth() + 1)).slice(-2) + '/' + dt.getUTCFullYear(); }
+    function monthly(dom, desc, amt) {
+      for (var m = -4; m <= 0; m++) {
+        var dt = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + m, dom));
+        if (dt < t && dt >= d(-95)) tx.push([dt, desc + ' ' + (1000 + m * 7 + dom), typeof amt === 'function' ? amt(m) : amt]);
+      }
+    }
+    monthly(28, 'FP PAYROLL BUREAU LTD REF', -6200);
+    monthly(1, 'DD HARBOURSIDE ESTATES RENT', -1450);
+    monthly(15, 'CARD NOTION LABS INC', function (m) { return -[372, 380, 384, 380, 380][m + 4]; });
+    monthly(1, 'BGC WIRRAL DENTAL LTD', 3500);
+    monthly(20, 'FP MERSEY BUILD CO', 5000);
+    for (var k = 1; k <= 7; k++) tx.push([d(4 - 14 * k), 'FP J SMITH DESIGN', -900]);
+    [[-88, 23.4], [-80, 61.2], [-71, 18.75], [-66, 44.1], [-52, 9.6], [-45, 52.3], [-33, 31.0], [-19, 12.85], [-8, 27.4], [-3, 40.15]]
+      .forEach(function (x, i) { tx.push([d(x[0]), 'CARD TESCO STORES ' + (2200 + i * 13) + ' LIVERPOOL', -x[1]]); });
+    [[-77, 89.99], [-41, 23.5], [-12, 149]].forEach(function (x) { tx.push([d(x[0]), 'AMAZON MKTPLACE PMTS', -x[1]]); });
+    tx.push([d(-40), 'FP ACME LOGISTICS INV-0088', 4200]);
+    tx.push([d(-60), 'FP NORTHSIDE CAFE', 1250]);
+    tx.push([d(-30), 'FP HARBOUR HOMES LTD', 6800]);
+    tx.push([d(-58), 'DD HMRC VAT', -4300]);
+    tx.sort(function (a, b) { return a[0] - b[0]; });
+    var bal = 4200 - tx.reduce(function (s, x) { return s + x[2]; }, 0), lines = [];
+    tx.forEach(function (x) { bal += x[2]; x.push(bal); });
+    tx.reverse().forEach(function (x) {
+      lines.push([dmy(x[0]), '"' + x[1] + '"', x[2] < 0 ? (-x[2]).toFixed(2) : '', x[2] > 0 ? x[2].toFixed(2) : '', x[3].toFixed(2)].join(','));
+    });
+    var bank = 'Date,Description,Paid out,Paid in,Balance\n' + lines.join('\n');
+
+    function dm(n) { return fmtD(d(n)) + ' ' + d(n).getUTCFullYear(); }
+    var inv = [['ContactName', 'InvoiceNumber', 'InvoiceDate', 'DueDate', 'Total', 'InvoiceAmountDue', 'Status', 'FullyPaidOnDate']];
+    [['Acme Logistics', 'INV-0081', -100, -70, 3900, 0, 'PAID', -56],
+     ['Acme Logistics', 'INV-0088', -84, -54, 4200, 0, 'PAID', -40],
+     ['Northside Café', 'INV-0079', -111, -81, 1250, 0, 'PAID', -60],
+     ['Harbour Homes', 'INV-0074', -125, -95, 5200, 0, 'PAID', -65],
+     ['Harbour Homes', 'INV-0084', -90, -60, 6800, 0, 'PAID', -30],
+     ['Acme Logistics', 'INV-0093', -42, -12, 4200, 4200, 'AUTHORISED', null],
+     ['Northside Café', 'INV-0097', -25, 5, 1250, 1250, 'AUTHORISED', null],
+     ['Harbour Homes', 'INV-0099', -12, 18, 6800, 6800, 'AUTHORISED', null],
+     ['Sefton Arts Trust', 'INV-0100', -2, 28, 2400, 2400, 'AUTHORISED', null],
+     ['Bootle Fitness', 'INV-0101', 0, 30, 950, 950, 'DRAFT', null]
+    ].forEach(function (r) {
+      inv.push([r[0], r[1], dm(r[2]), dm(r[3]), r[4].toFixed(2), r[5].toFixed(2), r[6], r[7] == null ? '' : dm(r[7])]);
+    });
+    return [{ name: 'business-account-statement.csv', text: bank },
+            { name: 'invoices-export.csv', text: inv.map(function (r) { return r.join(','); }).join('\n') }];
+  }
+  $('#trySample').addEventListener('click', function () { importTexts(sampleExports(), true); });
 
   // ---------- rendering: outputs ----------
   function update() {
