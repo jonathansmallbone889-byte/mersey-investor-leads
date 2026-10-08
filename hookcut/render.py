@@ -128,11 +128,16 @@ def build_ass(words, start, end, style="bold", hook=None, caption_y=0.70):
     if st:
         y = int(H * caption_y)
         clip_words = [w for w in words if w["end"] > start and w["start"] < end]
-        for chunk in _chunks(clip_words, st["per"]):
+        chunks = _chunks(clip_words, st["per"])
+        for ci, chunk in enumerate(chunks):
+            # Hold the last word briefly, but never past the start of the next caption line.
+            hold = chunk[-1]["end"] + 0.15
+            if ci + 1 < len(chunks):
+                hold = min(hold, chunks[ci + 1][0]["start"])
             texts = [_esc(w["text"].upper() if st["upper"] else w["text"]) for w in chunk]
             for k, w in enumerate(chunk):
                 a = (chunk[0]["start"] if k == 0 else w["start"]) - start
-                b = (chunk[k + 1]["start"] if k + 1 < len(chunk) else chunk[-1]["end"] + 0.15) - start
+                b = (chunk[k + 1]["start"] if k + 1 < len(chunk) else hold) - start
                 if b <= a:
                     continue
                 parts = []

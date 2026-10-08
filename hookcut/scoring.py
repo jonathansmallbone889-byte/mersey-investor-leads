@@ -10,7 +10,11 @@ once only or other our out over own really right same say says she should so som
 then there these they thing things this those through to too under until up us very want was way we well were what when
 where which while who whom why will with would you your youre yeah okay ok gonna kind sort mean actually basically
 literally going got dont didnt doesnt isnt its im ive youve were theyre thats theres heres whats lot little bit one two
-make made think thought people really just""".split())
+make made think thought people really just never someone something anyone everyone back tell told
+yourself myself ever take took first last month months year years day days time times instead wrong because
+said says thing things good great much many even still every being doing going getting come came give gave look
+looked need needs want wanted able percent maybe sure whole week weeks today
+""".split())
 
 HOOK = re.compile(r"^(here'?s|the (truth|secret|problem|reason|biggest|one|real)|nobody|no one|most people|stop|never|"
                   r"why|how|what if|imagine|i (quit|lost|made|spent|was|never)|if you|you (need|should|have|won'?t)|"
@@ -87,7 +91,9 @@ def score_range(sents):
 
 
 def _title(sents):
-    best = max(sents[:3], key=lambda s: (s["text"].endswith("?"), bool(HOOK.search(s["text"])), -len(s["text"])))
+    # Prefer a hooky opener with some substance; short interviewer prompts ("Why?") make weak titles.
+    pool = [s for s in sents[:4] if len(s["text"].split()) >= 5] or sents[:3]
+    best = max(pool, key=lambda s: (bool(HOOK.search(s["text"])), s["text"].endswith("?"), -len(s["text"])))
     t = best["text"].strip().rstrip(".")
     if len(t) > 70:
         t = t[:67].rsplit(" ", 1)[0] + "…"
@@ -97,9 +103,10 @@ def _title(sents):
 def hashtags_from(text, extra=()):
     counts = Counter(tokens(text))
     tags = []
-    for w, _ in counts.most_common(12):
+    # Repeated words first (they're what the clip is about), longer words break ties.
+    for w, _ in sorted(counts.items(), key=lambda kv: (-min(kv[1], 3), -len(kv[0])))[:12]:
         tag = re.sub(r"[^a-z0-9]", "", w)
-        if len(tag) > 3 and tag not in tags:
+        if len(tag) > 4 and not tag.endswith(("ly", "ed", "ing")) and tag not in tags:
             tags.append(tag)
         if len(tags) == 4:
             break
