@@ -246,6 +246,7 @@
     .video-placeholder { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 1.5rem; color: #cbd5e1; background: radial-gradient(circle at 30% 20%, #12304a, #020617 70%); }
     .video-placeholder svg { width: 56px; height: 56px; margin-bottom: .5rem; color: #38bdf8; }
     .video-placeholder p { font-size: .9rem; max-width: 42ch; }
+    .video-caption { font-size: .85rem; color: var(--faint); margin-top: .6rem; }
     .yt-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: .6rem; font-size: .9rem; font-weight: 600; }
     .lesson-head h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: .35rem; }
     .lesson-head .sub { color: var(--faint); font-size: .9rem; margin-bottom: 1.25rem; }
@@ -403,7 +404,7 @@
   <div class="wrap">
     <div><strong style="color:var(--text)">Mersey Investor Leads</strong> · Research-driven property leads across Liverpool, the Wirral and Merseyside ·
       <a href="tel:+447576618414">07576 618414</a> · <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a></div>
-    <p class="disclaimer">Course content is general education, not financial, tax, legal or mortgage advice. Figures in examples are illustrative; rules and rates change, so check GOV.UK and take professional advice before you buy. Your course progress is saved only in this browser.</p>
+    <p class="disclaimer">Course content is general education, not financial, tax, legal or mortgage advice. Figures in examples are illustrative; rules and rates change, so check GOV.UK and take professional advice before you buy. Lesson videos are from independent YouTube creators, and their views are their own; the written notes are ours. Your course progress is saved only in this browser.</p>
     <div>© <span id="year"></span> Mersey Investor Leads · <a href="../">Main site</a></div>
   </div>
 </footer>
@@ -414,6 +415,7 @@
    - youtubeId: the 11-character ID from a YouTube URL
      (https://www.youtube.com/watch?v=XXXXXXXXXXX → "XXXXXXXXXXX").
      Leave it "" to show a placeholder and a YouTube search link instead.
+   - videoTitle: optional title shown under the player (credit for the creator).
    - youtubeQuery: optional search used for the fallback link when no ID is set.
    - notes: plain HTML. Use <div class="example"> for worked examples,
      <div class="note"> for warnings and <div class="takeaways"> for summaries.
@@ -430,7 +432,8 @@ const COURSES = [
         id: 'how-property-makes-money',
         title: 'How property investors make money',
         minutes: 6,
-        youtubeId: '',
+        youtubeId: 'HLQvI3SNwvk',
+        videoTitle: 'Capital Growth Vs Rental Yield',
         youtubeQuery: 'how property investors make money UK buy to let explained',
         notes: `
 <p>Residential property pays you in three ways. Strong deals usually have at least two of them working at once.</p>
@@ -459,7 +462,8 @@ const COURSES = [
         id: 'rental-yield',
         title: 'Rental yield: gross vs net',
         minutes: 8,
-        youtubeId: '',
+        youtubeId: 'Lc6vxtTmdZY',
+        videoTitle: 'Gross Yield vs Net Yield with Property Investments',
         youtubeQuery: 'gross yield vs net yield buy to let UK',
         notes: `
 <p>Yield is the quickest way to compare deals. It tells you how much rent a property produces as a percentage of what it costs.</p>
@@ -495,7 +499,8 @@ const COURSES = [
         id: 'choosing-an-area',
         title: 'Choosing an area in Merseyside',
         minutes: 9,
-        youtubeId: '',
+        youtubeId: 'DjvM6Q8Orfw',
+        videoTitle: 'Liverpool\'s Best Investment Areas',
         youtubeQuery: 'Liverpool Wirral property investment areas',
         notes: `
 <p>In Liverpool and the Wirral, the street matters more than the postcode. Two roads a few hundred metres apart can have very different rents, tenants and resale values.</p>
@@ -535,7 +540,8 @@ const COURSES = [
         id: 'below-market-value',
         title: 'Below-market-value (BMV) deals explained',
         minutes: 9,
-        youtubeId: '',
+        youtubeId: 'Flwn8Bu0eZs',
+        videoTitle: 'How to Find REAL Below Market Value (BMV) Property Deals [Step-by-Step Guide]',
         youtubeQuery: 'below market value property deals UK how to check comparables',
         notes: `
 <p>A below-market-value deal is one where you buy for less than the property is <em>really</em> worth in its current condition. That value comes from evidence (what similar homes have actually sold for), not from the asking price or a sourcer's headline.</p>
@@ -568,7 +574,8 @@ const COURSES = [
         id: 'buying-costs',
         title: 'Buying costs and your first-deal checklist',
         minutes: 7,
-        youtubeId: '',
+        youtubeId: 'RDk6LKlen_E',
+        videoTitle: 'SDLT Surcharge Increases: What 5% Stamp Duty Means for Second Homes & Landlords',
         youtubeQuery: 'buy to let buying costs stamp duty surcharge UK',
         notes: `
 <p>The price on the listing is only part of what you'll pay. New investors are most often caught out by these costs:</p>
@@ -633,7 +640,8 @@ const COURSES = [
         id: 'btl-mortgages',
         title: 'How buy-to-let mortgages work',
         minutes: 9,
-        youtubeId: '',
+        youtubeId: 'wKKIoeUVQcE',
+        videoTitle: 'How Lenders \'Stress Test\' Your Buy to Let Property Rent',
         youtubeQuery: 'buy to let mortgage interest coverage ratio explained UK',
         notes: `
 <p>Buy-to-let (BTL) lenders care mainly about two things: your deposit and whether the <strong>rent</strong> covers the mortgage with room to spare.</p>
@@ -665,7 +673,8 @@ const COURSES = [
         id: 'safety-duties',
         title: 'Landlord legal and safety duties',
         minutes: 10,
-        youtubeId: '',
+        youtubeId: 'f0dRsHOfZ3E',
+        videoTitle: 'New Landlord? 5 Documents You Need Before Renting Out a Property',
         youtubeQuery: 'landlord legal requirements England gas safety EICR smoke alarms',
         notes: `
 <p>These are the main safety duties for private landlords in England. Missing them can mean fines, losing the right to evict, or worse: someone getting hurt.</p>
@@ -695,7 +704,8 @@ const COURSES = [
         id: 'tenancies-deposits',
         title: 'Tenancies, deposits and the Renters\' Rights Act',
         minutes: 10,
-        youtubeId: '',
+        youtubeId: 'pdZ8uiPxAnU',
+        videoTitle: 'The Renters\' Rights Act 2025 - Overview of the Assured Periodic Tenancy',
         youtubeQuery: 'Renters Rights Act landlords explained section 21 abolished',
         notes: `
 <h3>Before the tenant moves in</h3>
@@ -727,7 +737,8 @@ const COURSES = [
         id: 'licensing',
         title: 'Licensing in Liverpool and the Wirral',
         minutes: 7,
-        youtubeId: '',
+        youtubeId: 'IsameZGxYDU',
+        videoTitle: 'Selective Licensing Explained',
         youtubeQuery: 'Liverpool selective licensing landlords',
         notes: `
 <p>Whether a property needs a licence affects your costs, your conditions and whether you can legally let it at all. Check before you offer.</p>
@@ -755,7 +766,8 @@ const COURSES = [
         id: 'costs-and-tax',
         title: 'Running costs and tax basics',
         minutes: 8,
-        youtubeId: '',
+        youtubeId: 'L1qGNq3Smio',
+        videoTitle: 'Section 24 - BTL - Buy To Let Tax Changes Explained',
         youtubeQuery: 'section 24 landlord tax explained UK',
         notes: `
 <h3>Typical annual running costs (single let)</h3>
@@ -814,7 +826,8 @@ const COURSES = [
         id: 'comparables',
         title: 'Guide price vs local sold prices',
         minutes: 9,
-        youtubeId: '',
+        youtubeId: 'diMWA26i5dU',
+        videoTitle: 'How To Value A House Quickly',
         youtubeQuery: 'how to value property using comparables sold prices UK investor',
         notes: `
 <p>The first number we check on every lead is how the guide or asking price compares with what similar homes nearby have <em>actually sold for</em>. Here's how to do it yourself.</p>
@@ -849,7 +862,8 @@ const COURSES = [
         id: 'refurb-budget',
         title: 'Refurb budgeting',
         minutes: 10,
-        youtubeId: '',
+        youtubeId: 'HPljYsGcJF4',
+        videoTitle: 'How Much Does It REALLY Cost to Renovate a Victorian Terraced House?',
         youtubeQuery: 'refurbishment cost guide UK terraced house renovation budget',
         notes: `
 <p>Refurb overspend is the most common reason a good deal turns bad. Build your budget room by room, add a contingency, and don't forget the costs of holding the property while the work happens.</p>
@@ -899,7 +913,8 @@ const COURSES = [
         id: 'running-the-numbers',
         title: 'Running the numbers: yield, cash flow and ROI',
         minutes: 10,
-        youtubeId: '',
+        youtubeId: 'CP_3xZlfejA',
+        videoTitle: 'How to Calculate Gross Yield, Net Yield, and Return on Investment',
         youtubeQuery: 'buy to let return on investment cash flow calculation UK',
         notes: `
 <p>Let's put it all together on one deal. Three numbers matter: <strong>net yield</strong> (how good is the asset?), <strong>monthly cash flow</strong> (does it pay you?) and <strong>return on cash invested</strong> (is it a good use of your money?).</p>
@@ -947,7 +962,8 @@ const COURSES = [
         id: 'stress-testing',
         title: 'Stress-testing a deal',
         minutes: 7,
-        youtubeId: '',
+        youtubeId: 'NGpY0MWry0A',
+        videoTitle: 'Managing CASH FLOW on your BUY TO LET investments?',
         youtubeQuery: 'stress test buy to let deal interest rates voids',
         notes: `
 <p>A deal that only works if everything goes right isn't a deal. Before you offer, run the numbers again with things going wrong.</p>
@@ -986,7 +1002,8 @@ const COURSES = [
         id: 'auctions-brrr',
         title: 'Buying at auction and the BRRR strategy',
         minutes: 10,
-        youtubeId: '',
+        youtubeId: 'AD-27Pf7WIk',
+        videoTitle: 'Buying Property At UK Auctions and Creating Immediate Value - A Beginners Guide',
         youtubeQuery: 'property auction UK beginners legal pack BRRR strategy',
         notes: `
 <h3>Traditional auction</h3>
@@ -1213,7 +1230,8 @@ function videoBlock(lesson) {
     ? `<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(lesson.youtubeId)}?rel=0" title="${esc(lesson.title)} (video)" loading="lazy"
          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`
     : `<div class="video-placeholder"><div>${ICONS.play}<p><strong>Video coming soon.</strong><br>The written notes below cover the full lesson. In the meantime you can watch related videos on YouTube.</p></div></div>`;
-  return `<div class="video">${player}</div>
+  const caption = lesson.youtubeId && lesson.videoTitle ? `<p class="video-caption">Video: “${esc(lesson.videoTitle)}”, from an independent YouTube creator.</p>` : '';
+  return `<div class="video">${player}</div>${caption}
     <a class="yt-link" href="${watchUrl}" target="_blank" rel="noopener">${lesson.youtubeId ? 'Watch on YouTube' : 'Watch related videos on YouTube'} ↗</a>`;
 }
 
