@@ -415,6 +415,7 @@
           </select>
         </div>
         <input type="hidden" name="source" value="renters-rights-checklist">
+        <input type="hidden" name="ref" id="ref" value="direct">
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
         <button type="submit" class="btn btn-primary" id="leadSubmit">Unlock the checklist</button>
         <p class="form-note" id="formNote" role="status" hidden></p>
@@ -548,6 +549,7 @@
   <script>
     const UNLOCK_KEY = 'rra-checklist-unlocked';
     const TICKS_KEY = 'rra-checklist-ticks';
+    const REF_KEY = 'rra-checklist-ref';
     const CONTACT_FALLBACK = 'email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.';
 
     function store(key, value) {
@@ -613,7 +615,8 @@
       emailInput.value = email;
       const button = document.getElementById('leadSubmit');
       const data = new FormData(form);
-      data.append('_subject', "Renters' Rights checklist signup - " + nameInput.value.trim());
+      const ref = document.getElementById('ref').value;
+      data.append('_subject', "Renters' Rights checklist signup - " + nameInput.value.trim() + (ref !== 'direct' ? ' (via ' + ref + ')' : ''));
 
       button.disabled = true;
       button.textContent = 'Unlocking...';
@@ -682,6 +685,18 @@
 
     updateProgress();
     if (load(UNLOCK_KEY) === '1') unlockChecklist(false);
+
+    // Partner tracking links, e.g. renters-rights.html?ref=smithgas.
+    // The first partner a visitor arrives from is kept, even if they sign up on a later visit.
+    (function () {
+      const fromUrl = (new URLSearchParams(window.location.search).get('ref') || '')
+        .toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40);
+      const ref = load(REF_KEY) || fromUrl;
+      if (ref) {
+        store(REF_KEY, ref);
+        document.getElementById('ref').value = ref;
+      }
+    })();
   </script>
 
 </body>
