@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Renters' Rights Checklist | Mersey Investor Leads</title>
+  <meta name="description" content="Free Renters' Rights Act checklist for Merseyside landlords. What changed on 1 May 2026, what you must do for each property, and what's coming next. Liverpool &amp; the Wirral.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f172a'/%3E%3Ctext x='16' y='22' font-family='Arial,sans-serif' font-size='17' font-weight='700' fill='%230ea5e9' text-anchor='middle'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --grey: #64748b;
+      --grey-light: #f1f5f9;
+      --border: #e2e8f0;
+      --white: #ffffff;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --warn: #b45309;
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --ok: #047857;
+      --ok-bg: #ecfdf5;
+      --ok-border: #a7f3d0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-hover); }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner, .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+
+    .header-inner {
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .header-contact {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .header-contact a { color: var(--navy); text-decoration: none; white-space: nowrap; }
+    .header-contact a:hover { color: var(--accent); }
+
+    .phone-link {
+      background: var(--navy);
+      color: var(--white) !important;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .phone-link:hover { background: var(--navy-light); }
+
+    .btn {
+      display: inline-block;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: 0.85rem 1.6rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { opacity: 0.6; cursor: wait; }
+    .btn-secondary { background: var(--white); color: var(--navy); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--grey-light); }
+
+    /* Hero */
+    .hero {
+      padding-top: 4rem;
+      padding-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--warn-bg);
+      color: var(--warn);
+      border: 1px solid var(--warn-border);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4.5vw, 2.9rem);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+
+    .lede { font-size: 1.15rem; color: var(--grey); margin-bottom: 1.5rem; }
+
+    .changes { list-style: none; display: grid; gap: 0.6rem; }
+
+    .changes li {
+      padding-left: 1.6rem;
+      position: relative;
+    }
+
+    .changes li::before {
+      content: "✕";
+      position: absolute;
+      left: 0;
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .changes li.new::before { content: "＋"; color: var(--ok); }
+
+    .signup {
+      background: var(--grey-light);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+    }
+
+    .signup h2 { font-size: 1.3rem; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+    .signup > p { color: var(--grey); font-size: 0.95rem; margin-bottom: 1.25rem; }
+
+    form { display: grid; gap: 0.9rem; }
+
+    label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+
+    input, select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--white);
+      color: var(--navy);
+    }
+
+    input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+
+    .form-note { font-size: 0.9rem; }
+    .fine { font-size: 0.8rem; color: var(--grey); }
+
+    /* Sections */
+    section.block { padding-top: 3.5rem; padding-bottom: 3.5rem; border-top: 1px solid var(--border); }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-hover);
+      margin-bottom: 0.5rem;
+    }
+
+    h2.title { font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -0.02em; margin-bottom: 0.75rem; }
+    .intro { color: var(--grey); max-width: 680px; margin-bottom: 2rem; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.4rem;
+    }
+
+    .card h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .card p { color: var(--grey); font-size: 0.95rem; }
+
+    /* Checklist */
+    .checklist-group { margin-bottom: 2rem; }
+    .checklist-group h3 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+
+    .check {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.8rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 0.6rem;
+      cursor: pointer;
+    }
+
+    .check input { width: 1.15rem; height: 1.15rem; margin-top: 0.2rem; flex-shrink: 0; accent-color: var(--ok); }
+    .check strong { display: block; }
+    .check span { color: var(--grey); font-size: 0.92rem; }
+    .check:has(input:checked) { background: var(--ok-bg); border-color: var(--ok-border); }
+
+    .locked { position: relative; }
+
+    .locked .checklist-body {
+      max-height: 340px;
+      overflow: hidden;
+      filter: blur(3px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .unlock-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 2rem;
+      background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 65%);
+    }
+
+    .unlock-overlay div { text-align: center; }
+    .unlock-overlay p { font-weight: 600; margin-bottom: 0.75rem; }
+
+    .unlocked .unlock-overlay { display: none; }
+
+    .progress { font-weight: 600; margin-bottom: 1.25rem; }
+    .checklist-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+
+    .disclaimer {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      font-size: 0.9rem;
+      color: #78350f;
+    }
+
+    /* Coming next */
+    .timeline { display: grid; gap: 0.75rem; }
+
+    .timeline div {
+      display: grid;
+      grid-template-columns: 9rem 1fr;
+      gap: 1rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .timeline b { color: var(--accent-hover); }
+
+    .cta-band {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 14px;
+      padding: 2.25rem;
+      text-align: center;
+    }
+
+    .cta-band h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .cta-band p { color: #cbd5e1; margin-bottom: 1.25rem; }
+
+    footer { border-top: 1px solid var(--border); margin-top: 3.5rem; }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--grey);
+    }
+
+    .footer-inner div { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+    .footer-inner a { color: var(--grey); }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 2.5rem; }
+      .cards { grid-template-columns: 1fr; }
+      .header-contact .email-link { display: none; }
+    }
+
+    @media (max-width: 520px) {
+      .header-inner, .wrap { padding-left: 1rem; padding-right: 1rem; }
+      .header-contact .home-link { display: none; }
+      .row { grid-template-columns: 1fr; }
+      .signup { padding: 1.25rem; }
+      .timeline div { grid-template-columns: 1fr; gap: 0.25rem; }
+      .cta-band { padding: 1.5rem; }
+    }
+
+    @media print {
+      header, .hero, .no-print, footer, .cta-band { display: none !important; }
+      section.block { border: 0; padding: 0; }
+      .check { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo">Mersey <span>Investor Leads</span></a>
+      <div class="header-contact">
+        <a href="index.html" class="home-link">Maintenance triage</a>
+        <a href="mailto:jonathansmallbone889@gmail.com" class="email-link">jonathansmallbone889@gmail.com</a>
+        <a href="tel:+447576618414" class="phone-link">07576 618414</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="wrap hero">
+    <div>
+      <div class="badge">The rules changed on 1 May 2026</div>
+      <h1>Are your rentals compliant with the Renters' Rights Act?</h1>
+      <p class="lede">A free, plain-English checklist for Liverpool and Wirral landlords. Go through it property by property and see what you need to fix before it costs you a fine.</p>
+      <ul class="changes">
+        <li>Section 21 "no-fault" evictions are gone</li>
+        <li>Fixed-term ASTs have become periodic tenancies</li>
+        <li>No more rental bidding, or asking for months of rent up front</li>
+        <li class="new">Rent can only go up once a year, using a Section 13 notice</li>
+        <li class="new">Tenants can ask to keep a pet, and you can't refuse without a good reason</li>
+        <li class="new">Fines of up to £7,000, rising to £40,000 for repeat or serious breaches</li>
+      </ul>
+    </div>
+
+    <div class="signup" id="get-checklist">
+      <h2>Get the free checklist</h2>
+      <p>Unlock the full checklist on this page. We'll also email you when the landlord database and the ombudsman go live.</p>
+      <form id="leadForm" action="https://formspree.io/f/mnpnkrby" method="POST" onsubmit="return submitLead(event)" novalidate>
+        <div>
+          <label for="name">First name</label>
+          <input type="text" id="name" name="name" autocomplete="given-name" required>
+        </div>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="row">
+          <div>
+            <label for="properties">Properties you let</label>
+            <select id="properties" name="properties">
+              <option value="">Choose…</option>
+              <option>1</option>
+              <option>2–3</option>
+              <option>4–10</option>
+              <option>11+</option>
+            </select>
+          </div>
+          <div>
+            <label for="managed">Who manages them?</label>
+            <select id="managed" name="managed">
+              <option value="">Choose…</option>
+              <option>I self-manage</option>
+              <option>Letting agent</option>
+              <option>A mix</option>
+            </select>
+          </div>
+        </div>
+        <input type="hidden" name="source" value="renters-rights-checklist">
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
+        <button type="submit" class="btn btn-primary" id="leadSubmit">Unlock the checklist</button>
+        <p class="form-note" id="formNote" role="status" hidden></p>
+        <p class="fine">No spam. Unsubscribe any time. We never share your details.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <div class="section-label">Who it's for</div>
+    <h2 class="title">Built for landlords who don't have an agent doing this for them</h2>
+    <p class="intro">Most landlords on Merseyside own one to three properties. The new rules apply to you exactly as they do to big portfolios. You just don't have a compliance team.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>Self-managing landlords</h3>
+        <p>Know exactly what each property needs, without paying an agent 10–15% to tell you.</p>
+      </div>
+      <div class="card">
+        <h3>Accidental landlords</h3>
+        <p>Inherited a house or let out your old flat? Find out what's now required of you.</p>
+      </div>
+      <div class="card">
+        <h3>Landlords weighing up selling</h3>
+        <p>See what compliance will cost before you decide whether to keep, upgrade or sell.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block" id="checklist">
+    <div class="section-label">The checklist</div>
+    <h2 class="title">Renters' Rights checklist, property by property</h2>
+    <p class="intro">Tick items as you go. Your ticks are saved in this browser, and you can print the list for each property.</p>
+
+    <div class="locked" id="checklistWrap">
+      <div class="checklist-body">
+        <p class="progress no-print" id="progress">0 of 0 done</p>
+        <div class="checklist-actions no-print">
+          <button type="button" class="btn btn-secondary" onclick="window.print()">Print / save as PDF</button>
+          <button type="button" class="btn btn-secondary" onclick="resetChecklist()">Clear ticks</button>
+        </div>
+
+        <div class="checklist-group">
+          <h3>1. Tenancy paperwork</h3>
+          <label class="check"><input type="checkbox" data-id="info-sheet"><div><strong>Give existing tenants the government information sheet</strong><span>Tenancies that started before 1 May 2026 needed the official Renters' Rights Act information sheet by 31 May 2026. If you missed it, send it now.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="written-terms"><div><strong>New tenancies have a written statement of terms</strong><span>Every new tenancy must set out its key terms in writing, as an assured periodic tenancy with no fixed end date.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="remove-s21"><div><strong>Remove fixed terms and Section 21 wording from your templates</strong><span>Old AST templates are out of date. Fixed terms and break clauses no longer apply.</span></div></label>
+        </div>
+
+        <div class="checklist-group">
+          <h3>2. Rent and money</h3>
+          <label class="check"><input type="checkbox" data-id="s13"><div><strong>Raise rent only with a Section 13 notice</strong><span>Once a year at most, with at least two months' notice. Rent review clauses in the tenancy no longer work. Tenants can challenge the increase at the First-tier Tribunal.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="no-bidding"><div><strong>Advertise one asking rent, and don't accept bids above it</strong><span>Rental bidding is banned. Your listing must show the rent, and you can't take more than that.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="advance"><div><strong>Don't ask for months of rent up front</strong><span>Rent in advance is now limited. Check your referencing process doesn't ask for more than the rules allow.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="deposit"><div><strong>Protect the deposit within 30 days and send the prescribed information</strong><span>Use DPS, TDS or mydeposits. This is still one of the most common reasons possession claims fail.</span></div></label>
+        </div>
+
+        <div class="checklist-group">
+          <h3>3. Lettings and tenant rights</h3>
+          <label class="check"><input type="checkbox" data-id="no-discrim"><div><strong>No "No DSS" or "No children" in your adverts or decisions</strong><span>It is now unlawful to refuse tenants because they receive benefits or have children.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="pets"><div><strong>Have a process for pet requests</strong><span>Reply in writing within the time limit, and only refuse with a good reason. You can ask the tenant to have pet insurance.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="right-to-rent"><div><strong>Right to Rent checks done and copies kept</strong><span>Check every adult occupier before the tenancy starts.</span></div></label>
+        </div>
+
+        <div class="checklist-group">
+          <h3>4. Getting a property back</h3>
+          <label class="check"><input type="checkbox" data-id="s8-grounds"><div><strong>Know the new Section 8 grounds</strong><span>You now need a legal ground to end a tenancy, such as selling, moving in, rent arrears or antisocial behaviour.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="12-months"><div><strong>Plan around the first-12-months rule</strong><span>You can't use the selling or moving-in grounds in the first year of a tenancy, and they need four months' notice.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="arrears-log"><div><strong>Keep a clear rent arrears record</strong><span>The arrears ground now needs three months' arrears and four weeks' notice. Good records win cases.</span></div></label>
+        </div>
+
+        <div class="checklist-group">
+          <h3>5. Safety certificates (still required)</h3>
+          <label class="check"><input type="checkbox" data-id="gas"><div><strong>Gas safety certificate, renewed every 12 months</strong><span>Give the tenant a copy within 28 days of the check.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="eicr"><div><strong>Electrical (EICR) report, at least every 5 years</strong><span>Complete any remedial work within 28 days.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="epc"><div><strong>EPC rated E or above</strong><span>A higher minimum rating is planned for 2030, so budget for upgrades now.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="alarms"><div><strong>Smoke alarm on every storey, and a CO alarm wherever there's a fixed combustion appliance</strong><span>Test them on the first day of each new tenancy.</span></div></label>
+        </div>
+
+        <div class="checklist-group">
+          <h3>6. Merseyside licensing</h3>
+          <label class="check"><input type="checkbox" data-id="licence"><div><strong>Check whether your property needs a licence</strong><span>Liverpool runs selective licensing across most of the city, and Wirral covers parts of the borough. Any HMO with 5 or more tenants needs a licence everywhere. Check your postcode with the council.</span></div></label>
+          <label class="check"><input type="checkbox" data-id="licence-conditions"><div><strong>Meet your licence conditions</strong><span>Common ones are keeping certificates up to date, managing antisocial behaviour, and storing rubbish properly.</span></div></label>
+        </div>
+
+        <div class="disclaimer">
+          This checklist is general guidance for landlords in England. It isn't legal advice. Rules and dates change, so check the latest guidance on <a href="https://www.gov.uk/government/collections/renters-rights-act" target="_blank" rel="noopener">gov.uk</a> or take advice before serving any notice.
+        </div>
+      </div>
+
+      <div class="unlock-overlay no-print">
+        <div>
+          <p>Enter your email to see the full checklist</p>
+          <a href="#get-checklist" class="btn btn-primary">Unlock it free</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <div class="section-label">Coming next</div>
+    <h2 class="title">What's still on the way</h2>
+    <p class="intro">More of the Act comes in over the next few years. Sign up and we'll email you when each part is confirmed.</p>
+    <div class="timeline">
+      <div><b>Landlord database</b><span>Every landlord and rented property must be registered, for a fee. You can't use most possession grounds until you're registered.</span></div>
+      <div><b>Landlord ombudsman</b><span>Joining will be compulsory. Tenants will be able to bring complaints without going to court.</span></div>
+      <div><b>Decent Homes Standard</b><span>A minimum standard for the condition of private rented homes, enforced by councils.</span></div>
+      <div><b>Awaab's Law</b><span>Strict deadlines to investigate and fix damp, mould and other hazards.</span></div>
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <div class="cta-band">
+      <h2>Want this done for you, per property?</h2>
+      <p>We're building a simple tracker for Merseyside landlords. It reminds you before certificates expire and drafts the right notices. Join the checklist list to get early access.</p>
+      <a href="#get-checklist" class="btn btn-primary">Get early access</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <p>© 2026 Mersey Investor Leads · Serving landlords across Liverpool &amp; the Wirral</p>
+      <div>
+        <a href="index.html">Maintenance triage</a>
+        <a href="roi-calculator.html">ROI calculator</a>
+        <a href="tel:+447576618414">07576 618414</a>
+        <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const UNLOCK_KEY = 'rra-checklist-unlocked';
+    const TICKS_KEY = 'rra-checklist-ticks';
+    const CONTACT_FALLBACK = 'email <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a> or call <a href="tel:+447576618414">07576 618414</a>.';
+
+    function store(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) {}
+    }
+
+    function load(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showFormNote(html) {
+      const note = document.getElementById('formNote');
+      note.innerHTML = html;
+      note.hidden = false;
+    }
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+    }
+
+    function unlockChecklist(scroll) {
+      const wrap = document.getElementById('checklistWrap');
+      wrap.classList.remove('locked');
+      wrap.classList.add('unlocked');
+      store(UNLOCK_KEY, '1');
+      if (scroll) document.getElementById('checklist').scrollIntoView();
+    }
+
+    function submitLead(event) {
+      event.preventDefault();
+      const form = document.getElementById('leadForm');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value.trim();
+
+      if (!nameInput.value.trim()) {
+        nameInput.reportValidity();
+        nameInput.focus();
+        return false;
+      }
+
+      if (!isValidEmail(email)) {
+        emailInput.setCustomValidity('Please enter a valid email address, e.g. you@example.com');
+        emailInput.setAttribute('aria-invalid', 'true');
+        emailInput.reportValidity();
+        emailInput.focus();
+        return false;
+      }
+
+      emailInput.value = email;
+      const button = document.getElementById('leadSubmit');
+      const data = new FormData(form);
+      data.append('_subject', "Renters' Rights checklist signup - " + nameInput.value.trim());
+
+      button.disabled = true;
+      button.textContent = 'Unlocking...';
+
+      fetch(form.getAttribute('action'), {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(function (response) {
+          if (response.ok) {
+            form.reset();
+            showFormNote("You're in. The full checklist is unlocked below.");
+            unlockChecklist(true);
+            return;
+          }
+          return response.json().catch(function () { return {}; }).then(function (result) {
+            const errors = (result && result.errors) || [];
+            const details = errors.map(function (e) { return e.message; }).filter(Boolean).join('. ');
+            showFormNote("Sorry, we couldn't sign you up" + (details ? ' (' + escapeHtml(details) + ')' : '') + '. Please ' + CONTACT_FALLBACK);
+          });
+        })
+        .catch(function () {
+          // Don't hold the checklist hostage to a network error.
+          showFormNote("We couldn't save your email, but the checklist is unlocked below. To get updates, " + CONTACT_FALLBACK);
+          unlockChecklist(true);
+        })
+        .finally(function () {
+          button.disabled = false;
+          button.textContent = 'Unlock the checklist';
+        });
+
+      return false;
+    }
+
+    document.getElementById('email').addEventListener('input', function () {
+      this.setCustomValidity('');
+      this.removeAttribute('aria-invalid');
+    });
+
+    // Checklist ticks, saved per browser
+    const boxes = Array.from(document.querySelectorAll('.check input[type="checkbox"]'));
+    let ticks = {};
+    try { ticks = JSON.parse(load(TICKS_KEY) || '{}') || {}; } catch (e) { ticks = {}; }
+
+    function updateProgress() {
+      const done = boxes.filter(function (b) { return b.checked; }).length;
+      document.getElementById('progress').textContent = done + ' of ' + boxes.length + ' done';
+    }
+
+    function resetChecklist() {
+      boxes.forEach(function (b) { b.checked = false; });
+      ticks = {};
+      store(TICKS_KEY, '{}');
+      updateProgress();
+    }
+
+    boxes.forEach(function (box) {
+      box.checked = !!ticks[box.dataset.id];
+      box.addEventListener('change', function () {
+        ticks[box.dataset.id] = box.checked;
+        store(TICKS_KEY, JSON.stringify(ticks));
+        updateProgress();
+      });
+    });
+
+    updateProgress();
+    if (load(UNLOCK_KEY) === '1') unlockChecklist(false);
+  </script>
+
+</body>
+</html>
