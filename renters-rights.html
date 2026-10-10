@@ -403,6 +403,17 @@
             </select>
           </div>
         </div>
+        <div>
+          <label for="location">Where are your properties?</label>
+          <select id="location" name="location" required>
+            <option value="">Choose…</option>
+            <option>Liverpool</option>
+            <option>Wirral</option>
+            <option>Elsewhere on Merseyside</option>
+            <option>Merseyside and elsewhere</option>
+            <option>Elsewhere in the UK</option>
+          </select>
+        </div>
         <input type="hidden" name="source" value="renters-rights-checklist">
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
         <button type="submit" class="btn btn-primary" id="leadSubmit">Unlock the checklist</button>
@@ -589,6 +600,13 @@
         emailInput.setAttribute('aria-invalid', 'true');
         emailInput.reportValidity();
         emailInput.focus();
+        return false;
+      }
+
+      const locationInput = document.getElementById('location');
+      if (!locationInput.value) {
+        locationInput.reportValidity();
+        locationInput.focus();
         return false;
       }
 
