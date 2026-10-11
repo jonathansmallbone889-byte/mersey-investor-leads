@@ -298,10 +298,10 @@
           <h1>Your happiest customers aren't leaving reviews. <em>Nobody asked them.</em></h1>
           <p class="sub">Mersey Stars helps cafés, salons, trades and shops across Merseyside ask every customer for a Google review in one tap, hear about problems before they go public, and reply to reviews in seconds.</p>
           <div class="btn-row">
-            <a class="btn btn-gold" href="#setupSection">Set up my business, free</a>
+            <a class="btn btn-gold" href="#setupSection">Try it free</a>
             <a class="btn btn-ghost" href="#problems">See how it helps</a>
           </div>
-          <div class="ticks"><span>Free</span><span>No sign-up</span><span>Ready in 2 minutes</span><span>Works on your phone</span></div>
+          <div class="ticks"><span>Free while we launch</span><span>No sign-up</span><span>Ready in 2 minutes</span><span>Works on your phone</span></div>
         </div>
         <div>
           <div class="phone"><iframe title="Example of the page your customers see" src="r.html?n=Lark+Lane+Coffee&g=https%3A%2F%2Fwww.google.com%2Fmaps&o=Sam&e=hello%40example.com&w=447700900000&c=7c2d12&demo=1" loading="lazy"></iframe></div>
@@ -340,7 +340,7 @@
     <section class="block steps" style="padding-top:0">
       <div class="wrap">
         <h2 class="t">How it works</h2>
-        <p class="st">No app to install, no account, no monthly bill.</p>
+        <p class="st">No app to install, no account, nothing to pay while we launch.</p>
         <div class="grid3">
           <div class="pcard"><h3>Add your business</h3><p>Your business name and your Google review link. We show you exactly where to find it.</p></div>
           <div class="pcard"><h3>Share your link</h3><p>WhatsApp or text customers after their visit, and put a QR card on the counter or tables.</p></div>
@@ -369,6 +369,49 @@
       </div>
     </section>
 
+    <section class="block" id="founding">
+      <div class="wrap">
+        <h2 class="t">Become a founding business</h2>
+        <p class="st">We're looking for Liverpool businesses to use Mersey Stars free during launch and tell us what they think. Founding businesses keep a discount for life.</p>
+        <div class="card setup-card">
+          <form id="foundForm" novalidate>
+            <div class="row2">
+              <div><label class="f" for="ffBiz">Business name</label><input type="text" id="ffBiz" maxlength="80" required></div>
+              <div><label class="f" for="ffName">Your name</label><input type="text" id="ffName" maxlength="60" autocomplete="name" required></div>
+            </div>
+            <div class="row2">
+              <div><label class="f" for="ffPhone">Phone</label><input type="tel" id="ffPhone" autocomplete="tel" required></div>
+              <div><label class="f" for="ffEmail">Email <span class="opt">(optional)</span></label><input type="email" id="ffEmail" autocomplete="email"></div>
+            </div>
+            <div class="row2">
+              <div><label class="f" for="ffType">Type of business</label>
+                <select id="ffType"><option value="">Choose…</option><option>Café / restaurant</option><option>Pub / bar</option><option>Takeaway</option><option>Barber / salon / beauty</option><option>Trades (plumber, electrician, builder…)</option><option>Dentist / clinic</option><option>Gym / personal trainer</option><option>Shop / retail</option><option>Garage / valeting</option><option>Letting / estate agent</option><option>Other</option></select></div>
+              <div><label class="f" for="ffArea">Area <span class="opt">(e.g. Allerton Road)</span></label><input type="text" id="ffArea" maxlength="60"></div>
+            </div>
+            <p style="margin-top:20px;font-weight:700">Where are you on Google today?</p>
+            <p class="help" style="margin-top:2px">So we can show you how much you've grown. Search your business on Google to check.</p>
+            <div class="row2">
+              <div><label class="f" for="ffRating">Star rating</label><input type="number" id="ffRating" min="1" max="5" step="0.1" placeholder="e.g. 4.3" inputmode="decimal"></div>
+              <div><label class="f" for="ffCount">Number of reviews</label><input type="number" id="ffCount" min="0" step="1" placeholder="e.g. 52" inputmode="numeric"></div>
+            </div>
+            <label style="display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:15px;cursor:pointer"><input type="checkbox" id="ffHelp" style="margin-top:4px;width:18px;height:18px"> I'd like someone to visit and set it up for me</label>
+            <p class="err" id="ffErr"></p>
+            <button type="submit" class="btn btn-gold" style="margin-top:18px;width:100%;padding:14px">Send my details</button>
+            <p class="help" style="text-align:center">This opens your email app with your details filled in. Just press Send.</p>
+          </form>
+          <div id="foundDone" hidden style="text-align:center">
+            <h2 style="margin-bottom:8px">Nearly there. Press Send in your email app</h2>
+            <p class="muted">Once it's sent, we'll be in touch within a day. Email didn't open?</p>
+            <div class="btn-row" style="justify-content:center;margin-top:16px">
+              <a class="btn btn-wa" id="ffWa" target="_blank" rel="noopener">Send on WhatsApp instead</a>
+              <button class="btn btn-ghost" id="ffCopy" type="button">Copy my details</button>
+            </div>
+            <p class="small muted" style="margin-top:14px">Or call <a href="tel:+447576618414">07576 618414</a>. <button class="link-btn" id="ffBack" type="button" style="background:none;border:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer">Edit my details</button></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="block">
       <div class="wrap">
         <div class="dfy">
@@ -387,7 +430,8 @@
     <section class="block" style="padding-top:0">
       <div class="wrap faq">
         <h2 class="t" style="margin-bottom:24px">Questions</h2>
-        <details><summary>Is it really free?</summary><p>Yes. Mersey Stars runs in your web browser. There's no account and nothing to pay. If you'd like us to set it up and print materials for you, get in touch.</p></details>
+        <details><summary>Is it free?</summary><p>Yes, completely free while we launch. Paid plans will come later with extra features. Founding businesses who join now keep a discount for life, and we'll always tell you well before anything changes.</p></details>
+        <details><summary>What's a founding business?</summary><p>One of the first Liverpool businesses to use Mersey Stars. You use it free during launch, tell us what works and what doesn't, and lock in a lifetime discount on any paid plan. Sign up with the form above. It takes a minute.</p></details>
         <details><summary>What do I need?</summary><p>A Google Business Profile (it's free from Google and is what shows your business on Google Maps and Search). If you can see "Ask for reviews" when you search for your business while signed in, you're ready.</p></details>
         <details><summary>Where does the private feedback go?</summary><p>Straight to your email or WhatsApp, whichever you choose during setup. We never see it.</p></details>
         <details><summary>Where is my customer list stored?</summary><p>Only in the browser on your device. Nothing is uploaded. Use Settings to back it up, or to copy your setup to a second phone for your staff.</p></details>
@@ -395,7 +439,7 @@
         <details><summary>Does it work for businesses without a shop?</summary><p>Yes. Trades and mobile businesses usually get the best results by sending a WhatsApp message the same day the job is finished.</p></details>
       </div>
     </section>
-    <footer class="foot">Mersey Stars · Made in Liverpool · <a href="../">Back to main site</a></footer>
+    <footer class="foot">Mersey Stars · Made in Liverpool · <a href="flyer.html">Printable flyer</a> · <a href="../">Back to main site</a></footer>
   </div>
 
   <!-- ===================== APP ===================== -->
@@ -422,6 +466,10 @@
     </div>
 
     <div class="wrap">
+      <div class="notice" id="foundNote" hidden style="margin-top:16px;background:var(--star-soft);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <span>You're using Mersey Stars free while we launch. <b style="color:inherit">Join as a founding business</b> to lock in a lifetime discount.</span>
+        <span class="btn-row"><button class="btn btn-gold btn-sm" id="foundGo">Join, it takes a minute</button><button class="btn btn-ghost btn-sm" id="foundHide">Not now</button></span>
+      </div>
       <div class="notice" id="fileWarn" hidden style="margin-top:16px"><b>Heads up:</b> you've opened this file straight from your computer, so the customer link won't work for anyone else yet. Publish the site (for example on GitHub Pages) and open it from there.</div>
 
       <!-- ASK -->
@@ -772,6 +820,7 @@
       $('toAbout').hidden = v !== 'app';
       $('toSetup').hidden = hasBiz;
       if (v === 'landing') {
+        foundPrefill();
         $('setupHome').appendChild(form);
         $('formTitle').hidden = true;
         if (hasBiz) {
@@ -862,6 +911,7 @@
       $('appLink').textContent = pageUrl();
       $('appLinkOpen').href = pageUrl();
       $('fileWarn').hidden = location.protocol !== 'file:';
+      $('foundNote').hidden = !!state.founded || (state.foundHidden && Date.now() - state.foundHidden < 7 * DAY);
       renderTpl();
       renderLog();
       renderBulk();
@@ -1225,6 +1275,56 @@
       try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
       location.reload();
     });
+
+    // ---------- Founding business sign-up (goes straight to the owner's inbox) ----------
+    var FOUND_TO = 'jonathansmallbone889@gmail.com', FOUND_WA = '447576618414';
+    var foundText = '';
+    function foundPrefill() {
+      if (!state.biz) return;
+      if (!$('ffBiz').value) $('ffBiz').value = state.biz.name;
+      if (!$('ffName').value) $('ffName').value = state.biz.owner || '';
+      if (!$('ffEmail').value) $('ffEmail').value = state.biz.email || '';
+      if (!$('ffPhone').value) $('ffPhone').value = state.biz.wa || '';
+      if (!$('ffRating').value && state.goal.rating) $('ffRating').value = state.goal.rating;
+      if (!$('ffCount').value && state.goal.count) $('ffCount').value = state.goal.count;
+    }
+    $('foundForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = function (id) { return $(id).value.trim(); };
+      var err = '';
+      if (!v('ffBiz')) err = 'Please enter your business name.';
+      else if (!v('ffName')) err = 'Please enter your name.';
+      else if (!isPhone(v('ffPhone'))) err = 'Please enter a phone number we can reach you on.';
+      else if (v('ffEmail') && !isEmail(v('ffEmail'))) err = 'That email address doesn\'t look right.';
+      $('ffErr').textContent = err;
+      if (err) return;
+      foundText = [
+        'New founding business for Mersey Stars',
+        '',
+        'Business: ' + v('ffBiz'),
+        'Contact: ' + v('ffName'),
+        'Phone: ' + v('ffPhone'),
+        'Email: ' + (v('ffEmail') || '-'),
+        'Type: ' + (v('ffType') || '-'),
+        'Area: ' + (v('ffArea') || '-'),
+        '',
+        'Google today (' + new Date().toLocaleDateString('en-GB') + '): ' + (v('ffRating') || '?') + ' stars from ' + (v('ffCount') || '?') + ' reviews',
+        'Wants a set-up visit: ' + ($('ffHelp').checked ? 'YES' : 'No'),
+        state.biz ? 'Already set up in the app: yes' : 'Already set up in the app: not yet'
+      ].join('\n');
+      $('ffWa').href = 'https://wa.me/' + FOUND_WA + '?text=' + encodeURIComponent(foundText);
+      $('foundForm').hidden = true;
+      $('foundDone').hidden = false;
+      state.founded = true; save();
+      location.href = 'mailto:' + FOUND_TO + '?subject=' + encodeURIComponent('Founding business: ' + v('ffBiz')) + '&body=' + encodeURIComponent(foundText);
+    });
+    $('ffCopy').addEventListener('click', function () { copy('To: ' + FOUND_TO + '\n\n' + foundText, 'Copied. Paste it into an email to ' + FOUND_TO); });
+    $('ffBack').addEventListener('click', function () { $('foundForm').hidden = false; $('foundDone').hidden = true; });
+    $('foundGo').addEventListener('click', function () {
+      setView('landing'); foundPrefill();
+      setTimeout(function () { $('founding').scrollIntoView(); }, 50);
+    });
+    $('foundHide').addEventListener('click', function () { state.foundHidden = Date.now(); save(); $('foundNote').hidden = true; });
 
     // ---------- Start ----------
     var m = location.hash.match(/^#setup=([A-Za-z0-9_-]+)$/);
