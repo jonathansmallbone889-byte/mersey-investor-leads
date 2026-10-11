@@ -396,15 +396,24 @@
             </div>
             <label style="display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:15px;cursor:pointer"><input type="checkbox" id="ffHelp" style="margin-top:4px;width:18px;height:18px"> I'd like someone to visit and set it up for me</label>
             <p class="err" id="ffErr"></p>
-            <button type="submit" class="btn btn-gold" style="margin-top:18px;width:100%;padding:14px">Send my details</button>
-            <p class="help" style="text-align:center">This opens your email app with your details filled in. Just press Send.</p>
+            <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label for="ffWebsite">Leave this empty</label><input type="text" id="ffWebsite" tabindex="-1" autocomplete="off"></div>
+            <button type="submit" class="btn btn-gold" id="ffSubmit" style="margin-top:18px;width:100%;padding:14px">Send my details</button>
+            <p class="help" style="text-align:center" id="ffNote">We'll be in touch within a day. Your details are only used to contact you about Mersey Stars.</p>
           </form>
           <div id="foundDone" hidden style="text-align:center">
-            <h2 style="margin-bottom:8px">Nearly there. Press Send in your email app</h2>
-            <p class="muted">Once it's sent, we'll be in touch within a day. Email didn't open?</p>
-            <div class="btn-row" style="justify-content:center;margin-top:16px">
-              <a class="btn btn-wa" id="ffWa" target="_blank" rel="noopener">Send on WhatsApp instead</a>
-              <button class="btn btn-ghost" id="ffCopy" type="button">Copy my details</button>
+            <div id="ffSent">
+              <div style="width:56px;height:56px;border-radius:50%;background:var(--ok-soft);color:var(--ok);display:grid;place-items:center;margin:0 auto 14px"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></div>
+              <h2 style="margin-bottom:8px">You're in. Welcome aboard!</h2>
+              <p class="muted">Thanks for joining as a founding business. We'll be in touch within a day.</p>
+            </div>
+            <div id="ffManual">
+              <h2 style="margin-bottom:8px">One last step: send us your details</h2>
+              <p class="muted">Choose whichever is easiest. Everything is already filled in.</p>
+              <div class="btn-row" style="justify-content:center;margin-top:16px">
+                <a class="btn btn-wa" id="ffWa" target="_blank" rel="noopener">Send on WhatsApp</a>
+                <a class="btn btn-primary" id="ffMail">Send by email</a>
+                <button class="btn btn-ghost" id="ffCopy" type="button">Copy my details</button>
+              </div>
             </div>
             <p class="small muted" style="margin-top:14px">Or call <a href="tel:+447576618414">07576 618414</a>. <button class="link-btn" id="ffBack" type="button" style="background:none;border:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer">Edit my details</button></p>
           </div>
@@ -1278,6 +1287,9 @@
 
     // ---------- Founding business sign-up (goes straight to the owner's inbox) ----------
     var FOUND_TO = 'jonathansmallbone889@gmail.com', FOUND_WA = '447576618414';
+    // Web app address of the sign-up connector (see signup-connector/README.md).
+    // While this is empty, sign-ups open the business's email app instead.
+    var SIGNUP_URL = '';
     var foundText = '';
     function foundPrefill() {
       if (!state.biz) return;
@@ -1313,10 +1325,27 @@
         state.biz ? 'Already set up in the app: yes' : 'Already set up in the app: not yet'
       ].join('\n');
       $('ffWa').href = 'https://wa.me/' + FOUND_WA + '?text=' + encodeURIComponent(foundText);
-      $('foundForm').hidden = true;
-      $('foundDone').hidden = false;
-      state.founded = true; save();
-      location.href = 'mailto:' + FOUND_TO + '?subject=' + encodeURIComponent('Founding business: ' + v('ffBiz')) + '&body=' + encodeURIComponent(foundText);
+      var mailto = 'mailto:' + FOUND_TO + '?subject=' + encodeURIComponent('Founding business: ' + v('ffBiz')) + '&body=' + encodeURIComponent(foundText);
+      $('ffMail').href = mailto;
+      function finish(sent) {
+        $('foundForm').hidden = true;
+        $('foundDone').hidden = false;
+        $('ffSent').hidden = !sent;
+        $('ffManual').hidden = sent;
+        if (sent) { state.founded = true; save(); }
+      }
+      if (!SIGNUP_URL) { finish(false); location.href = mailto; return; }
+      var btn = $('ffSubmit');
+      btn.disabled = true; btn.textContent = 'Sending…';
+      var payload = {
+        business: v('ffBiz'), name: v('ffName'), phone: v('ffPhone'), email: v('ffEmail'), type: v('ffType'), area: v('ffArea'),
+        rating: v('ffRating'), count: v('ffCount'), help: $('ffHelp').checked, inApp: !!state.biz, website: $('ffWebsite').value
+      };
+      var timeout = new Promise(function (_, reject) { setTimeout(function () { reject(new Error('timeout')); }, 15000); });
+      // text/plain + no-cors keeps this a simple request that Apps Script accepts from any site.
+      Promise.race([fetch(SIGNUP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }), timeout])
+        .then(function () { finish(true); }, function () { finish(false); })
+        .then(function () { btn.disabled = false; btn.textContent = 'Send my details'; });
     });
     $('ffCopy').addEventListener('click', function () { copy('To: ' + FOUND_TO + '\n\n' + foundText, 'Copied. Paste it into an email to ' + FOUND_TO); });
     $('ffBack').addEventListener('click', function () { $('foundForm').hidden = false; $('foundDone').hidden = true; });
