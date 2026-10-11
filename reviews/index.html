@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mersey Stars | More Google Reviews for Liverpool Businesses</title>
+  <meta name="description" content="Free tool for Liverpool businesses: ask every customer for a Google review in one tap, print QR table cards, hear complaints privately first, and reply to reviews in seconds. No sign-up.">
+  <meta property="og:title" content="Mersey Stars: more Google reviews for Liverpool businesses">
+  <meta property="og:description" content="Ask every customer for a Google review in one tap. QR cards, WhatsApp asks, reply writer. Free, no sign-up.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b2f4a'/%3E%3Cpath d='M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z' fill='%23f5b301'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #5b6472;
+      --border: #e1e5eb;
+      --brand: #0b2f4a;
+      --brand-2: #134a72;
+      --on-brand: #ffffff;
+      --accent: #0b5cad;
+      --accent-soft: #e8f1fb;
+      --star: #f5b301;
+      --star-soft: #fff6dc;
+      --ok: #15803d;
+      --ok-soft: #e7f6ec;
+      --warn: #b45309;
+      --warn-soft: #fef3e2;
+      --bad: #dc2626;
+      --soft: #f1f4f8;
+      --shadow: 0 1px 2px rgba(17, 24, 39, .05), 0 8px 24px rgba(17, 24, 39, .07);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d1117; --card: #161b22; --text: #e8edf3; --muted: #9aa5b1; --border: #2a323c;
+        --accent: #6cb2ff; --accent-soft: #14263a; --star-soft: #33290f; --ok: #4ade80; --ok-soft: #12301d;
+        --warn: #fbbf24; --warn-soft: #33270f; --bad: #f87171; --soft: #1d242d;
+        --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0d1117; --card: #161b22; --text: #e8edf3; --muted: #9aa5b1; --border: #2a323c;
+      --accent: #6cb2ff; --accent-soft: #14263a; --star-soft: #33290f; --ok: #4ade80; --ok-soft: #12301d;
+      --warn: #fbbf24; --warn-soft: #33270f; --bad: #f87171; --soft: #1d242d;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); }
+    h1, h2, h3 { letter-spacing: -.02em; line-height: 1.2; margin: 0; }
+    p { margin: 0; }
+    [hidden] { display: none !important; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+
+    /* Header */
+    header.top { background: var(--brand); color: var(--on-brand); }
+    .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: inherit; text-decoration: none; }
+    .logo svg { width: 30px; height: 30px; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .top-btn {
+      background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+    }
+    .top-btn:hover { background: rgba(255, 255, 255, .2); }
+
+    /* Buttons and forms */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 16px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 700;
+      border: 1px solid transparent; cursor: pointer; text-decoration: none; white-space: nowrap;
+    }
+    .btn svg { width: 18px; height: 18px; flex: none; }
+    .btn-primary { background: var(--brand); color: var(--on-brand); }
+    :root[data-theme="dark"] .btn-primary { background: #2563a8; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-primary { background: #2563a8; } }
+    .btn-primary:hover { filter: brightness(1.12); }
+    .btn-gold { background: var(--star); color: #1f1600; }
+    .btn-gold:hover { filter: brightness(1.05); }
+    .btn-ghost { background: var(--card); color: var(--text); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--muted); }
+    .btn-wa { background: #1fa855; color: #fff; }
+    .btn-wa:hover { filter: brightness(1.08); }
+    .btn-sm { padding: 7px 11px; font-size: 13px; border-radius: 10px; }
+    .btn-danger { background: var(--card); color: var(--bad); border-color: var(--border); }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    label.f { display: block; font-size: 14px; font-weight: 600; margin: 16px 0 6px; }
+    label.f .opt { font-weight: 400; color: var(--muted); }
+    input[type=text], input[type=email], input[type=tel], input[type=number], input[type=url], select, textarea {
+      width: 100%; font: inherit; font-size: 16px; color: var(--text); background: var(--card);
+      border: 1px solid var(--border); border-radius: 10px; padding: 11px 12px;
+    }
+    textarea { resize: vertical; min-height: 96px; line-height: 1.45; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+    .help { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .err { font-size: 13px; color: var(--bad); margin-top: 6px; min-height: 0; }
+    details.how { margin-top: 10px; background: var(--soft); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+    details.how summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+    details.how ol { margin: 10px 0 4px; padding-left: 20px; }
+    details.how li { margin-bottom: 6px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+    @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); padding: 24px; }
+    @media (max-width: 640px) { .card { padding: 18px; } }
+    .card h2 { font-size: 20px; margin-bottom: 4px; }
+    .card > .lead { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
+
+    /* Landing */
+    .hero { background: var(--brand); color: var(--on-brand); padding: 48px 0 72px; overflow: hidden; }
+    .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; }
+    @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 18px; }
+    .eyebrow .s { color: var(--star); letter-spacing: 1px; }
+    .hero h1 { font-size: clamp(32px, 5vw, 50px); font-weight: 800; margin-bottom: 18px; }
+    .hero h1 em { font-style: normal; color: var(--star); }
+    .hero p.sub { font-size: 18px; color: rgba(255, 255, 255, .82); max-width: 560px; margin-bottom: 26px; }
+    .hero .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .35); }
+    .hero .btn { padding: 14px 20px; font-size: 16px; }
+    .ticks { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: 14px; color: rgba(255, 255, 255, .8); }
+    .ticks span::before { content: '✓ '; color: var(--star); font-weight: 800; }
+
+    .phone {
+      width: 300px; max-width: 100%; margin: 0 auto; background: #0a0f14; border-radius: 40px; padding: 12px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, .35), inset 0 0 0 2px #27313b; position: relative;
+    }
+    .phone iframe { display: block; width: 100%; height: 560px; border: 0; border-radius: 30px; background: #f5f6f8; }
+    .phone-cap { text-align: center; font-size: 13px; color: rgba(255, 255, 255, .75); margin-top: 14px; }
+
+    section.block { padding: 64px 0; }
+    section.block h2.t { font-size: clamp(26px, 3.4vw, 36px); text-align: center; margin-bottom: 10px; }
+    section.block p.st { text-align: center; color: var(--muted); font-size: 17px; max-width: 640px; margin: 0 auto 36px; }
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .grid3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 600px) { .grid3 { grid-template-columns: 1fr; } }
+    .pcard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
+    .pcard .prob { font-size: 13px; font-weight: 700; color: var(--bad); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+    .pcard h3 { font-size: 18px; margin-bottom: 8px; }
+    .pcard p { color: var(--muted); font-size: 15px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 760px; margin: 0 auto; }
+    .chip { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 600; }
+    .steps { counter-reset: s; }
+    .steps .pcard h3::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--star); color: #1f1600; font-size: 15px; margin-right: 10px; vertical-align: middle; }
+    .rules { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; background: var(--ok-soft); border: 1px solid transparent; border-radius: 18px; padding: 24px; max-width: 860px; margin: 0 auto; }
+    .rules svg { width: 40px; height: 40px; color: var(--ok); }
+    .rules h3 { font-size: 20px; margin-bottom: 6px; }
+    .rules p { color: var(--text); opacity: .85; }
+    @media (max-width: 600px) { .rules { grid-template-columns: 1fr; } }
+    #setupSection { background: var(--soft); }
+    .setup-card { max-width: 680px; margin: 0 auto; }
+    .faq { max-width: 760px; margin: 0 auto; }
+    .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; }
+    .faq summary { font-weight: 700; cursor: pointer; }
+    .faq details p { color: var(--muted); margin-top: 10px; }
+    .dfy { background: var(--brand); color: var(--on-brand); border-radius: 20px; padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; max-width: 860px; margin: 0 auto; }
+    .dfy p { color: rgba(255, 255, 255, .8); margin-top: 8px; }
+    @media (max-width: 700px) { .dfy { grid-template-columns: 1fr; padding: 24px; } }
+    footer.foot { padding: 32px 0 48px; text-align: center; color: var(--muted); font-size: 14px; }
+
+    /* App */
+    .bizbar { background: var(--brand); color: var(--on-brand); padding: 18px 0 0; }
+    .bizbar .wrap { display: flex; flex-direction: column; gap: 14px; }
+    .bizbar h1 { font-size: 22px; }
+    .linkbox { display: flex; gap: 8px; align-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); border-radius: 12px; padding: 6px 6px 6px 12px; max-width: 100%; }
+    .linkbox code { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; color: rgba(255, 255, 255, .85); }
+    .linkbox .btn { background: rgba(255, 255, 255, .15); color: #fff; }
+    .tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; margin-top: 4px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      background: none; border: 0; color: rgba(255, 255, 255, .72); font: inherit; font-size: 15px; font-weight: 600;
+      padding: 12px 14px; border-radius: 12px 12px 0 0; cursor: pointer; white-space: nowrap;
+    }
+    .tab[aria-selected="true"] { background: var(--bg); color: var(--text); }
+    .panel { padding: 24px 0 64px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+    @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+    .stack > * + * { margin-top: 16px; }
+    .seg { display: inline-flex; background: var(--soft); border: 1px solid var(--border); border-radius: 12px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+    .seg button { background: none; border: 0; font: inherit; font-size: 14px; font-weight: 600; color: var(--muted); padding: 8px 12px; border-radius: 9px; cursor: pointer; }
+    .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 2px rgba(0, 0, 0, .1); }
+    .preview-msg { white-space: pre-wrap; background: #dcf8c6; color: #111; border-radius: 12px 12px 4px 12px; padding: 12px 14px; font-size: 14px; margin: 14px 0; max-width: 92%; margin-left: auto; word-break: break-word; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 6px; }
+    .stat { background: var(--soft); border-radius: 12px; padding: 12px; }
+    .stat b { display: block; font-size: 24px; }
+    .stat span { font-size: 12px; color: var(--muted); }
+    table.log { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 10px; }
+    table.log th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; padding: 8px 6px; border-bottom: 1px solid var(--border); }
+    table.log td { padding: 10px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    table.log td.acts { text-align: right; white-space: nowrap; }
+    .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+    .pill.ok { background: var(--ok-soft); color: var(--ok); }
+    .pill.wait { background: var(--soft); color: var(--muted); }
+    .pill.nudge { background: var(--warn-soft); color: var(--warn); }
+    .empty { text-align: center; color: var(--muted); padding: 24px 8px; font-size: 14px; }
+    @media (max-width: 600px) {
+      table.log thead { display: none; }
+      table.log tr { display: grid; grid-template-columns: 1fr auto; padding: 10px 0; border-bottom: 1px solid var(--border); }
+      table.log td { border: 0; padding: 2px 0; }
+      table.log td.acts { grid-column: 1 / -1; text-align: left; padding-top: 8px; }
+    }
+    .qrbox { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    .qrbox .qr { width: 160px; height: 160px; background: #fff; border-radius: 12px; padding: 4px; border: 1px solid var(--border); }
+    .qrbox .qr svg { width: 100%; height: 100%; display: block; }
+    .prev-wrap { background: var(--soft); border-radius: 14px; padding: 16px; display: flex; justify-content: center; overflow: hidden; }
+    .prev-inner { transform-origin: top left; }
+    .out { white-space: pre-wrap; background: var(--soft); border-radius: 12px; padding: 14px; font-size: 15px; min-height: 120px; }
+    .big { font-size: 44px; font-weight: 800; letter-spacing: -.03em; }
+    .bars { display: flex; gap: 6px; align-items: flex-end; height: 110px; margin-top: 14px; }
+    .bars div { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; font-size: 11px; color: var(--muted); }
+    .bars i { display: block; width: 100%; background: var(--star); border-radius: 6px 6px 2px 2px; min-height: 2px; }
+    .notice { background: var(--warn-soft); color: var(--text); border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+    .notice b { color: var(--warn); }
+    .toast {
+      position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+      background: #111827; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 14px; font-weight: 600;
+      transition: all .2s ease; z-index: 50; max-width: calc(100% - 32px); text-align: center;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* Printable cards (sizes in mm so they print true) */
+    .pc { background: #fff; color: #111827; position: relative; overflow: hidden; font-family: 'Inter', Arial, sans-serif; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .pc .band { width: 100%; background: var(--pc-brand, #0b2f4a); color: var(--pc-on, #fff); font-weight: 800; }
+    .pc .stars { color: #f5b301; letter-spacing: .08em; }
+    .pc .qr svg { display: block; width: 100%; height: 100%; }
+    .pc .gw { font-weight: 700; }
+    .pc .gw b:nth-child(1) { color: #4285F4; } .pc .gw b:nth-child(2) { color: #EA4335; } .pc .gw b:nth-child(3) { color: #FBBC05; }
+    .pc .gw b:nth-child(4) { color: #4285F4; } .pc .gw b:nth-child(5) { color: #34A853; } .pc .gw b:nth-child(6) { color: #EA4335; }
+    .pc-sign h3, .pc-table h3 { margin-top: auto !important; }
+    .pc-sign .gw, .pc-table .gw { margin-bottom: auto; }
+    .pc-sign { width: 190mm; height: 277mm; border-radius: 6mm; border: .3mm solid #e5e7eb; }
+    .pc-sign .band { padding: 14mm 10mm; font-size: 28pt; }
+    .pc-sign h3 { font-size: 40pt; margin: 16mm 10mm 4mm; line-height: 1.1; }
+    .pc-sign .stars { font-size: 34pt; }
+    .pc-sign .qr { width: 110mm; height: 110mm; margin: 8mm 0 6mm; }
+    .pc-sign .sub { font-size: 18pt; margin: 0 12mm; }
+    .pc-sign .gw { font-size: 16pt; margin-top: 6mm; color: #6b7280; }
+    .pc-table { width: 105mm; height: 148.5mm; border: .2mm dashed #cbd5e1; }
+    .pc-table .band { padding: 6mm 5mm; font-size: 14pt; }
+    .pc-table h3 { font-size: 19pt; margin: 6mm 6mm 2mm; line-height: 1.15; }
+    .pc-table .stars { font-size: 17pt; }
+    .pc-table .qr { width: 56mm; height: 56mm; margin: 4mm 0 3mm; }
+    .pc-table .sub { font-size: 10.5pt; margin: 0 7mm; }
+    .pc-table .gw { font-size: 9pt; margin-top: 2.5mm; color: #6b7280; }
+    .pc-mini { width: 85mm; height: 55mm; border: .2mm dashed #cbd5e1; flex-direction: row; text-align: left; }
+    .pc-mini .band { width: 4mm; height: 100%; padding: 0; font-size: 0; }
+    .pc-mini .txt { flex: 1; padding: 0 3mm 0 5mm; }
+    .pc-mini .nm { font-size: 8pt; font-weight: 700; color: #6b7280; margin-bottom: 1.5mm; }
+    .pc-mini h3 { font-size: 12.5pt; line-height: 1.15; margin: 0 0 1.5mm; }
+    .pc-mini .stars { font-size: 11pt; }
+    .pc-mini .sub { font-size: 7.5pt; margin-top: 1.5mm; color: #374151; }
+    .pc-mini .qr { width: 38mm; height: 38mm; margin-right: 4mm; flex: none; }
+    #printSheet { display: none; }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      html, body { background: #fff !important; }
+      body > *:not(#printSheet) { display: none !important; }
+      #printSheet { display: block; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sheet { width: 210mm; height: 297mm; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; page-break-after: always; break-after: page; }
+      .sheet.sign { padding: 10mm; }
+      .sheet.mini { gap: 0; padding: 11mm 20mm; align-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="logo" href="#" id="logoLink">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity=".12"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>
+        Mersey Stars
+      </a>
+      <div class="top-actions">
+        <button class="top-btn" id="toAbout" hidden>How it works</button>
+        <button class="top-btn" id="toApp" hidden>My dashboard</button>
+        <a class="top-btn" href="#setupSection" id="toSetup">Start free</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== LANDING ===================== -->
+  <div id="landing">
+    <section class="hero">
+      <div class="wrap">
+        <div>
+          <div class="eyebrow"><span class="s">★★★★★</span> Made for Liverpool businesses</div>
+          <h1>Your happiest customers aren't leaving reviews. <em>Nobody asked them.</em></h1>
+          <p class="sub">Mersey Stars helps cafés, salons, trades and shops across Merseyside ask every customer for a Google review in one tap, hear about problems before they go public, and reply to reviews in seconds.</p>
+          <div class="btn-row">
+            <a class="btn btn-gold" href="#setupSection">Set up my business, free</a>
+            <a class="btn btn-ghost" href="#problems">See how it helps</a>
+          </div>
+          <div class="ticks"><span>Free</span><span>No sign-up</span><span>Ready in 2 minutes</span><span>Works on your phone</span></div>
+        </div>
+        <div>
+          <div class="phone"><iframe title="Example of the page your customers see" src="r.html?n=Lark+Lane+Coffee&g=https%3A%2F%2Fwww.google.com%2Fmaps&o=Sam&e=hello%40example.com&w=447700900000&c=7c2d12&demo=1" loading="lazy"></iframe></div>
+          <p class="phone-cap">What your customers see. Try tapping a star.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="problems">
+      <div class="wrap">
+        <h2 class="t">The five things stopping you getting reviews, fixed</h2>
+        <p class="st">Customers choose who to visit by looking at Google. More recent, genuine reviews means more people walking through your door.</p>
+        <div class="grid3">
+          <div class="pcard"><div class="prob">You forget to ask</div><h3>Ask in one tap</h3><p>Send a friendly review request by WhatsApp, text or email straight from your phone. Paste a list of today's customers and work through it in a minute.</p></div>
+          <div class="pcard"><div class="prob">Customers can't find where to click</div><h3>One link, one QR code</h3><p>Your link opens your Google review box directly. Print QR table cards, a counter sign or business cards to hand out with receipts.</p></div>
+          <div class="pcard"><div class="prob">One bad day ends up on Google</div><h3>Hear it first</h3><p>Customers who weren't happy get an easy way to message you privately, so you can put it right. Your Google button stays on show for everyone.</p></div>
+          <div class="pcard"><div class="prob">People say "I'll do it later"</div><h3>Gentle nudges</h3><p>Mersey Stars keeps track of who you've asked and reminds you who to follow up after three days, with a polite nudge ready to send.</p></div>
+          <div class="pcard"><div class="prob">Replying takes ages</div><h3>Replies in seconds</h3><p>Ready-to-post replies to five-star praise and one-star complaints, in a warm or professional voice, signed by you.</p></div>
+          <div class="pcard"><div class="prob">No idea what you're aiming for</div><h3>A clear target</h3><p>Enter your current rating and see exactly how many five-star reviews you need to reach 4.5 or 4.8, then track your progress week by week.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" style="padding-top:0">
+      <div class="wrap">
+        <h2 class="t">Built for businesses like yours</h2>
+        <p class="st">If your customers search Google before they pick you, this is for you.</p>
+        <div class="chips">
+          <span class="chip">☕ Cafés &amp; restaurants</span><span class="chip">💈 Barbers &amp; salons</span><span class="chip">🔧 Plumbers, sparkies &amp; builders</span>
+          <span class="chip">🦷 Dentists &amp; clinics</span><span class="chip">🏋️ Gyms &amp; PTs</span><span class="chip">🛍️ Independent shops</span>
+          <span class="chip">🍕 Takeaways</span><span class="chip">🚗 Garages &amp; valeters</span><span class="chip">🏠 Letting agents</span><span class="chip">🐶 Groomers</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block steps" style="padding-top:0">
+      <div class="wrap">
+        <h2 class="t">How it works</h2>
+        <p class="st">No app to install, no account, no monthly bill.</p>
+        <div class="grid3">
+          <div class="pcard"><h3>Add your business</h3><p>Your business name and your Google review link. We show you exactly where to find it.</p></div>
+          <div class="pcard"><h3>Share your link</h3><p>WhatsApp or text customers after their visit, and put a QR card on the counter or tables.</p></div>
+          <div class="pcard"><h3>Watch the stars add up</h3><p>Happy customers post on Google. Unhappy ones tell you first, so you get the chance to fix it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" style="padding-top:0">
+      <div class="wrap">
+        <div class="rules">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+          <div>
+            <h3>Plays by Google's rules and UK law</h3>
+            <p>Google's review policy and the UK's Digital Markets, Competition and Consumers Act 2024 ban fake reviews, paying or rewarding people for reviews, and hiding negative ones. Mersey Stars never blocks anyone from Google, never writes reviews for customers, and never suggests offering incentives. Every customer, happy or not, can always reach your Google page. That protects your listing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="setupSection">
+      <div class="wrap">
+        <h2 class="t">Set up your business</h2>
+        <p class="st">Takes about two minutes. Everything is saved on this device only.</p>
+        <div class="card setup-card" id="setupHome"></div>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="wrap">
+        <div class="dfy">
+          <div>
+            <h2 style="font-size:24px">Rather someone did it for you?</h2>
+            <p>We'll set up your review link, design table cards and window stickers in your colours, and show your team how to ask, for businesses across Liverpool and Merseyside.</p>
+          </div>
+          <div class="btn-row">
+            <a class="btn btn-gold" href="mailto:jonathansmallbone889@gmail.com?subject=Mersey%20Stars%20setup">Email us</a>
+            <a class="btn btn-ghost" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="tel:+447576618414">07576 618414</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" style="padding-top:0">
+      <div class="wrap faq">
+        <h2 class="t" style="margin-bottom:24px">Questions</h2>
+        <details><summary>Is it really free?</summary><p>Yes. Mersey Stars runs in your web browser. There's no account and nothing to pay. If you'd like us to set it up and print materials for you, get in touch.</p></details>
+        <details><summary>What do I need?</summary><p>A Google Business Profile (it's free from Google and is what shows your business on Google Maps and Search). If you can see "Ask for reviews" when you search for your business while signed in, you're ready.</p></details>
+        <details><summary>Where does the private feedback go?</summary><p>Straight to your email or WhatsApp, whichever you choose during setup. We never see it.</p></details>
+        <details><summary>Where is my customer list stored?</summary><p>Only in the browser on your device. Nothing is uploaded. Use Settings to back it up, or to copy your setup to a second phone for your staff.</p></details>
+        <details><summary>Can I offer a discount for a review?</summary><p>No. Google doesn't allow rewards for reviews, and UK law treats incentivised reviews that aren't clearly disclosed as misleading. Just ask, and make asking easy. That's what this tool is for.</p></details>
+        <details><summary>Does it work for businesses without a shop?</summary><p>Yes. Trades and mobile businesses usually get the best results by sending a WhatsApp message the same day the job is finished.</p></details>
+      </div>
+    </section>
+    <footer class="foot">Mersey Stars · Made in Liverpool · <a href="../">Back to main site</a></footer>
+  </div>
+
+  <!-- ===================== APP ===================== -->
+  <div id="app" hidden>
+    <div class="bizbar">
+      <div class="wrap">
+        <div>
+          <p class="small" style="opacity:.75">Dashboard for</p>
+          <h1 id="appBizName"></h1>
+        </div>
+        <div class="linkbox">
+          <code id="appLink"></code>
+          <button class="btn btn-sm" data-copy-link>Copy link</button>
+          <a class="btn btn-sm" id="appLinkOpen" target="_blank" rel="noopener">Open</a>
+        </div>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" data-tab="ask">Ask customers</button>
+          <button class="tab" role="tab" data-tab="qr">QR &amp; print</button>
+          <button class="tab" role="tab" data-tab="reply">Reply to reviews</button>
+          <button class="tab" role="tab" data-tab="goal">My goal</button>
+          <button class="tab" role="tab" data-tab="settings">Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="notice" id="fileWarn" hidden style="margin-top:16px"><b>Heads up:</b> you've opened this file straight from your computer, so the customer link won't work for anyone else yet. Publish the site (for example on GitHub Pages) and open it from there.</div>
+
+      <!-- ASK -->
+      <div class="panel" data-panel="ask">
+        <div class="grid2">
+          <div class="card">
+            <h2>Ask a customer</h2>
+            <p class="lead">Best sent the same day, while the visit is fresh.</p>
+            <div class="row2">
+              <div><label class="f" for="askName">First name <span class="opt">(optional)</span></label><input type="text" id="askName" autocomplete="off" placeholder="e.g. Chloe"></div>
+              <div><label class="f" for="askContact">Mobile or email <span class="opt">(optional)</span></label><input type="text" id="askContact" autocomplete="off" inputmode="email" placeholder="07… or name@…"></div>
+            </div>
+            <label class="f">Message</label>
+            <div class="seg" id="tplSeg">
+              <button type="button" data-tpl="friendly">Friendly</button>
+              <button type="button" data-tpl="short">Short</button>
+              <button type="button" data-tpl="trades">After a job</button>
+              <button type="button" data-tpl="custom">My own</button>
+            </div>
+            <textarea id="tplText" style="margin-top:10px" aria-label="Message template"></textarea>
+            <p class="help">Use {name}, {business}, {owner} and {link}. They're filled in for you.</p>
+            <div class="preview-msg" id="askPreview" aria-live="polite"></div>
+            <div class="btn-row">
+              <button class="btn btn-wa" data-send="wa"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .1-1.7-.1-.4-.1-.9-.3-1.5-.6-2.7-1.2-4.4-3.9-4.6-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.1.1.3 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 1.9 1.1.9 2 1.2 2.3 1.4.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>WhatsApp</button>
+              <button class="btn btn-primary" data-send="sms"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Text</button>
+              <button class="btn btn-ghost" data-send="email"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Email</button>
+              <button class="btn btn-ghost" data-send="copy">Copy</button>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <h2>Ask a list of customers</h2>
+              <p class="lead">Paste today's bookings, one per line: name, then number or email.</p>
+              <textarea id="bulkText" placeholder="Chloe, 07700 900123&#10;Mark, mark@example.com&#10;Priya 07700900456"></textarea>
+              <div class="btn-row" style="margin-top:10px">
+                <button class="btn btn-primary" id="bulkBuild">Make my list</button>
+                <button class="btn btn-ghost" id="bulkClear" hidden>Clear list</button>
+              </div>
+              <div id="bulkList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+            <div><h2>Who you've asked</h2><p class="lead" style="margin:0">Tick "Reviewed" when their review appears on Google.</p></div>
+          </div>
+          <div class="stats">
+            <div class="stat"><b id="stWeek">0</b><span>asked this week</span></div>
+            <div class="stat"><b id="stNudge">0</b><span>ready for a nudge</span></div>
+            <div class="stat"><b id="stDone">0</b><span>reviews left</span></div>
+          </div>
+          <div id="logWrap"></div>
+        </div>
+      </div>
+
+      <!-- QR -->
+      <div class="panel" data-panel="qr" hidden>
+        <div class="grid2">
+          <div class="card">
+            <h2>Your QR code</h2>
+            <p class="lead">Customers scan it with their phone camera and land on your review page.</p>
+            <div class="qrbox" style="margin-top:14px">
+              <div class="qr" id="qrSmall"></div>
+              <div class="btn-row" style="flex-direction:column;align-items:stretch">
+                <button class="btn btn-ghost" id="dlPng">Download PNG</button>
+                <button class="btn btn-ghost" id="dlSvg">Download SVG (for printers)</button>
+              </div>
+            </div>
+            <label class="f">Print layout</label>
+            <div class="seg" id="layoutSeg">
+              <button type="button" data-layout="table">Table cards (4 per page)</button>
+              <button type="button" data-layout="sign">Counter / window sign</button>
+              <button type="button" data-layout="mini">Hand-out cards (10 per page)</button>
+            </div>
+            <label class="f" for="pHead">Headline</label>
+            <input type="text" id="pHead" maxlength="40">
+            <label class="f" for="pSub">Small print</label>
+            <input type="text" id="pSub" maxlength="70">
+            <div class="btn-row" style="margin-top:18px">
+              <button class="btn btn-primary" id="printBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print on A4</button>
+            </div>
+            <p class="help">Tip: set your printer to "Actual size" (100%), not "Fit to page". Thick card (250gsm+) works best for table cards.</p>
+          </div>
+          <div class="card">
+            <h2>Preview</h2>
+            <p class="lead">One of the cards on your sheet.</p>
+            <div class="prev-wrap" id="prevWrap" style="margin-top:12px"><div class="prev-inner" id="prevInner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPLY -->
+      <div class="panel" data-panel="reply" hidden>
+        <div class="grid2">
+          <div class="card">
+            <h2>Reply to a review</h2>
+            <p class="lead">Replying to every review, good and bad, shows new customers you care.</p>
+            <label class="f">Their rating</label>
+            <div class="seg" id="rStars">
+              <button type="button" data-r="5">★★★★★</button><button type="button" data-r="4">★★★★</button><button type="button" data-r="3">★★★</button><button type="button" data-r="2">★★</button><button type="button" data-r="1">★</button>
+            </div>
+            <div class="row2">
+              <div><label class="f" for="rName">Reviewer's first name</label><input type="text" id="rName" placeholder="e.g. Danny"></div>
+              <div><label class="f" for="rMention">What they mentioned <span class="opt">(optional)</span></label><input type="text" id="rMention" placeholder="e.g. the Sunday roast"></div>
+            </div>
+            <label class="f">Tone</label>
+            <div class="seg" id="rTone">
+              <button type="button" data-tone="warm">Warm</button>
+              <button type="button" data-tone="pro">Professional</button>
+              <button type="button" data-tone="short">Short</button>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Your reply</h2>
+            <p class="lead">Edit anything you like before posting.</p>
+            <textarea class="out" id="rOut" style="min-height:190px;border:0;margin-top:10px" aria-label="Suggested reply"></textarea>
+            <div class="btn-row" style="margin-top:12px">
+              <button class="btn btn-primary" id="rCopy">Copy reply</button>
+              <button class="btn btn-ghost" id="rAgain">Another version</button>
+              <a class="btn btn-ghost" href="https://business.google.com/reviews" target="_blank" rel="noopener">Open my Google reviews</a>
+            </div>
+            <p class="help" id="rTip"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- GOAL -->
+      <div class="panel" data-panel="goal" hidden>
+        <div class="grid2">
+          <div class="card">
+            <h2>How many reviews do I need?</h2>
+            <p class="lead">Find these numbers on your Google listing.</p>
+            <div class="row2">
+              <div><label class="f" for="gRating">Current rating</label><input type="number" id="gRating" min="1" max="5" step="0.1" placeholder="e.g. 4.2" inputmode="decimal"></div>
+              <div><label class="f" for="gCount">Number of reviews</label><input type="number" id="gCount" min="0" step="1" placeholder="e.g. 38" inputmode="numeric"></div>
+            </div>
+            <label class="f" for="gTarget">Target rating</label>
+            <select id="gTarget">
+              <option>4.3</option><option>4.4</option><option selected>4.5</option><option>4.6</option><option>4.7</option><option>4.8</option><option>4.9</option>
+            </select>
+            <div style="margin-top:20px" id="gOut"></div>
+          </div>
+          <div class="card">
+            <h2>Your asking streak</h2>
+            <p class="lead">Review requests sent each week, last 8 weeks.</p>
+            <div class="bars" id="gBars"></div>
+            <p class="help" id="gBarsNote" style="margin-top:12px"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" data-panel="settings" hidden>
+        <div class="grid2">
+          <div class="card" id="setupApp"></div>
+          <div class="stack">
+            <div class="card">
+              <h2>Use it on another phone</h2>
+              <p class="lead">Send this link to a member of staff. Opening it copies your business setup (not your customer list).</p>
+              <button class="btn btn-ghost" id="shareSetup" style="margin-top:10px">Copy setup link</button>
+            </div>
+            <div class="card">
+              <h2>Back up</h2>
+              <p class="lead">Everything lives in this browser. Save a backup file now and then.</p>
+              <div class="btn-row" style="margin-top:10px">
+                <button class="btn btn-ghost" id="backupBtn">Download backup</button>
+                <label class="btn btn-ghost" for="restoreFile">Restore backup</label>
+                <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+              </div>
+            </div>
+            <div class="card">
+              <h2>Start again</h2>
+              <p class="lead">Deletes your business details and customer list from this device.</p>
+              <button class="btn btn-danger" id="wipeBtn" style="margin-top:10px">Delete everything</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The business form; moved between the landing page and Settings -->
+  <form id="bizForm" novalidate>
+    <h2 id="formTitle" hidden>Business details</h2>
+    <label class="f" for="fName">Business name</label>
+    <input type="text" id="fName" maxlength="60" placeholder="e.g. Lark Lane Coffee" required>
+    <p class="err" id="eName"></p>
+
+    <label class="f" for="fGoogle">Google review link or Place ID</label>
+    <input type="text" id="fGoogle" placeholder="https://g.page/r/…/review" autocomplete="off" spellcheck="false" required>
+    <p class="err" id="eGoogle"></p>
+    <p class="help" id="hGoogle"></p>
+    <details class="how">
+      <summary>Where do I find this?</summary>
+      <ol>
+        <li>On your phone or computer, sign in to the Google account that manages your business.</li>
+        <li>Search Google for your business name. Your Business Profile appears with your management tools.</li>
+        <li>Tap <b>Ask for reviews</b> (sometimes under <b>Read reviews</b> → <b>Get more reviews</b>).</li>
+        <li>Copy the link it gives you (it looks like <code>g.page/r/…/review</code>) and paste it above.</li>
+      </ol>
+      <p class="small muted">No access to the profile? Use Google's free <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener">Place ID finder</a>: search your business and paste the ID that starts with "ChIJ".</p>
+    </details>
+    <button type="button" class="btn btn-ghost btn-sm" id="testGoogle" style="margin-top:10px">Test my Google link</button>
+
+    <div class="row2">
+      <div><label class="f" for="fOwner">Your first name <span class="opt">(optional)</span></label><input type="text" id="fOwner" maxlength="30" placeholder="e.g. Sam"><p class="help">Used to sign messages.</p></div>
+      <div><label class="f" for="fColor">Brand colour</label><input type="color" id="fColor" value="#0b2f4a" style="height:46px;padding:4px;width:100%;border:1px solid var(--border);border-radius:10px;background:var(--card)"></div>
+    </div>
+
+    <p style="margin-top:20px;font-weight:700">Where should private feedback go?</p>
+    <p class="help" style="margin-top:2px">Customers who weren't happy can message you here instead of only posting publicly. Add at least one.</p>
+    <div class="row2">
+      <div><label class="f" for="fEmail">Email</label><input type="email" id="fEmail" placeholder="you@business.co.uk" autocomplete="email"></div>
+      <div><label class="f" for="fWa">WhatsApp number</label><input type="tel" id="fWa" placeholder="07…" autocomplete="tel"></div>
+    </div>
+    <p class="err" id="eContact"></p>
+    <button type="submit" class="btn btn-gold" id="saveBiz" style="margin-top:22px;width:100%;padding:14px">Create my review page</button>
+  </form>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div id="printSheet"></div>
+
+  <script src="qr.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var KEY = 'mersey-stars-v1';
+    var DAY = 86400000;
+    var TEMPLATES = {
+      friendly: 'Hi {name}, thanks for choosing {business} today! If you\'ve got 30 seconds, a quick Google review would really help us out:\n{link}\n\nThanks a million,\n{owner}',
+      short: 'Hi {name}, thanks for coming to {business}! Would you mind leaving us a quick review? {link}',
+      trades: 'Hi {name}, thanks again for having us out. Hope you\'re happy with the job! If you are, a Google review helps a small local business like ours more than you\'d think:\n{link}\n\n{owner}, {business}',
+      custom: 'Hi {name}, '
+    };
+    var NUDGE = 'Hi {name}, just a gentle reminder in case it got buried. If you have a moment, we\'d love to hear how we did:\n{link}\n\nNo worries if not. Thanks!\n{owner}';
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+    var defaults = {
+      biz: null, linkMode: 'page', tpl: 'friendly', custom: TEMPLATES.custom, log: [], queue: [],
+      print: { layout: 'table', head: 'Enjoyed your visit?', sub: 'Scan with your phone camera to leave us a quick Google review' },
+      reply: { r: 5, tone: 'warm', name: '', mention: '' },
+      goal: { rating: '', count: '', target: '4.5' }
+    };
+    var state;
+    try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
+    state = Object.assign({}, defaults, state || {});
+    ['print', 'reply', 'goal'].forEach(function (k) { state[k] = Object.assign({}, defaults[k], state[k] || {}); });
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ } }
+
+    var toastTimer;
+    function toast(msg) {
+      var t = $('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2600);
+    }
+    function copy(text, msg) {
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+        ta.remove();
+      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).catch(fallback); else fallback();
+      toast(msg || 'Copied');
+    }
+    function download(name, blob) {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    }
+
+    // ---------- Links ----------
+    function googleUrl(g) {
+      g = (g || '').trim();
+      if (/^https?:\/\//i.test(g)) return g.replace(/^http:/i, 'https:');
+      if (/^(g\.page|maps\.app\.goo\.gl|goo\.gl|search\.google\.com|www\.google\.|google\.)/i.test(g)) return 'https://' + g;
+      if (/^[A-Za-z0-9_-]{15,}$/.test(g)) return 'https://search.google.com/local/writereview?placeid=' + g;
+      return '';
+    }
+    function pageUrl(b) {
+      b = b || state.biz;
+      var u = new URL('r.html', location.href);
+      u.hash = '';
+      u.search = '';
+      var p = new URLSearchParams();
+      p.set('n', b.name);
+      var g = googleUrl(b.google);
+      var m = g.match(/^https:\/\/search\.google\.com\/local\/writereview\?placeid=([A-Za-z0-9_-]+)$/);
+      var gp = g.match(/^https:\/\/g\.page\/r\/([A-Za-z0-9_-]+)\/review\/?$/);
+      p.set('g', m ? m[1] : gp ? 'r/' + gp[1] : g);
+      if (b.owner) p.set('o', b.owner);
+      if (b.email) p.set('e', b.email);
+      if (b.wa) p.set('w', waNumber(b.wa));
+      if (b.color && b.color.toLowerCase() !== '#0b2f4a') p.set('c', b.color.replace('#', ''));
+      u.search = p.toString();
+      return u.href;
+    }
+    function reviewLink() { return state.linkMode === 'google' ? googleUrl(state.biz.google) : pageUrl(); }
+    function waNumber(s) {
+      var d = String(s || '').replace(/[^\d+]/g, '');
+      if (d.charAt(0) === '+') return d.slice(1);
+      if (d.indexOf('00') === 0) return d.slice(2);
+      if (d.charAt(0) === '0') return '44' + d.slice(1);
+      return d;
+    }
+    function isEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s || '').trim()); }
+    function isPhone(s) { return String(s || '').replace(/\D/g, '').length >= 9; }
+    function ownerName() { var b = state.biz; return b.owner ? b.owner : 'The ' + b.name + ' team'; }
+    function fill(tpl, name) {
+      var b = state.biz;
+      return tpl
+        .replace(/\{name\}/g, (name || '').trim() || 'there')
+        .replace(/\{business\}/g, b.name)
+        .replace(/\{owner\}/g, ownerName())
+        .replace(/\{link\}/g, reviewLink());
+    }
+    function openChannel(via, contact, text) {
+      var c = (contact || '').trim();
+      if (via === 'wa') {
+        var n = isPhone(c) ? waNumber(c) : '';
+        window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+      } else if (via === 'sms') {
+        var num = isPhone(c) ? c.replace(/[^\d+]/g, '') : '';
+        location.href = 'sms:' + num + '?&body=' + encodeURIComponent(text);
+      } else if (via === 'email') {
+        var to = isEmail(c) ? c : '';
+        location.href = 'mailto:' + to + '?subject=' + encodeURIComponent('Thanks from ' + state.biz.name) + '&body=' + encodeURIComponent(text);
+      }
+    }
+
+    // ---------- Views ----------
+    var form = $('bizForm');
+    function setView(v) {
+      var hasBiz = !!state.biz;
+      if (v === 'app' && !hasBiz) v = 'landing';
+      $('landing').hidden = v !== 'landing';
+      $('app').hidden = v !== 'app';
+      $('toApp').hidden = !(hasBiz && v === 'landing');
+      $('toAbout').hidden = v !== 'app';
+      $('toSetup').hidden = hasBiz;
+      if (v === 'landing') {
+        $('setupHome').appendChild(form);
+        $('formTitle').hidden = true;
+        if (hasBiz) {
+          $('setupSection').querySelector('h2.t').textContent = 'Your business';
+          $('setupSection').querySelector('p.st').textContent = 'You\'re set up. Change your details here or open your dashboard.';
+        }
+      } else {
+        $('setupApp').appendChild(form);
+        $('formTitle').hidden = false;
+        renderApp();
+      }
+      $('saveBiz').textContent = hasBiz ? 'Save changes' : 'Create my review page';
+      fillForm();
+      window.scrollTo(0, 0);
+    }
+    $('toApp').addEventListener('click', function () { setView('app'); });
+    $('toAbout').addEventListener('click', function () { setView('landing'); });
+    $('logoLink').addEventListener('click', function (e) { e.preventDefault(); setView(state.biz ? 'app' : 'landing'); });
+
+    var tab = 'ask';
+    function setTab(t) {
+      tab = t;
+      document.querySelectorAll('.tab').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === t)); });
+      document.querySelectorAll('[data-panel]').forEach(function (p) { p.hidden = p.dataset.panel !== t; });
+      if (t === 'qr') renderQr();
+      if (t === 'goal') renderGoal();
+      if (t === 'reply') renderReply();
+      try { sessionStorage.setItem(KEY + '-tab', t); } catch (e) { /* ignore */ }
+    }
+    document.querySelectorAll('.tab').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+
+    // ---------- Business form ----------
+    function fillForm() {
+      var b = state.biz || {};
+      $('fName').value = b.name || '';
+      $('fGoogle').value = b.google || '';
+      $('fOwner').value = b.owner || '';
+      $('fColor').value = b.color || '#0b2f4a';
+      $('fEmail').value = b.email || '';
+      $('fWa').value = b.wa || '';
+      googleHint();
+    }
+    function googleHint() {
+      var v = $('fGoogle').value.trim(), h = '';
+      if (v) {
+        var g = googleUrl(v);
+        if (!g) h = '';
+        else if (/google\.[a-z.]+\/maps|maps\.app\.goo\.gl/i.test(g)) h = 'This looks like a Google Maps link. It works, but a review link (g.page/r/…/review) opens the review box directly, which gets more reviews.';
+        else if (!/(g\.page|google\.|goo\.gl)/i.test(g)) h = 'This doesn\'t look like a Google link. Double-check it with "Test my Google link".';
+        else h = '✓ Looks good.';
+      }
+      $('hGoogle').textContent = h;
+    }
+    $('fGoogle').addEventListener('input', googleHint);
+    $('testGoogle').addEventListener('click', function () {
+      var g = googleUrl($('fGoogle').value);
+      if (!g) { $('eGoogle').textContent = 'Paste your review link or Place ID first.'; return; }
+      $('eGoogle').textContent = '';
+      window.open(g, '_blank', 'noopener');
+    });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = $('fName').value.trim(), google = $('fGoogle').value.trim();
+      var email = $('fEmail').value.trim(), wa = $('fWa').value.trim();
+      var ok = true;
+      $('eName').textContent = name ? '' : 'Please enter your business name.';
+      if (!name) ok = false;
+      if (!googleUrl(google)) { $('eGoogle').textContent = 'Please paste your Google review link (or Place ID). See "Where do I find this?" below.'; ok = false; }
+      else $('eGoogle').textContent = '';
+      var ce = '';
+      if (email && !isEmail(email)) ce = 'That email address doesn\'t look right.';
+      else if (wa && !isPhone(wa)) ce = 'That WhatsApp number looks too short.';
+      else if (!email && !wa) ce = 'Add an email or WhatsApp number so unhappy customers can reach you privately.';
+      $('eContact').textContent = ce;
+      if (ce) ok = false;
+      if (!ok) { var firstErr = form.querySelector('.err:not(:empty)'); if (firstErr) firstErr.previousElementSibling.focus(); return; }
+      var isNew = !state.biz;
+      state.biz = { name: name, google: google, owner: $('fOwner').value.trim(), color: $('fColor').value, email: email, wa: wa };
+      save();
+      if (isNew) { setView('app'); setTab('ask'); toast('You\'re all set! Send your first ask below.'); }
+      else { renderApp(); toast('Saved'); }
+    });
+
+    // ---------- App ----------
+    function renderApp() {
+      if (!state.biz) return;
+      $('appBizName').textContent = state.biz.name;
+      $('appLink').textContent = pageUrl();
+      $('appLinkOpen').href = pageUrl();
+      $('fileWarn').hidden = location.protocol !== 'file:';
+      renderTpl();
+      renderLog();
+      renderBulk();
+      if (tab === 'qr') renderQr();
+      if (tab === 'reply') renderReply();
+      if (tab === 'goal') renderGoal();
+    }
+    document.querySelectorAll('[data-copy-link]').forEach(function (b) {
+      b.addEventListener('click', function () { copy(pageUrl(), 'Review link copied'); });
+    });
+
+    // Ask
+    function currentTpl() { return state.tpl === 'custom' ? state.custom : TEMPLATES[state.tpl]; }
+    function renderTpl() {
+      document.querySelectorAll('#tplSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tpl === state.tpl)); });
+      $('tplText').value = currentTpl();
+      renderPreview();
+    }
+    function renderPreview() { $('askPreview').textContent = fill($('tplText').value, $('askName').value); }
+    $('tplSeg').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      state.tpl = b.dataset.tpl; save(); renderTpl();
+    });
+    $('tplText').addEventListener('input', function () {
+      if (state.tpl !== 'custom') {
+        state.tpl = 'custom';
+        document.querySelectorAll('#tplSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tpl === 'custom')); });
+      }
+      state.custom = $('tplText').value; save(); renderPreview();
+    });
+    $('askName').addEventListener('input', renderPreview);
+
+    function logAsk(name, contact, via) {
+      state.log.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name: name, contact: contact, via: via, at: Date.now(), reviewed: false, nudged: 0 });
+      if (state.log.length > 2000) state.log.length = 2000;
+      save(); renderLog();
+    }
+    document.querySelectorAll('[data-send]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var via = b.dataset.send, name = $('askName').value.trim(), contact = $('askContact').value.trim();
+        var text = fill($('tplText').value, name);
+        if (text.indexOf(reviewLink()) === -1) { toast('Your message needs {link} in it'); return; }
+        if (via === 'copy') copy(text, 'Message copied. Paste it anywhere.');
+        else openChannel(via, contact, text);
+        logAsk(name, contact, via);
+        $('askName').value = ''; $('askContact').value = ''; renderPreview();
+        if (via !== 'copy') toast('Added to your list');
+      });
+    });
+
+    // Bulk list
+    function parseBulk(text) {
+      return text.split(/\n+/).map(function (line) {
+        line = line.trim(); if (!line) return null;
+        var m = line.match(/([^\s,;\t]+@[^\s,;\t]+)/) || line.match(/(\+?[\d][\d\s()-]{7,}\d)/);
+        var contact = m ? m[1].trim() : '';
+        var name = (m ? line.replace(m[1], '') : line).replace(/[,;\t]+/g, ' ').trim().split(/\s+/)[0] || '';
+        return { name: name, contact: contact, sent: '' };
+      }).filter(Boolean).slice(0, 200);
+    }
+    function renderBulk() {
+      var q = state.queue;
+      $('bulkClear').hidden = !q.length;
+      if (!q.length) { $('bulkList').innerHTML = ''; return; }
+      var left = q.filter(function (r) { return !r.sent; }).length;
+      var html = '<p class="help" style="margin-top:14px">' + (left ? left + ' left to ask. Tap a button to open the message, send it, then come back here.' : 'All done! Nice work.') + '</p><table class="log"><tbody>';
+      q.forEach(function (r, i) {
+        var phone = isPhone(r.contact), email = isEmail(r.contact);
+        html += '<tr><td><b>' + esc(r.name || 'No name') + '</b><br><span class="small muted">' + esc(r.contact || 'no contact') + '</span></td>' +
+          '<td>' + (r.sent ? '<span class="pill ok">Sent</span>' : '<span class="pill wait">To ask</span>') + '</td>' +
+          '<td class="acts">' +
+          (phone || !email ? '<button class="btn btn-wa btn-sm" data-q="' + i + '" data-via="wa">WhatsApp</button> <button class="btn btn-primary btn-sm" data-q="' + i + '" data-via="sms">Text</button> ' : '') +
+          (email ? '<button class="btn btn-ghost btn-sm" data-q="' + i + '" data-via="email">Email</button>' : '') +
+          '</td></tr>';
+      });
+      $('bulkList').innerHTML = html + '</tbody></table>';
+    }
+    $('bulkBuild').addEventListener('click', function () {
+      var rows = parseBulk($('bulkText').value);
+      if (!rows.length) { toast('Paste at least one customer first'); return; }
+      state.queue = rows; save(); $('bulkText').value = ''; renderBulk();
+    });
+    $('bulkClear').addEventListener('click', function () { state.queue = []; save(); renderBulk(); });
+    $('bulkList').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-q]'); if (!b) return;
+      var r = state.queue[+b.dataset.q];
+      openChannel(b.dataset.via, r.contact, fill(currentTpl(), r.name));
+      if (!r.sent) logAsk(r.name, r.contact, b.dataset.via);
+      r.sent = b.dataset.via; save(); renderBulk();
+    });
+
+    // Log
+    function ago(t) {
+      var d = Math.floor((Date.now() - t) / DAY);
+      if (d <= 0) return 'Today';
+      if (d === 1) return 'Yesterday';
+      if (d < 14) return d + ' days ago';
+      return new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    }
+    function needsNudge(r) { return !r.reviewed && !r.nudged && Date.now() - r.at > 3 * DAY && r.via !== 'copy'; }
+    var VIA = { wa: 'WhatsApp', sms: 'Text', email: 'Email', copy: 'Copied' };
+    var showAll = false;
+    function renderLog() {
+      var log = state.log, weekAgo = Date.now() - 7 * DAY;
+      $('stWeek').textContent = log.filter(function (r) { return r.at > weekAgo; }).length;
+      $('stNudge').textContent = log.filter(needsNudge).length;
+      $('stDone').textContent = log.filter(function (r) { return r.reviewed; }).length;
+      if (!log.length) { $('logWrap').innerHTML = '<div class="empty">Nobody yet. Send your first ask above and it\'ll appear here.</div>'; return; }
+      var rows = showAll ? log : log.slice(0, 25);
+      var html = '<table class="log"><thead><tr><th>Customer</th><th>Status</th><th></th></tr></thead><tbody>';
+      rows.forEach(function (r) {
+        var status = r.reviewed ? '<span class="pill ok">Reviewed ★</span>' : needsNudge(r) ? '<span class="pill nudge">Nudge?</span>' : r.nudged ? '<span class="pill wait">Nudged</span>' : '<span class="pill wait">Waiting</span>';
+        html += '<tr><td><b>' + esc(r.name || 'Customer') + '</b><br><span class="small muted">' + VIA[r.via] + ' · ' + ago(r.at) + '</span></td><td>' + status + '</td><td class="acts">' +
+          (needsNudge(r) ? '<button class="btn btn-gold btn-sm" data-act="nudge" data-id="' + r.id + '">Send nudge</button> ' : '') +
+          '<button class="btn btn-ghost btn-sm" data-act="rev" data-id="' + r.id + '">' + (r.reviewed ? 'Undo' : 'Reviewed') + '</button> ' +
+          '<button class="btn btn-ghost btn-sm" data-act="del" data-id="' + r.id + '" aria-label="Remove">✕</button></td></tr>';
+      });
+      html += '</tbody></table>';
+      if (log.length > 25) html += '<button class="btn btn-ghost btn-sm" id="logMore" style="margin-top:12px">' + (showAll ? 'Show fewer' : 'Show all ' + log.length) + '</button>';
+      $('logWrap').innerHTML = html;
+    }
+    $('logWrap').addEventListener('click', function (e) {
+      if (e.target.id === 'logMore') { showAll = !showAll; renderLog(); return; }
+      var b = e.target.closest('[data-act]'); if (!b) return;
+      var r = state.log.find(function (x) { return x.id === b.dataset.id; }); if (!r) return;
+      if (b.dataset.act === 'rev') { r.reviewed = !r.reviewed; if (r.reviewed) toast('Brilliant! Another review in the bag ★'); }
+      else if (b.dataset.act === 'nudge') { openChannel(r.via, r.contact, fill(NUDGE, r.name)); r.nudged = Date.now(); }
+      else if (b.dataset.act === 'del') { state.log = state.log.filter(function (x) { return x !== r; }); }
+      save(); renderLog();
+    });
+
+    // ---------- QR & print ----------
+    function qrSvg() { return QR.toSvg(QR.encode(pageUrl()), { margin: 2 }); }
+    function contrastText(hex) {
+      var r = parseInt(hex.substr(1, 2), 16), g = parseInt(hex.substr(3, 2), 16), b = parseInt(hex.substr(5, 2), 16);
+      return (r * 299 + g * 587 + b * 114) / 1000 > 160 ? '#111827' : '#ffffff';
+    }
+    var GW = '<span class="gw"><b>G</b><b>o</b><b>o</b><b>g</b><b>l</b><b>e</b> reviews</span>';
+    function cardHtml(layout, svg) {
+      var b = state.biz, p = state.print;
+      var style = '--pc-brand:' + b.color + ';--pc-on:' + contrastText(b.color);
+      if (layout === 'mini') {
+        return '<div class="pc pc-mini" style="' + style + '"><div class="band"></div><div class="txt"><div class="nm">' + esc(b.name) + '</div><h3>' + esc(p.head) + '</h3><div class="stars">★★★★★</div><div class="sub">' + esc(p.sub) + '</div></div><div class="qr">' + svg + '</div></div>';
+      }
+      return '<div class="pc pc-' + layout + '" style="' + style + '"><div class="band">' + esc(b.name) + '</div><h3>' + esc(p.head) + '</h3><div class="stars">★★★★★</div><div class="qr">' + svg + '</div><div class="sub">' + esc(p.sub) + '</div>' + GW + '</div>';
+    }
+    function renderQr() {
+      if (!state.biz) return;
+      var svg = qrSvg();
+      $('qrSmall').innerHTML = svg;
+      document.querySelectorAll('#layoutSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.layout === state.print.layout)); });
+      $('pHead').value = state.print.head;
+      $('pSub').value = state.print.sub;
+      $('prevInner').innerHTML = cardHtml(state.print.layout, svg);
+      fitPreview();
+    }
+    function fitPreview() {
+      var inner = $('prevInner'), card = inner.firstElementChild;
+      if (!card || $('prevWrap').offsetParent === null) return;
+      inner.style.transform = 'none';
+      var avail = $('prevWrap').clientWidth - 32, w = card.offsetWidth, h = card.offsetHeight;
+      var s = Math.min(1, avail / w, 460 / h);
+      inner.style.transform = 'scale(' + s + ')';
+      inner.style.width = w * s + 'px';
+      inner.style.height = h * s + 'px';
+    }
+    window.addEventListener('resize', fitPreview);
+    $('layoutSeg').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      state.print.layout = b.dataset.layout; save(); renderQr();
+    });
+    $('pHead').addEventListener('input', function () { state.print.head = this.value; save(); $('prevInner').innerHTML = cardHtml(state.print.layout, qrSvg()); fitPreview(); });
+    $('pSub').addEventListener('input', function () { state.print.sub = this.value; save(); $('prevInner').innerHTML = cardHtml(state.print.layout, qrSvg()); fitPreview(); });
+    function slug() { return state.biz.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'review'; }
+    $('dlPng').addEventListener('click', function () {
+      var c = QR.toCanvas(QR.encode(pageUrl()), document.createElement('canvas'), 16, { margin: 4 });
+      c.toBlob(function (blob) { download(slug() + '-review-qr.png', blob); });
+    });
+    $('dlSvg').addEventListener('click', function () {
+      download(slug() + '-review-qr.svg', new Blob([QR.toSvg(QR.encode(pageUrl()), { margin: 4 })], { type: 'image/svg+xml' }));
+    });
+    $('printBtn').addEventListener('click', function () {
+      var layout = state.print.layout, svg = qrSvg();
+      var per = layout === 'table' ? 4 : layout === 'mini' ? 10 : 1;
+      var cards = '';
+      for (var i = 0; i < per; i++) cards += cardHtml(layout, svg);
+      $('printSheet').innerHTML = '<div class="sheet ' + layout + '">' + cards + '</div>';
+      setTimeout(function () { window.print(); }, 50);
+    });
+
+    // ---------- Replies ----------
+    var REPLIES = {
+      pos: {
+        warm: {
+          open: ['Thank you so much, {name}!', 'Thanks a million, {name}!', 'Aw, thank you {name}!', '{name}, this made our day. Thank you!'],
+          mention: ['We\'re so glad you enjoyed {m}.', 'Really happy to hear {m} hit the spot.', 'Great to hear {m} went down well.'],
+          plain: ['It means a lot to a small local team like ours.', 'Reviews like this genuinely make our week.', 'We\'re delighted you had a good time with us.'],
+          close: ['Hope to see you again soon!', 'Looking forward to seeing you next time.', 'See you again soon!']
+        },
+        pro: {
+          open: ['Thank you for your review, {name}.', 'Thank you for taking the time to leave a review, {name}.', 'Many thanks for your kind words, {name}.'],
+          mention: ['We are pleased to hear you were happy with {m}.', 'It is good to know {m} met your expectations.'],
+          plain: ['We are pleased you had a positive experience with {business}.', 'Your feedback is appreciated by the whole team.'],
+          close: ['We look forward to welcoming you back.', 'We hope to see you again soon.']
+        },
+        short: {
+          open: ['Thanks so much, {name}!', 'Thank you, {name}!', 'Cheers {name}!'],
+          mention: ['Glad you enjoyed {m}.'], plain: ['Really appreciate it.', 'Means a lot.'],
+          close: ['See you soon!', 'Hope to see you again.']
+        }
+      },
+      mid: {
+        warm: {
+          open: ['Thanks for the honest review, {name}.', 'Thank you for taking the time to share this, {name}.'],
+          mention: ['Thanks for flagging {m}. I\'ve passed it on to the team.', 'Your point about {m} is a fair one, and we\'re looking at it.'],
+          plain: ['It sounds like we didn\'t quite get everything right, and we want every visit to be a five-star one.', 'We want every visit to be a five-star one, so feedback like this really helps.'],
+          close: ['{contact} Hope we can show you a better time next time.', '{contact} We\'d love the chance to win that extra star.']
+        },
+        pro: {
+          open: ['Thank you for your feedback, {name}.', 'Thank you for your review, {name}.'],
+          mention: ['Thank you for raising {m}; we have shared this with the team.'],
+          plain: ['We are sorry your experience was not everything it should have been.', 'We take all feedback seriously and are always looking to improve.'],
+          close: ['{contact}', '{contact} We hope to have the opportunity to serve you better next time.']
+        },
+        short: {
+          open: ['Thanks for the feedback, {name}.'], mention: ['We\'ll look at {m}.'], plain: ['Sorry it wasn\'t perfect.'],
+          close: ['{contact}']
+        }
+      },
+      neg: {
+        warm: {
+          open: ['{name}, I\'m really sorry to read this.', 'I\'m so sorry, {name}. This isn\'t the experience we want anyone to have.'],
+          mention: ['What you\'ve described with {m} isn\'t good enough.', 'Thank you for telling us about {m}. That shouldn\'t have happened.'],
+          plain: ['It\'s not the standard we hold ourselves to, and we\'d genuinely like to put it right.', 'We\'d genuinely like to understand what happened and put it right.'],
+          close: ['{contact} I\'d really like the chance to make it up to you.', '{contact} Thank you for giving us the chance to put it right.']
+        },
+        pro: {
+          open: ['Dear {name}, thank you for your feedback, and please accept our apologies.', 'Dear {name}, we are sorry to read about your experience.'],
+          mention: ['The issue you describe with {m} falls below the standard we expect.', 'Thank you for raising {m}; this has been shared with the team.'],
+          plain: ['We take this seriously and are looking into what happened.'],
+          close: ['{contact} We would welcome the opportunity to resolve this with you directly.']
+        },
+        short: {
+          open: ['Sorry to hear this, {name}.'], mention: ['Sorry about {m}.'], plain: ['That\'s not good enough.'],
+          close: ['{contact}']
+        }
+      }
+    };
+    var replyVariant = 0;
+    function contactLine() {
+      var b = state.biz, parts = [];
+      if (b.email) parts.push('email ' + b.email);
+      if (b.wa) parts.push('message us on ' + b.wa);
+      if (!parts.length) return 'Please ask for ' + (b.owner || 'the manager') + ' next time you\'re in.';
+      return 'Please ' + parts.join(' or ') + (b.owner ? ' and ask for ' + b.owner : '') + ' so we can talk it through.';
+    }
+    function pick(arr, i) { return arr[i % arr.length]; }
+    function buildReply() {
+      var b = state.biz, rp = state.reply;
+      var band = rp.r >= 4 ? 'pos' : rp.r === 3 ? 'mid' : 'neg';
+      var set = REPLIES[band][rp.tone];
+      var name = rp.name.trim() || 'there', m = rp.mention.trim(), v = replyVariant;
+      var parts = [pick(set.open, v), m ? pick(set.mention, v + 1) : pick(set.plain, v + 1)];
+      if (rp.tone !== 'short' && m && band !== 'pos') parts.push(pick(set.plain, v));
+      else if (rp.tone !== 'short' && band === 'pos' && v % 2 === 1) parts.splice(1, 0, pick(set.plain, v + 2));
+      parts.push(pick(set.close, v));
+      var text = parts.join(' ')
+        .replace(/\{name\}/g, name).replace(/\{m\}/g, m).replace(/\{business\}/g, b.name)
+        .replace(/\{contact\}/g, contactLine()).replace(/\s+/g, ' ').trim();
+      if (name === 'there') text = text.replace(/^Dear there, /, '').replace(/, there([.!])/g, '$1').replace(/^there, /, '').replace(/ there!/, '!');
+      text = text.charAt(0).toUpperCase() + text.slice(1);
+      var sign = b.owner ? b.owner + ', ' + b.name : 'The ' + b.name + ' team';
+      return text + '\n\n' + sign;
+    }
+    function renderReply() {
+      if (!state.biz) return;
+      var rp = state.reply;
+      document.querySelectorAll('#rStars button').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.r === rp.r)); });
+      document.querySelectorAll('#rTone button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tone === rp.tone)); });
+      if (document.activeElement !== $('rName')) $('rName').value = rp.name;
+      if (document.activeElement !== $('rMention')) $('rMention').value = rp.mention;
+      $('rOut').value = buildReply();
+      $('rTip').textContent = rp.r <= 3
+        ? 'Keep it calm and short. Never argue in public: future customers read your reply more than the review. Take the details offline.'
+        : 'Reply within a day or two. Thanking people by name encourages others to leave reviews too.';
+    }
+    $('rStars').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; state.reply.r = +b.dataset.r; replyVariant = 0; save(); renderReply(); });
+    $('rTone').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; state.reply.tone = b.dataset.tone; replyVariant = 0; save(); renderReply(); });
+    $('rName').addEventListener('input', function () { state.reply.name = this.value; save(); renderReply(); });
+    $('rMention').addEventListener('input', function () { state.reply.mention = this.value; save(); renderReply(); });
+    $('rAgain').addEventListener('click', function () { replyVariant++; renderReply(); });
+    $('rCopy').addEventListener('click', function () { copy($('rOut').value, 'Reply copied. Paste it on Google.'); });
+
+    // ---------- Goal ----------
+    function renderGoal() {
+      var g = state.goal;
+      if (document.activeElement !== $('gRating')) $('gRating').value = g.rating;
+      if (document.activeElement !== $('gCount')) $('gCount').value = g.count;
+      $('gTarget').value = g.target;
+      var R = parseFloat(g.rating), N = parseInt(g.count, 10), T = parseFloat(g.target), out;
+      if (!(R >= 1 && R <= 5) || !(N >= 0)) {
+        out = '<p class="muted">Enter your current rating and number of reviews to see your target.</p>';
+      } else if (N === 0) {
+        out = '<p class="big">1</p><p>Your first five-star review gets you started. Ask your five most loyal customers today.</p>';
+      } else if (R >= T) {
+        out = '<p class="big" style="color:var(--ok)">You\'re there ★</p><p>You\'re already at ' + R.toFixed(1) + '. Keep asking every week so new reviews keep your rating fresh and protect it from the odd bad day.</p>';
+      } else {
+        var need = Math.ceil(N * (T - R) / (5 - T) - 1e-9);
+        out = '<p class="muted small">Five-star reviews needed to reach ' + T.toFixed(1) + '</p><p class="big">' + need + '</p>' +
+          '<p>That\'s about <b>' + Math.ceil(need / 4) + ' a week</b> for a month, or <b>' + Math.ceil(need / 12) + ' a week</b> over three months. Most people won\'t leave one unless asked, so plan to ask several customers for every review you need.</p>' +
+          '<p class="help" style="margin-top:10px">An estimate: Google rounds your rating to one decimal place, so your real average may be slightly higher or lower.</p>';
+      }
+      $('gOut').innerHTML = out;
+
+      var now = Date.now(), weeks = [];
+      for (var i = 7; i >= 0; i--) {
+        var end = now - i * 7 * DAY, start = end - 7 * DAY;
+        weeks.push({ n: state.log.filter(function (r) { return r.at > start && r.at <= end; }).length, label: i === 0 ? 'This wk' : i + 'w ago' });
+      }
+      var max = Math.max.apply(null, weeks.map(function (w) { return w.n; }).concat([1]));
+      $('gBars').innerHTML = weeks.map(function (w) {
+        return '<div><span>' + w.n + '</span><i style="height:' + (w.n / max * 80) + '%"></i><span>' + w.label + '</span></div>';
+      }).join('');
+      var total = state.log.length, done = state.log.filter(function (r) { return r.reviewed; }).length;
+      $('gBarsNote').textContent = total ? 'You\'ve asked ' + total + ' customer' + (total === 1 ? '' : 's') + ' and ' + done + ' have left a review so far.' : 'Send asks from the "Ask customers" tab and your weekly count shows here.';
+    }
+    ['gRating', 'gCount'].forEach(function (id) {
+      $(id).addEventListener('input', function () { state.goal[id === 'gRating' ? 'rating' : 'count'] = this.value; save(); renderGoal(); });
+    });
+    $('gTarget').addEventListener('change', function () { state.goal.target = this.value; save(); renderGoal(); });
+
+    // ---------- Settings ----------
+    function b64(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+    function unb64(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+    $('shareSetup').addEventListener('click', function () {
+      var u = new URL(location.href);
+      u.search = '';
+      u.hash = 'setup=' + b64(JSON.stringify({ biz: state.biz, tpl: state.tpl, custom: state.custom, linkMode: state.linkMode }));
+      copy(u.href, 'Setup link copied. Send it to your other phone.');
+    });
+    $('backupBtn').addEventListener('click', function () {
+      download('mersey-stars-backup-' + new Date().toISOString().slice(0, 10) + '.json', new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }));
+    });
+    $('restoreFile').addEventListener('change', function () {
+      var f = this.files[0]; if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var data = JSON.parse(reader.result);
+          if (!data || !data.biz || !data.biz.name) throw new Error('bad');
+          state = Object.assign({}, defaults, data);
+          save(); setView('app'); setTab('ask'); toast('Backup restored');
+        } catch (e) { toast('That file isn\'t a Mersey Stars backup'); }
+      };
+      reader.readAsText(f);
+      this.value = '';
+    });
+    $('wipeBtn').addEventListener('click', function () {
+      if (!confirm('Delete your business details and customer list from this device? This can\'t be undone.')) return;
+      state = JSON.parse(JSON.stringify(defaults));
+      try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ }
+      location.reload();
+    });
+
+    // ---------- Start ----------
+    var m = location.hash.match(/^#setup=([A-Za-z0-9_-]+)$/);
+    if (m) {
+      try {
+        var shared = JSON.parse(unb64(m[1]));
+        if (shared.biz && shared.biz.name && (!state.biz || confirm('Replace the business on this device with ' + shared.biz.name + '?'))) {
+          state.biz = shared.biz;
+          ['tpl', 'custom', 'linkMode'].forEach(function (k) { if (shared[k]) state[k] = shared[k]; });
+          save();
+          setTimeout(function () { toast('Set up for ' + shared.biz.name); }, 300);
+        }
+      } catch (e) { /* ignore a broken link */ }
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+    var savedTab;
+    try { savedTab = sessionStorage.getItem(KEY + '-tab'); } catch (e) { savedTab = null; }
+    setView(state.biz ? 'app' : 'landing');
+    if (state.biz) setTab(savedTab && document.querySelector('[data-panel="' + savedTab + '"]') ? savedTab : 'ask');
+  })();
+  </script>
+</body>
+</html>
