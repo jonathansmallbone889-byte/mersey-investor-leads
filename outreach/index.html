@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>Mersey Stars Outreach</title>
+  <meta name="theme-color" content="#0b2f4a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Outreach">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f6f8; --card: #ffffff; --text: #111827; --muted: #5b6472; --border: #e1e5eb;
+      --brand: #0b2f4a; --accent: #0b5cad; --soft: #f1f4f8; --star: #f5b301;
+      --ok: #15803d; --ok-soft: #e7f6ec; --warn: #b45309; --warn-soft: #fef3e2; --bad: #b91c1c; --bad-soft: #fdecec;
+      --info: #1d4ed8; --info-soft: #e8f0fe; --violet: #6d28d9; --violet-soft: #f1eafe;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d1117; --card: #161b22; --text: #e8edf3; --muted: #9aa5b1; --border: #2a323c;
+        --accent: #6cb2ff; --soft: #1d242d; --ok: #4ade80; --ok-soft: #12301d; --warn: #fbbf24; --warn-soft: #33270f;
+        --bad: #f87171; --bad-soft: #3a1717; --info: #93c5fd; --info-soft: #14263a; --violet: #c4b5fd; --violet-soft: #241a3a;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0d1117; --card: #161b22; --text: #e8edf3; --muted: #9aa5b1; --border: #2a323c;
+      --accent: #6cb2ff; --soft: #1d242d; --ok: #4ade80; --ok-soft: #12301d; --warn: #fbbf24; --warn-soft: #33270f;
+      --bad: #f87171; --bad-soft: #3a1717; --info: #93c5fd; --info-soft: #14263a; --violet: #c4b5fd; --violet-soft: #241a3a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; line-height: 1.45; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+    [hidden] { display: none !important; }
+    a { color: var(--accent); }
+    header.top { background: var(--brand); color: #fff; padding: calc(14px + env(safe-area-inset-top)) 16px 14px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 10; }
+    header.top svg { width: 30px; height: 30px; flex: none; }
+    header.top h1 { font-size: 18px; margin: 0; flex: 1; }
+    header.top .date { font-size: 13px; opacity: .75; }
+    main { max-width: 640px; margin: 0 auto; padding: 16px; }
+    nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; background: var(--card); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); padding-bottom: env(safe-area-inset-bottom); z-index: 20; }
+    nav.tabs button { background: none; border: 0; padding: 9px 0 10px; font: inherit; font-size: 12px; font-weight: 600; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+    nav.tabs button svg { width: 24px; height: 24px; }
+    nav.tabs button[aria-selected="true"] { color: var(--accent); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 14px; }
+    .card h2 { font-size: 17px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+    .card h2 .n { background: var(--soft); color: var(--muted); font-size: 13px; padding: 1px 9px; border-radius: 99px; }
+    .card .sub { color: var(--muted); font-size: 14px; margin: 0 0 10px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+    .stat { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+    .stat b { display: block; font-size: 24px; letter-spacing: -.02em; }
+    .stat span { font-size: 12px; color: var(--muted); }
+    .item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-top: 1px solid var(--border); cursor: pointer; }
+    .item:first-of-type { border-top: 0; }
+    .item .main { flex: 1; min-width: 0; }
+    .item .nm { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item .meta { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item .chev { color: var(--muted); font-size: 20px; }
+    .empty { color: var(--muted); font-size: 14px; padding: 6px 0; }
+    .pill { display: inline-block; font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+    .p-check, .p-nofit { background: var(--soft); color: var(--muted); }
+    .p-follow { background: var(--info-soft); color: var(--info); }
+    .p-followed { background: var(--violet-soft); color: var(--violet); }
+    .p-dm, .p-fu { background: var(--warn-soft); color: var(--warn); }
+    .p-replied, .p-demo { background: var(--ok-soft); color: var(--ok); }
+    .p-signed { background: #fff3c4; color: #7a5400; }
+    .p-no { background: var(--bad-soft); color: var(--bad); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid transparent; border-radius: 12px; padding: 11px 14px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
+    .btn svg { width: 18px; height: 18px; }
+    .btn-primary { background: var(--brand); color: #fff; }
+    :root[data-theme="dark"] .btn-primary { background: #2563a8; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-primary { background: #2563a8; } }
+    .btn-gold { background: var(--star); color: #1f1600; }
+    .btn-ig { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); color: #fff; }
+    .btn-ghost { background: var(--card); color: var(--text); border-color: var(--border); }
+    .btn-danger { background: var(--card); color: var(--bad); border-color: var(--border); }
+    .btn-sm { padding: 7px 11px; font-size: 13px; border-radius: 10px; }
+    .btn-block { width: 100%; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row > .btn { flex: 1 1 auto; }
+    label.f { display: block; font-size: 13px; font-weight: 700; margin: 14px 0 6px; }
+    label.f .o { font-weight: 400; color: var(--muted); }
+    input[type=text], input[type=number], input[type=date], input[type=search], select, textarea {
+      width: 100%; font: inherit; font-size: 16px; color: var(--text); background: var(--card);
+      border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+    }
+    textarea { min-height: 90px; resize: vertical; line-height: 1.45; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+    .help { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+    .chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 10px; scrollbar-width: none; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { flex: none; background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .chip[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .msg { white-space: pre-wrap; background: #dcf8c6; color: #111; border-radius: 14px 14px 4px 14px; padding: 12px 14px; font-size: 14.5px; margin: 10px 0; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 10px; margin-top: 10px; }
+    .badge.ok { background: var(--ok-soft); color: var(--ok); }
+    .badge.no { background: var(--bad-soft); color: var(--bad); }
+    .badge.wait { background: var(--soft); color: var(--muted); }
+    .notice { background: var(--warn-soft); border-radius: 12px; padding: 11px 13px; font-size: 13.5px; margin-top: 10px; }
+    .meter { height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .meter i { display: block; height: 100%; background: var(--star); border-radius: 99px; }
+    /* Lead sheet */
+    .sheet { position: fixed; inset: 0; background: var(--bg); z-index: 40; overflow-y: auto; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+    .sheet header { position: sticky; top: 0; background: var(--brand); color: #fff; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 12px 12px; z-index: 2; }
+    .sheet header button { background: rgba(255,255,255,.15); border: 0; color: #fff; border-radius: 10px; width: 38px; height: 38px; font-size: 20px; cursor: pointer; flex: none; }
+    .sheet header .t { flex: 1; min-width: 0; }
+    .sheet header .t b { display: block; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sheet header .t span { font-size: 12.5px; opacity: .8; }
+    .steps { display: flex; gap: 4px; margin: 4px 0 2px; }
+    .steps i { flex: 1; height: 5px; border-radius: 99px; background: var(--border); }
+    .steps i.on { background: var(--star); }
+    .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translate(-50%, 16px); opacity: 0; pointer-events: none; background: #111827; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; transition: all .2s; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .res { border-top: 1px solid var(--border); padding: 11px 0; display: flex; gap: 10px; align-items: center; }
+    .res:first-child { border-top: 0; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity=".12"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>
+    <h1 id="title">Today</h1>
+    <span class="date" id="today"></span>
+  </header>
+
+  <main>
+    <!-- TODAY -->
+    <section data-view="today">
+      <div class="stats">
+        <div class="stat"><b id="sDm">0</b><span>DMs sent today</span></div>
+        <div class="stat"><b id="sReplies">0</b><span>replies</span></div>
+        <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
+      </div>
+      <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
+      <div class="card"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
+      <div class="card">
+        <h2>Ready to DM <span class="n" id="nDm"></span></h2>
+        <p class="sub" id="dmLimitText"></p>
+        <div class="meter"><i id="dmMeter"></i></div>
+        <div id="lDm" style="margin-top:8px"></div>
+      </div>
+      <div class="card"><h2>Follow and like <span class="n" id="nFollow"></span></h2><p class="sub">Follow, then like 2 or 3 posts. DM them tomorrow.</p><div id="lFollow"></div></div>
+      <div class="card"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following.</p><div id="lCheck"></div></div>
+      <button class="btn btn-gold btn-block" data-go="find">Find new businesses</button>
+    </section>
+
+    <!-- LEADS -->
+    <section data-view="leads" hidden>
+      <input type="search" id="q" placeholder="Search businesses" aria-label="Search businesses" style="margin-bottom:10px">
+      <div class="chips" id="filters"></div>
+      <div class="card" style="padding-top:6px;padding-bottom:6px"><div id="lAll"></div></div>
+      <button class="btn btn-ghost btn-block" id="addManual">+ Add a business manually</button>
+    </section>
+
+    <!-- FIND -->
+    <section data-view="find" hidden>
+      <div class="card">
+        <h2>1. Your criteria</h2>
+        <p class="sub">The businesses you want to find.</p>
+        <div class="two">
+          <div><label class="f" for="cMin">Min rating</label><input type="number" id="cMin" step="0.1" min="1" max="5" inputmode="decimal"></div>
+          <div><label class="f" for="cMax">Max rating</label><input type="number" id="cMax" step="0.1" min="1" max="5" inputmode="decimal"></div>
+        </div>
+        <div class="two">
+          <div><label class="f" for="cRev">Fewer than … reviews</label><input type="number" id="cRev" min="1" inputmode="numeric"></div>
+          <div><label class="f" for="cCount">How many to find</label><input type="number" id="cCount" min="1" max="20" inputmode="numeric"></div>
+        </div>
+        <label class="f">Types of business</label>
+        <div class="chips" id="cTypes" style="flex-wrap:wrap;overflow:visible"></div>
+        <label class="f" for="cAreas">Areas <span class="o">(comma separated)</span></label>
+        <input type="text" id="cAreas">
+      </div>
+
+      <div class="card">
+        <h2>2. Ask Google AI</h2>
+        <p class="sub">Copy this prompt into Gemini. It already excludes every business on your list.</p>
+        <textarea id="prompt" readonly style="min-height:150px;font-size:13.5px"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-primary" id="copyPrompt">Copy prompt</button>
+          <a class="btn btn-ghost" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>3. Import the results</h2>
+        <p class="sub">Paste the table Gemini gives you (or export it as CSV and choose the file). New businesses land in "Check these".</p>
+        <textarea id="importText" placeholder="Paste the table or CSV here"></textarea>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btn-primary" id="doImport">Import</button>
+          <label class="btn btn-ghost" for="importFile">Choose CSV file</label>
+          <input type="file" id="importFile" accept=".csv,text/csv,text/plain" hidden>
+        </div>
+      </div>
+
+      <div class="card" id="liveCard">
+        <h2>Live Google Maps search <span class="n">optional</span></h2>
+        <div id="liveOff"><p class="sub">Search Google Maps directly from the app, with real ratings and review counts. Needs a free Google Maps key, which you can add in Settings.</p></div>
+        <div id="liveOn" hidden>
+          <p class="sub">Searches Google Maps and keeps only open businesses that match your criteria.</p>
+          <div class="two">
+            <div><label class="f" for="lvType">Type</label><select id="lvType"></select></div>
+            <div><label class="f" for="lvArea">Area</label><input type="text" id="lvArea" placeholder="e.g. Crosby"></div>
+          </div>
+          <button class="btn btn-primary btn-block" id="liveGo" style="margin-top:12px">Search</button>
+          <div id="liveRes" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section data-view="settings" hidden>
+      <div class="card">
+        <h2>You</h2>
+        <label class="f" for="sName">Your first name</label><input type="text" id="sName">
+        <label class="f" for="sIg">Your Instagram username</label><input type="text" id="sIg" placeholder="merseystars">
+        <label class="f" for="sLink">Your Mersey Stars link</label><input type="text" id="sLink">
+        <div class="two">
+          <div><label class="f" for="sLimit">DMs per day</label><input type="number" id="sLimit" min="1" max="20" inputmode="numeric"></div>
+          <div><label class="f" for="sFu">Follow up after (days)</label><input type="number" id="sFu" min="1" max="14" inputmode="numeric"></div>
+        </div>
+        <p class="help">Keep DMs to about 5 a day while your account is new, so Instagram doesn't flag you.</p>
+        <a class="btn btn-ig btn-block" id="myIg" target="_blank" rel="noopener" style="margin-top:12px">Open my Instagram</a>
+      </div>
+      <div class="card">
+        <h2>Google Maps key <span class="n">optional</span></h2>
+        <p class="sub">Turns on live search in the Find tab. Create one in Google Cloud (Maps JavaScript API and Places API (New)), restrict it to your website, and paste it here. It stays on this phone.</p>
+        <input type="text" id="sKey" placeholder="AIza…" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="card">
+        <h2>Backup</h2>
+        <p class="sub">Your leads are stored on this phone only. Save a backup now and then.</p>
+        <div class="row">
+          <button class="btn btn-ghost" id="exportBtn">Save backup</button>
+          <label class="btn btn-ghost" for="restoreFile">Restore</label>
+          <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+        </div>
+        <button class="btn btn-ghost btn-block" id="exportCsv" style="margin-top:8px">Download leads as CSV</button>
+      </div>
+      <div class="card">
+        <h2>Install on your phone</h2>
+        <p class="sub"><b>Android (Chrome):</b> ⋮ menu → <b>Add to home screen</b>.<br><b>iPhone (Safari):</b> Share → <b>Add to Home Screen</b>.<br>It then opens full-screen like an app.</p>
+      </div>
+      <button class="btn btn-danger btn-block" id="wipe">Delete all leads</button>
+    </section>
+  </main>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Today</button>
+    <button role="tab" data-tab="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Leads</button>
+    <button role="tab" data-tab="find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Find</button>
+    <button role="tab" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
+  </nav>
+
+  <!-- Lead detail -->
+  <div class="sheet" id="sheet" hidden>
+    <header>
+      <button id="sheetBack" aria-label="Back">←</button>
+      <div class="t"><b id="shName"></b><span id="shMeta"></span></div>
+    </header>
+    <main id="shBody"></main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    'use strict';
+    var KEY = 'ms-outreach-v1';
+    var DAY = 86400000;
+    var STATUS = [
+      ['check', 'To check'], ['follow', 'Ready to follow'], ['followed', 'Followed'], ['dm', 'DM sent'],
+      ['fu', 'Followed up'], ['replied', 'Replied'], ['demo', 'Demo booked'], ['signed', 'Signed up'],
+      ['no', 'Not interested'], ['nofit', 'Not a fit']
+    ];
+    var STATUS_NAME = {}; STATUS.forEach(function (s) { STATUS_NAME[s[0]] = s[1]; });
+    var TYPES = [
+      ['salon', 'Hair & beauty salons', 'hair salon'], ['nails', 'Nail bars', 'nail bar'], ['barber', 'Barbers', 'barber'],
+      ['groomer', 'Dog groomers', 'dog groomer'], ['cafe', 'Cafés & restaurants', 'café'], ['takeaway', 'Takeaways', 'takeaway'],
+      ['gym', 'Gyms & PTs', 'gym'], ['tattoo', 'Tattoo studios', 'tattoo studio'], ['shop', 'Independent shops', 'independent shop'],
+      ['trade', 'Trades', 'plumber']
+    ];
+    var TYPE_NAME = {}; TYPES.forEach(function (t) { TYPE_NAME[t[0]] = t[1]; });
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+    function todayIso() { return iso(new Date()); }
+    function addDays(isoStr, n) { var p = isoStr.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]); d.setDate(d.getDate() + n); return iso(d); }
+    function nice(isoStr) {
+      if (!isoStr) return '';
+      var p = isoStr.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]);
+      var t = todayIso();
+      if (isoStr === t) return 'today';
+      if (isoStr === addDays(t, -1)) return 'yesterday';
+      if (isoStr === addDays(t, 1)) return 'tomorrow';
+      return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+    function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+    function handle(h) { return String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '').trim(); }
+    function igUrl(h) { return 'https://www.instagram.com/' + encodeURIComponent(handle(h)) + '/'; }
+    function mapsUrl(l) { return l.maps || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool'].filter(Boolean).join(' '))); }
+    function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
+
+    var defaults = {
+      me: { name: 'Jonathan', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', limit: 5, fuDays: 3, key: '' },
+      crit: { min: 4.0, max: 4.8, reviews: 100, count: 5, types: ['salon', 'nails', 'barber', 'groomer', 'cafe', 'gym'], areas: 'Crosby, Waterloo, Formby, Maghull, Southport, Wavertree, Aigburth, Childwall, West Derby, Allerton, Woolton, Liverpool city centre' },
+      leads: []
+    };
+    var state;
+    try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
+    state = state || JSON.parse(JSON.stringify(defaults));
+    state.me = Object.assign({}, defaults.me, state.me || {});
+    state.crit = Object.assign({}, defaults.crit, state.crit || {});
+    state.leads = state.leads || [];
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast('Could not save on this phone'); } }
+
+    var toastT;
+    function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 2400); }
+    function copy(text, msg) {
+      function fb() { var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) { /* ignore */ } ta.remove(); }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).catch(fb); else fb();
+      if (msg) toast(msg);
+    }
+    function download(name, text, type) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name;
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+    }
+
+    // ---------- Criteria ----------
+    function meets(l) {
+      var r = parseFloat(l.rating), n = parseInt(l.reviews, 10), c = state.crit;
+      if (isNaN(r) || isNaN(n)) return null;
+      return r >= c.min && r <= c.max && n < c.reviews;
+    }
+    function ratingText(l) {
+      if (!l.rating && !l.reviews) return '';
+      return (l.rating ? l.rating + '★' : '?★') + ' · ' + (l.reviews !== '' && l.reviews != null ? l.reviews : '?') + ' reviews' + (l.verified ? '' : ' (to check)');
+    }
+
+    // ---------- Messages ----------
+    var TYPE_LINE = {
+      salon: "I've built a free tool that helps salons turn happy clients into Google reviews, with a quick WhatsApp after their appointment or a QR card at the desk.",
+      nails: "I've built a free tool that helps nail bars turn happy clients into Google reviews, with a quick WhatsApp after their appointment or a QR card at the desk.",
+      barber: "I've built a free tool that helps barbers get more Google reviews, with a quick WhatsApp after a cut or a QR card at the chair.",
+      groomer: "I've built a free tool that helps groomers turn happy owners into Google reviews. You can send the \"after\" photo on WhatsApp with your review link.",
+      cafe: "I've built a free tool that helps independent cafés turn regulars into Google reviews, with a QR card by the till or on every table.",
+      takeaway: "I've built a free tool that helps takeaways get happy customers on Google, not just the odd unhappy one, with a QR card on the counter or a quick message after an order.",
+      gym: "I've built a free tool that helps gyms and PTs turn happy members into Google reviews, with a quick WhatsApp after a milestone or a QR card on the wall.",
+      tattoo: "I've built a free tool that helps studios turn happy clients into Google reviews, with a quick WhatsApp once they've healed or a QR card at the desk.",
+      trade: "I've built a free tool that helps trades get more Google reviews, with a quick WhatsApp the day the job's finished.",
+      shop: "I've built a free tool that helps independent shops turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp.",
+      other: "I've built a free tool that helps local businesses turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp."
+    };
+    function dmText(l) {
+      var me = state.me.name || 'Jonathan';
+      var opener = (l.compliment || '').trim();
+      if (opener && !/[.!?…😍👏🙌😊🔥💈🐶☕💪🍕🌿]$/.test(opener)) opener += '!';
+      if (!opener) opener = 'Love what you\'re doing at ' + l.name + '!';
+      var rev = '';
+      var n = parseInt(l.reviews, 10);
+      if (l.verified && !isNaN(n) && n < 60) rev = ' You\'ve got a great rating but only ' + n + ' reviews on Google, which doesn\'t reflect how many happy customers you must have.';
+      return 'Hi! ' + opener + ' I\'m ' + me + ', I\'m local to Liverpool.' + rev + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' I\'m looking for a few founding businesses to try it free. Could I show you in 2 minutes? 😊';
+    }
+    function fuText() { return 'Hi again! Just checking you saw my message, no worries if not. Happy to pop in any time 😊'; }
+    function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
+
+    // ---------- Views ----------
+    var view = 'today', filter = 'all';
+    function setView(v) {
+      view = v;
+      document.querySelectorAll('[data-view]').forEach(function (s) { s.hidden = s.dataset.view !== v; });
+      document.querySelectorAll('nav.tabs button').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.tab === v)); });
+      $('title').textContent = { today: 'Today', leads: 'Leads', find: 'Find businesses', settings: 'Settings' }[v];
+      render();
+      window.scrollTo(0, 0);
+    }
+    document.querySelectorAll('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.tab); }); });
+    document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.go); }); });
+
+    function itemHtml(l, meta, right) {
+      return '<div class="item" data-id="' + l.id + '"><div class="main"><div class="nm">' + esc(l.name) + '</div><div class="meta">' + esc(meta) + '</div></div>' +
+        (right || '<span class="pill p-' + l.status + '">' + STATUS_NAME[l.status] + '</span>') + '<span class="chev">›</span></div>';
+    }
+    function list(id, arr, metaFn, empty) {
+      $(id).innerHTML = arr.length ? arr.map(function (l) { return itemHtml(l, metaFn(l)); }).join('') : '<p class="empty">' + empty + '</p>';
+    }
+    function typeArea(l) { return [TYPE_NAME[l.type] ? TYPE_NAME[l.type].replace(/s( &|$)/, '$1') : '', l.area].filter(Boolean).join(' · '); }
+
+    function render() {
+      $('today').textContent = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+      if (view === 'today') renderToday();
+      if (view === 'leads') renderLeads();
+      if (view === 'find') renderFind();
+      if (view === 'settings') renderSettings();
+    }
+
+    function renderToday() {
+      var t = todayIso(), L = state.leads, fd = state.me.fuDays;
+      var dmToday = L.filter(function (l) { return l.dmAt === t; }).length;
+      $('sDm').textContent = dmToday;
+      $('sReplies').textContent = L.filter(function (l) { return ['replied', 'demo', 'signed'].indexOf(l.status) > -1; }).length;
+      $('sSigned').textContent = L.filter(function (l) { return l.status === 'signed'; }).length;
+
+      var hot = L.filter(function (l) { return l.status === 'replied' || l.status === 'demo'; });
+      $('cardHot').hidden = !hot.length; $('nHot').textContent = hot.length;
+      list('lHot', hot, function (l) { return l.status === 'demo' ? 'Demo ' + nice(l.demoAt) : 'Replied, book a demo'; }, '');
+
+      var fu = L.filter(function (l) {
+        return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t);
+      });
+      $('nFu').textContent = fu.length;
+      list('lFu', fu, function (l) { return l.status === 'fu' ? 'Followed up ' + nice(l.fuAt) + '. Visit or call?' : 'DM sent ' + nice(l.dmAt); }, 'Nothing due today 👍');
+
+      var left = Math.max(0, state.me.limit - dmToday);
+      var ready = L.filter(function (l) { return l.status === 'followed'; });
+      $('nDm').textContent = ready.length;
+      $('dmLimitText').textContent = left ? dmToday + ' of ' + state.me.limit + ' sent today. ' + left + ' left. Spread them out.' : 'Daily limit reached (' + state.me.limit + '). Send the rest tomorrow.';
+      $('dmMeter').style.width = Math.min(100, dmToday / state.me.limit * 100) + '%';
+      list('lDm', ready.slice(0, Math.max(left, 0) || ready.length), function (l) { return typeArea(l) + (l.followedAt ? ' · followed ' + nice(l.followedAt) : ''); }, 'Nobody followed yet. Follow some businesses first.');
+
+      var fol = L.filter(function (l) { return l.status === 'follow'; });
+      $('nFollow').textContent = fol.length;
+      list('lFollow', fol, function (l) { return typeArea(l) + (l.ig ? ' · @' + handle(l.ig) : ''); }, 'None waiting. Check new leads below.');
+
+      var chk = L.filter(function (l) { return l.status === 'check'; });
+      $('nCheck').textContent = chk.length;
+      list('lCheck', chk, function (l) { return typeArea(l) + ' · ' + (ratingText(l) || 'not checked'); }, 'No new leads. Tap "Find new businesses".');
+    }
+
+    function renderLeads() {
+      var counts = { all: state.leads.length };
+      state.leads.forEach(function (l) { counts[l.status] = (counts[l.status] || 0) + 1; });
+      $('filters').innerHTML = [['all', 'All']].concat(STATUS).filter(function (s) { return s[0] === 'all' || counts[s[0]]; }).map(function (s) {
+        return '<button class="chip" data-f="' + s[0] + '" aria-pressed="' + (filter === s[0]) + '">' + s[1] + ' ' + (counts[s[0]] || 0) + '</button>';
+      }).join('');
+      var q = $('q').value.trim().toLowerCase();
+      var order = {}; STATUS.forEach(function (s, i) { order[s[0]] = i; });
+      var arr = state.leads.filter(function (l) {
+        return (filter === 'all' || l.status === filter) && (!q || (l.name + ' ' + (l.area || '') + ' ' + (l.ig || '')).toLowerCase().indexOf(q) > -1);
+      }).sort(function (a, b) { return order[a.status] - order[b.status] || a.name.localeCompare(b.name); });
+      list('lAll', arr, function (l) { return typeArea(l) + (ratingText(l) ? ' · ' + ratingText(l) : ''); }, q ? 'No matches.' : 'No leads here yet.');
+    }
+    $('filters').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; renderLeads(); });
+    $('q').addEventListener('input', renderLeads);
+    document.addEventListener('click', function (e) {
+      var it = e.target.closest('.item[data-id]');
+      if (it && !$('sheet').contains(it)) openLead(it.dataset.id);
+    });
+    $('addManual').addEventListener('click', function () {
+      var name = prompt('Business name?');
+      if (!name || !name.trim()) return;
+      var l = newLead({ name: name.trim() });
+      state.leads.push(l); save(); openLead(l.id);
+    });
+
+    // ---------- Find ----------
+    function renderFind() {
+      var c = state.crit;
+      $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count; $('cAreas').value = c.areas;
+      $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
+      $('prompt').value = buildPrompt();
+      var on = !!state.me.key;
+      $('liveOff').hidden = on; $('liveOn').hidden = !on;
+      if (on && !$('lvType').options.length) $('lvType').innerHTML = TYPES.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+    }
+    function buildPrompt() {
+      var c = state.crit;
+      var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
+      var names = state.leads.map(function (l) { return l.name; });
+      return 'Find ' + c.count + ' independent small businesses in Liverpool and Merseyside, UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
+        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
+        'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
+        (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
+        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source,Google Maps Link\n\n' +
+        'Important: only give an Instagram username you found on the business\'s own Google listing or website. Don\'t guess usernames. If you can\'t verify one, choose a different business.';
+    }
+    $('cTypes').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-t]'); if (!b) return;
+      var i = state.crit.types.indexOf(b.dataset.t);
+      if (i > -1) state.crit.types.splice(i, 1); else state.crit.types.push(b.dataset.t);
+      save(); renderFind();
+    });
+    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cAreas', 'areas', String]].forEach(function (f) {
+      $(f[0]).addEventListener('change', function () {
+        var v = f[2](this.value, 10);
+        if (f[2] !== String && isNaN(v)) return;
+        state.crit[f[1]] = v; save(); $('prompt').value = buildPrompt();
+      });
+    });
+    $('copyPrompt').addEventListener('click', function () { copy($('prompt').value, 'Prompt copied. Paste it into Gemini.'); });
+
+    // CSV / table import
+    function parseRows(text) {
+      text = text.replace(/\r/g, '').trim();
+      if (!text) return [];
+      var lines = text.split('\n').filter(function (x) { return x.trim() && !/^\s*\|?\s*:?-{3,}/.test(x); });
+      var isPipe = lines[0].indexOf('|') > -1;
+      var isTab = !isPipe && lines[0].indexOf('\t') > -1;
+      return lines.map(function (line) {
+        if (isPipe) return line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
+        if (isTab) return line.split('\t').map(function (c) { return c.trim(); });
+        var out = [], cur = '', q = false;
+        for (var i = 0; i < line.length; i++) {
+          var ch = line[i];
+          if (q) { if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+          else if (ch === '"') q = true;
+          else if (ch === ',') { out.push(cur.trim()); cur = ''; }
+          else cur += ch;
+        }
+        out.push(cur.trim());
+        return out;
+      });
+    }
+    function guessType(s) {
+      s = (s || '').toLowerCase();
+      if (/nail/.test(s)) return 'nails';
+      if (/barber/.test(s)) return 'barber';
+      if (/groom|dog|pet/.test(s)) return 'groomer';
+      if (/hair|beauty|salon|brow|lash|aesthetic|spa/.test(s)) return 'salon';
+      if (/gym|fitness|pt|personal train|yoga|pilates/.test(s)) return 'gym';
+      if (/tattoo/.test(s)) return 'tattoo';
+      if (/takeaway|pizza|kebab|chippy|fish/.test(s)) return 'takeaway';
+      if (/caf|coffee|restaurant|bistro|bakery|deli|bar|pub/.test(s)) return 'cafe';
+      if (/plumb|electric|decorat|build|clean|roof|joiner|garage|mechanic/.test(s)) return 'trade';
+      if (/shop|boutique|store|florist/.test(s)) return 'shop';
+      return 'other';
+    }
+    function newLead(o) {
+      return Object.assign({ id: uid(), name: '', type: 'other', area: '', address: '', ig: '', maps: '', rating: '', reviews: '', verified: false,
+        status: 'check', compliment: '', notes: '', createdAt: todayIso(), followedAt: '', dmAt: '', fuAt: '', demoAt: '' }, o);
+    }
+    function importRows(rows) {
+      if (rows.length < 2) return 0;
+      var h = rows[0].map(function (x) { return x.toLowerCase(); });
+      function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
+      var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
+        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cMaps = col(/maps|link/);
+      if (cName < 0) cName = 0;
+      var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+      var added = 0;
+      rows.slice(1).forEach(function (r) {
+        var name = (r[cName] || '').replace(/\*\*/g, '').trim();
+        if (!name || have[name.toLowerCase()]) return;
+        var addr = cAddr > -1 ? r[cAddr] || '' : '';
+        var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
+        var ig = cIg > -1 ? handle(r[cIg]) : '';
+        if (/^(not found|n\/a|none|-)$/i.test(ig)) ig = '';
+        state.leads.push(newLead({
+          name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
+          rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
+          reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
+          ig: ig, maps: cMaps > -1 && /^https?:/.test(r[cMaps] || '') ? r[cMaps] : '', notes: 'Imported ' + nice(todayIso())
+        }));
+        have[name.toLowerCase()] = 1; added++;
+      });
+      save();
+      return added;
+    }
+    $('doImport').addEventListener('click', function () {
+      var n = importRows(parseRows($('importText').value));
+      if (n) { $('importText').value = ''; toast(n + ' new business' + (n === 1 ? '' : 'es') + ' added'); setView('today'); }
+      else toast('Nothing new found. Check the table has a header row.');
+    });
+    $('importFile').addEventListener('change', function () {
+      var f = this.files[0]; if (!f) return;
+      var r = new FileReader();
+      r.onload = function () { var n = importRows(parseRows(r.result)); toast(n ? n + ' new businesses added' : 'Nothing new in that file'); if (n) setView('today'); };
+      r.readAsText(f); this.value = '';
+    });
+
+    // Optional live search with the Google Maps JavaScript API (Places, new).
+    var mapsLoading = null;
+    function loadMaps() {
+      if (window.google && google.maps && google.maps.importLibrary) return Promise.resolve();
+      if (mapsLoading) return mapsLoading;
+      mapsLoading = new Promise(function (resolve, reject) {
+        window.__msMapsReady = resolve;
+        var s = document.createElement('script');
+        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(state.me.key) + '&v=weekly&loading=async&callback=__msMapsReady';
+        s.onerror = function () { mapsLoading = null; reject(new Error('load')); };
+        document.head.appendChild(s);
+      });
+      return mapsLoading;
+    }
+    var liveResults = [];
+    $('liveGo').addEventListener('click', function () {
+      var type = $('lvType').value, area = $('lvArea').value.trim() || 'Liverpool';
+      var q = TYPES.filter(function (t) { return t[0] === type; })[0][2] + ' in ' + area + ', Merseyside';
+      $('liveRes').innerHTML = '<p class="empty">Searching…</p>';
+      loadMaps().then(function () { return google.maps.importLibrary('places'); }).then(function (lib) {
+        return lib.Place.searchByText({
+          textQuery: q, region: 'gb', maxResultCount: 20,
+          fields: ['displayName', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'googleMapsURI', 'websiteURI']
+        });
+      }).then(function (res) {
+        var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+        var c = state.crit;
+        liveResults = (res.places || []).filter(function (p) {
+          return p.businessStatus === 'OPERATIONAL' && p.rating >= c.min && p.rating <= c.max && (p.userRatingCount || 0) < c.reviews && !have[(p.displayName || '').toLowerCase()];
+        }).map(function (p) {
+          return { name: p.displayName, address: p.formattedAddress || '', area: area, type: type, rating: String(p.rating), reviews: String(p.userRatingCount || 0), maps: p.googleMapsURI || '', web: p.websiteURI || '' };
+        });
+        $('liveRes').innerHTML = liveResults.length ? liveResults.map(function (p, i) {
+          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc(p.rating) + '★ · ' + esc(p.reviews) + ' reviews · ' + esc(p.address) + '</div></div><button class="btn btn-ghost btn-sm" data-add="' + i + '">Add</button></div>';
+        }).join('') : '<p class="empty">No matches for your criteria. Try another area or type.</p>';
+      }).catch(function (err) {
+        $('liveRes').innerHTML = '<div class="notice">Live search didn\'t work. Check your key allows the Maps JavaScript API and Places API (New), and that billing is set up in Google Cloud.' + (err && err.message ? '<br><small>' + esc(err.message) + '</small>' : '') + '</div>';
+      });
+    });
+    $('liveRes').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-add]'); if (!b) return;
+      var p = liveResults[+b.dataset.add];
+      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, rating: p.rating, reviews: p.reviews, maps: p.maps, verified: true, notes: p.web ? 'Website: ' + p.web : '' }));
+      save(); b.textContent = 'Added ✓'; b.disabled = true;
+    });
+
+    // ---------- Settings ----------
+    function renderSettings() {
+      var m = state.me;
+      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key;
+      $('myIg').href = igUrl(m.ig || 'merseystars');
+    }
+    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key']].forEach(function (f) {
+      $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
+    });
+    [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
+      $(f[0]).addEventListener('change', function () { var v = parseInt(this.value, 10); if (v > 0) { state.me[f[1]] = v; save(); } });
+    });
+    $('exportBtn').addEventListener('click', function () { download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json'); });
+    $('exportCsv').addEventListener('click', function () {
+      var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'notes'];
+      var csv = [cols.join(',')].concat(state.leads.map(function (l) {
+        return cols.map(function (c) { var v = c === 'status' ? STATUS_NAME[l.status] : l[c]; v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',');
+      })).join('\n');
+      download('mersey-outreach-leads-' + todayIso() + '.csv', csv, 'text/csv');
+    });
+    $('restoreFile').addEventListener('change', function () {
+      var f = this.files[0]; if (!f) return;
+      var r = new FileReader();
+      r.onload = function () {
+        try { var d = JSON.parse(r.result); if (!d.leads) throw 0; state = Object.assign(JSON.parse(JSON.stringify(defaults)), d); save(); toast('Backup restored'); setView('today'); }
+        catch (e) { toast('That isn\'t an outreach backup file'); }
+      };
+      r.readAsText(f); this.value = '';
+    });
+    $('wipe').addEventListener('click', function () {
+      if (!confirm('Delete every lead on this phone? Save a backup first if unsure.')) return;
+      state.leads = []; save(); toast('All leads deleted'); setView('today');
+    });
+
+    // ---------- Lead sheet ----------
+    var cur = null;
+    var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
+    function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
+    function openLead(id) { cur = find(id); if (!cur) return; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
+    $('sheetBack').addEventListener('click', closeSheet);
+
+    function renderSheet() {
+      var l = cur, h = handle(l.ig), m = meets(l);
+      $('shName').textContent = l.name;
+      $('shMeta').textContent = [TYPE_NAME[l.type], l.area].filter(Boolean).join(' · ');
+      var step = STEP[l.status], steps = '';
+      for (var i = 0; i < 6; i++) steps += '<i class="' + (i <= step ? 'on' : '') + '"></i>';
+      var html = '';
+
+      // Next action, based on where the lead is
+      var next = '';
+      if (l.status === 'check') next = '<h2>Next: check they fit</h2><p class="sub">Open Google Maps, type in the real rating and review count, and confirm the Instagram account.</p>';
+      else if (l.status === 'follow') next = '<h2>Next: follow and like</h2><p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts. Then tap "Done".</p><div class="row"><button class="btn btn-gold" data-act="followed">Done: followed and liked</button></div>';
+      else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
+      else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="sendFu">Copy follow-up</button></div>';
+      else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Try visiting or calling.</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
+      else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row"><button class="btn btn-primary" data-act="copyReply">Copy reply</button><button class="btn btn-gold" data-act="demo">Demo booked</button></div>';
+      else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
+      else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
+      else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
+      html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div></div>';
+
+      // Instagram + Maps
+      html += '<div class="card"><h2>Instagram & Google</h2>' +
+        '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
+        '<div class="row" style="margin-top:10px">' +
+        (h ? '<a class="btn btn-ig" href="' + igUrl(h) + '" target="_blank" rel="noopener">Open @' + esc(h) + '</a>' : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
+        '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a></div>' +
+        '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
+        '<div><label class="f" for="fReviews">Number of reviews</label><input type="number" id="fReviews" min="0" inputmode="numeric" value="' + esc(l.reviews) + '"></div></div>' +
+        '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google Maps</label>' +
+        (m === null ? '<div class="badge wait">Add the rating and review count to check the criteria</div>' :
+          m ? '<div class="badge ok">✓ Meets your criteria</div>' : '<div class="badge no">✕ Outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews)</div>') +
+        (l.status === 'check' ? '<div class="row" style="margin-top:12px"><button class="btn btn-gold" data-act="good">Good fit: ready to follow</button><button class="btn btn-ghost" data-act="nofit">Not a fit</button></div>' : '') +
+        '</div>';
+
+      // DM
+      if (['followed', 'dm', 'fu', 'follow', 'check'].indexOf(l.status) > -1) {
+        html += '<div class="card"><h2>Your DM</h2>' +
+          '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
+          '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
+          (l.compliment ? '' : '<p class="help">Owners can tell a copy-and-paste message. One real detail makes all the difference.</p>') +
+          '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
+          (l.status === 'followed' ? '<div class="row"><button class="btn btn-primary" data-act="copyDm">Copy DM</button>' + (h ? '<button class="btn btn-ig" data-act="copyOpen">Copy & open Instagram</button>' : '') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
+            '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>') +
+          '</div>';
+      }
+      if (l.status === 'dm') {
+        html += '<div class="card"><h2>Follow-up message</h2><div class="msg">' + esc(fuText()) + '</div><div class="row"><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>' + (h ? '<a class="btn btn-ig" href="' + igUrl(h) + '" target="_blank" rel="noopener">Open Instagram</a>' : '') + '</div><button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
+      }
+
+      // Details
+      html += '<div class="card"><h2>Details</h2>' +
+        '<label class="f" for="fName">Business name</label><input type="text" id="fName" value="' + esc(l.name) + '">' +
+        '<label class="f" for="fArea">Area</label><input type="text" id="fArea" value="' + esc(l.area) + '">' +
+        '<label class="f" for="fStatus">Status</label><select id="fStatus">' + STATUS.map(function (s) { return '<option value="' + s[0] + '"' + (l.status === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>' +
+        '<label class="f" for="fNotes">Notes</label><textarea id="fNotes" placeholder="Anything useful: owner\'s name, best time to visit…">' + esc(l.notes) + '</textarea>' +
+        '<p class="help">' + [l.followedAt ? 'Followed ' + nice(l.followedAt) : '', l.dmAt ? 'DM ' + nice(l.dmAt) : '', l.fuAt ? 'Follow-up ' + nice(l.fuAt) : ''].filter(Boolean).join(' · ') + '</p>' +
+        '<button class="btn btn-danger btn-block" data-act="delete" style="margin-top:10px">Delete this business</button></div>';
+
+      $('shBody').innerHTML = html;
+    }
+
+    function setStatus(s, extra) { cur.status = s; Object.assign(cur, extra || {}); save(); renderSheet(); }
+    $('shBody').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-act]'); if (!b) return;
+      var a = b.dataset.act, t = todayIso();
+      if (a === 'good') { if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; } setStatus('follow'); toast('Ready to follow'); }
+      else if (a === 'nofit') setStatus('nofit');
+      else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
+      else if (a === 'copyDm') copy(dmText(cur), 'DM copied');
+      else if (a === 'copyOpen') { copy(dmText(cur), 'DM copied. Paste it in their DMs'); setTimeout(function () { window.open(igUrl(cur.ig), '_blank', 'noopener'); }, 150); }
+      else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
+      else if (a === 'sendFu') copy(fuText(), 'Follow-up copied');
+      else if (a === 'fuSent') setStatus('fu', { fuAt: t });
+      else if (a === 'replied') { setStatus('replied'); toast('Brilliant! Reply quickly 🎉'); }
+      else if (a === 'copyReply') copy(replyText(), 'Reply copied');
+      else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
+      else if (a === 'signed') { setStatus('signed'); toast('Founding business signed up ⭐'); }
+      else if (a === 'no') setStatus('no');
+      else if (a === 'delete') { if (confirm('Delete ' + cur.name + '?')) { state.leads = state.leads.filter(function (l) { return l !== cur; }); save(); closeSheet(); } }
+    });
+    $('shBody').addEventListener('change', function (e) {
+      var id = e.target.id; if (!cur) return;
+      var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt' };
+      if (id === 'fVerified') cur.verified = e.target.checked;
+      else if (id === 'fStatus') cur.status = e.target.value;
+      else if (map[id]) cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim();
+      else return;
+      save();
+      if (id === 'fNotes') return;
+      var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
+    });
+    $('shBody').addEventListener('input', function (e) {
+      if (e.target.id === 'fComp' && cur) { cur.compliment = e.target.value; $('dmPrev').textContent = dmText(cur); save(); }
+    });
+    window.addEventListener('popstate', function () { if (!$('sheet').hidden) closeSheet(); });
+
+    // ---------- Import link: #import=<base64 JSON array of leads> ----------
+    var m = location.hash.match(/^#import=([A-Za-z0-9_-]+)$/);
+    if (m) {
+      try {
+        var s = m[1].replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
+        var arr = JSON.parse(decodeURIComponent(escape(atob(s))));
+        var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+        var n = 0;
+        arr.forEach(function (o) { if (o && o.name && !have[o.name.toLowerCase()]) { state.leads.push(newLead(o)); have[o.name.toLowerCase()] = 1; n++; } });
+        save();
+        setTimeout(function () { toast(n ? n + ' businesses imported' : 'Already imported'); }, 300);
+      } catch (e) { setTimeout(function () { toast('That import link is broken'); }, 300); }
+      history.replaceState(null, '', location.pathname);
+    }
+
+    setView('today');
+  })();
+  </script>
+</body>
+</html>
