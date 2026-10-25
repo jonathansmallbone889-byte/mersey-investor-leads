@@ -715,7 +715,7 @@
       else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
       else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button></div>';
       else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Visit or call if they\'re nearby, or send one polite final message to close the loop.</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
-      else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row"><button class="btn btn-primary" data-act="copyReply">Copy reply</button><button class="btn btn-gold" data-act="demo">Demo booked</button></div>';
+      else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyReply">Copy reply</button>') + '</div><button class="btn btn-gold btn-block" data-act="demo" style="margin-top:8px">Demo booked</button>';
       else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
@@ -725,7 +725,7 @@
       html += '<div class="card"><h2>Instagram & Google</h2>' +
         '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
-        (h ? igButton(l) : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
+        (h ? (igMessage(l) ? '' : igButton(l)) : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
         '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
         '<p class="help">Maps app won\'t connect? Use Google search: the business panel shows the star rating and number of reviews.</p>' +
@@ -744,21 +744,21 @@
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
           (l.compliment ? '' : '<p class="help">Owners can tell a copy-and-paste message. One real detail makes all the difference.</p>') +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
-          (l.status === 'followed' ? '<div class="row"><button class="btn btn-primary" data-act="copyDm">Copy DM</button>' + (h ? igButton(l) : '') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
-            '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>') +
+          (l.status === 'followed' ? '<div class="row">' + (h ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyDm">Copy DM</button>') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
+            (h ? '' : '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>')) +
           '</div>';
       }
       if (l.status === 'dm') {
         html += '<div class="card"><h2>Follow-up message</h2>' + hookField(l) +
           '<div class="msg" id="fuPrev">' + esc(fuText(l)) + '</div>' +
-          '<div class="row"><button class="btn btn-ghost" data-act="fuNext">Another version</button><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button></div>' +
+          '<div class="row"><button class="btn btn-ghost" data-act="fuNext">Another version</button>' + (h ? '' : '<button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>') + '</div>' +
           (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
           '<button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
       }
       if (l.status === 'fu') {
         html += '<div class="card"><h2>Final message <span class="n">optional</span></h2><p class="sub">Polite and short. It leaves the door open, and they may come back later.</p>' + hookField(l) +
           '<div class="msg" id="fuPrev">' + esc(finalText(l)) + '</div>' +
-          '<div class="row"><button class="btn btn-primary" data-act="sendFinal">Copy final message</button></div>' +
+          (h ? '' : '<div class="row"><button class="btn btn-primary" data-act="sendFinal">Copy final message</button></div>') +
           (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
           '<button class="btn btn-ghost btn-block" data-act="finalSent" style="margin-top:8px">Sent. Close this lead</button></div>';
       }
