@@ -305,6 +305,7 @@
     function handle(h) { return String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '').trim(); }
     function igUrl(h) { return 'https://www.instagram.com/' + encodeURIComponent(handle(h)) + '/'; }
     function mapsUrl(l) { return l.maps || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool'].filter(Boolean).join(' '))); }
+    function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool reviews'].filter(Boolean).join(' ')); }
     function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
 
     var defaults = {
@@ -688,10 +689,12 @@
         '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
         (h ? '<a class="btn btn-ig" href="' + igUrl(h) + '" target="_blank" rel="noopener">Open @' + esc(h) + '</a>' : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
-        '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a></div>' +
+        '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
+        '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
+        '<p class="help">Maps app won\'t connect? Use Google search: the business panel shows the star rating and number of reviews.</p>' +
         '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
         '<div><label class="f" for="fReviews">Number of reviews</label><input type="number" id="fReviews" min="0" inputmode="numeric" value="' + esc(l.reviews) + '"></div></div>' +
-        '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google Maps</label>' +
+        '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google</label>' +
         (m === null ? '<div class="badge wait">Add the rating and review count to check the criteria</div>' :
           m ? '<div class="badge ok">✓ Meets your criteria</div>' : '<div class="badge no">✕ Outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews)</div>') +
         (l.status === 'check' ? '<div class="row" style="margin-top:12px"><button class="btn btn-gold" data-act="good">Good fit: ready to follow</button><button class="btn btn-ghost" data-act="nofit">Not a fit</button></div>' : '') +
