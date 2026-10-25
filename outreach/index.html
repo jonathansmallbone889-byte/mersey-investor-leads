@@ -371,15 +371,41 @@
     // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
     function igMessage(l) {
       if (l.status === 'followed') return { text: dmText(l), label: 'DM' };
-      if (l.status === 'dm' || l.status === 'fu') return { text: fuText(), label: 'Follow-up' };
+      if (l.status === 'dm') return { text: fuText(l), label: 'Follow-up' };
+      if (l.status === 'fu') return { text: finalText(l), label: 'Final message' };
       if (l.status === 'replied') return { text: replyText(), label: 'Reply' };
       return null;
+    }
+    function hookField(l) {
+      return '<label class="f" for="fHook">Mention something new on their page <span class="o">(optional)</span></label>' +
+        '<input type="text" id="fHook" value="' + esc(l.fuHook || '') + '" placeholder="e.g. Saw the Halloween photos, brilliant 🎃">';
     }
     function igButton(l, cls) {
       var m = igMessage(l), h = handle(l.ig);
       return '<a class="btn btn-ig' + (cls || '') + '" data-ig href="' + igUrl(h) + '" target="_blank" rel="noopener">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open @' + esc(h) : 'Open @' + esc(h)) + '</a>';
     }
-    function fuText() { return 'Hi again! Just checking you saw my message, no worries if not. Happy to pop in any time 😊'; }
+    // Follow-ups: four wordings, each business gets its own by default, and "Another version" cycles them.
+    var PEOPLE = { salon: 'clients', nails: 'clients', barber: 'customers', groomer: 'dog owners', cafe: 'regulars', takeaway: 'regulars', gym: 'members', tattoo: 'clients', trade: 'customers', shop: 'customers', other: 'customers' };
+    var FU = [
+      ['Hi again!', 'Just checking you saw my message. No worries if you\'re busy. I\'m happy to pop in to {name} for 2 minutes whenever suits 😊'],
+      ['Hi!', 'Just following up on my message about getting more Google reviews from your {people}. It\'s completely free while I launch, and I\'d set it all up for you. Worth a quick look? 😊'],
+      ['Hey!', 'I know it gets busy, so just bumping this up. I\'m only looking for a handful of founding businesses in Liverpool, and I\'d love {name} to be one of them. Fancy a quick chat? 😊'],
+      ['Hi again!', 'Quick one: would it help if your happy {people} could leave {name} a Google review in one tap, from a QR card on the counter or a quick WhatsApp? Happy to show you, it takes 2 minutes 😊']
+    ];
+    function seed(l) { var n = 0; for (var i = 0; i < l.id.length; i++) n = (n * 31 + l.id.charCodeAt(i)) % 9973; return n; }
+    function fill(t, l) { return t.replace(/\{name\}/g, l.name).replace(/\{people\}/g, PEOPLE[l.type] || 'customers'); }
+    function withHook(greet, body, l) {
+      var hook = (l.fuHook || '').trim();
+      if (hook && !/[.!?…]$/.test(hook) && !/\p{Extended_Pictographic}$/u.test(hook)) hook += '!';
+      return greet + ' ' + (hook ? hook + ' ' : '') + fill(body, l);
+    }
+    function fuText(l) {
+      var v = FU[((l.fuVar == null ? seed(l) : l.fuVar) % FU.length + FU.length) % FU.length];
+      return withHook(v[0], v[1], l);
+    }
+    function finalText(l) {
+      return withHook('Hi!', 'Last message from me, I promise 😊 If getting more Google reviews isn\'t a priority right now, no problem at all. If it ever is, I\'m local and always happy to help. All the best with {name}!', l);
+    }
     function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
 
     // ---------- Views ----------
@@ -687,8 +713,8 @@
       if (l.status === 'check') next = '<h2>Next: check they fit</h2><p class="sub">Open Google Maps, type in the real rating and review count, and confirm the Instagram account.</p>';
       else if (l.status === 'follow') next = '<h2>Next: follow and like</h2><p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts. Then tap "Done".</p><div class="row"><button class="btn btn-gold" data-act="followed">Done: followed and liked</button></div>';
       else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
-      else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="sendFu">Copy follow-up</button></div>';
-      else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Try visiting or calling.</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
+      else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button></div>';
+      else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Visit or call if they\'re nearby, or send one polite final message to close the loop.</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
       else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row"><button class="btn btn-primary" data-act="copyReply">Copy reply</button><button class="btn btn-gold" data-act="demo">Demo booked</button></div>';
       else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
@@ -712,7 +738,7 @@
         '</div>';
 
       // DM
-      if (['followed', 'dm', 'fu', 'follow', 'check'].indexOf(l.status) > -1) {
+      if (['followed', 'follow', 'check'].indexOf(l.status) > -1) {
         html += '<div class="card"><h2>Your DM</h2>' +
           '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
@@ -723,7 +749,18 @@
           '</div>';
       }
       if (l.status === 'dm') {
-        html += '<div class="card"><h2>Follow-up message</h2><div class="msg">' + esc(fuText()) + '</div><div class="row"><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>' + (h ? igButton(l) : '') + '</div><button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
+        html += '<div class="card"><h2>Follow-up message</h2>' + hookField(l) +
+          '<div class="msg" id="fuPrev">' + esc(fuText(l)) + '</div>' +
+          '<div class="row"><button class="btn btn-ghost" data-act="fuNext">Another version</button><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button></div>' +
+          (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
+          '<button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
+      }
+      if (l.status === 'fu') {
+        html += '<div class="card"><h2>Final message <span class="n">optional</span></h2><p class="sub">Polite and short. It leaves the door open, and they may come back later.</p>' + hookField(l) +
+          '<div class="msg" id="fuPrev">' + esc(finalText(l)) + '</div>' +
+          '<div class="row"><button class="btn btn-primary" data-act="sendFinal">Copy final message</button></div>' +
+          (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
+          '<button class="btn btn-ghost btn-block" data-act="finalSent" style="margin-top:8px">Sent. Close this lead</button></div>';
       }
 
       // Details
@@ -753,8 +790,11 @@
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
       else if (a === 'copyDm') copy(dmText(cur), 'DM copied');
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
-      else if (a === 'sendFu') copy(fuText(), 'Follow-up copied');
-      else if (a === 'fuSent') setStatus('fu', { fuAt: t });
+      else if (a === 'sendFu') copy(fuText(cur), 'Follow-up copied');
+      else if (a === 'fuNext') { cur.fuVar = ((cur.fuVar == null ? seed(cur) : cur.fuVar) + 1) % FU.length; save(); $('fuPrev').textContent = fuText(cur); }
+      else if (a === 'sendFinal') copy(finalText(cur), 'Final message copied');
+      else if (a === 'finalSent') { setStatus('no', { notes: ((cur.notes || '') + (cur.notes ? '\n' : '') + 'Final message sent ' + nice(t)).trim() }); toast('Lead closed. You can reopen it any time'); }
+      else if (a === 'fuSent') setStatus('fu', { fuAt: t, fuHook: '' });
       else if (a === 'replied') { setStatus('replied'); toast('Brilliant! Reply quickly 🎉'); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
@@ -770,11 +810,12 @@
       else if (map[id]) cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim();
       else return;
       save();
-      if (id === 'fNotes') return;
+      if (id === 'fNotes' || id === 'fHook') return;
       var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
     });
     $('shBody').addEventListener('input', function (e) {
       if (e.target.id === 'fComp' && cur) { cur.compliment = e.target.value; $('dmPrev').textContent = dmText(cur); save(); }
+      if (e.target.id === 'fHook' && cur) { cur.fuHook = e.target.value; $('fuPrev').textContent = cur.status === 'fu' ? finalText(cur) : fuText(cur); save(); }
     });
     window.addEventListener('popstate', function () { if (!$('sheet').hidden) closeSheet(); });
 
