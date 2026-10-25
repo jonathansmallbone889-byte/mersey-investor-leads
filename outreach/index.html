@@ -358,11 +358,28 @@
       shop: "I've built a free tool that helps independent shops turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp.",
       other: "I've built a free tool that helps local businesses turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp."
     };
+    // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
+    // as the default when no compliment has been written (each lead gets its own by default).
+    var COMPLIMENTS = {
+      salon: ['Love the transformations on your page 😍', 'The before-and-afters on your page are brilliant 👏', 'Your clients always leave looking amazing ✨', 'Gorgeous work on your page 😍'],
+      nails: ['Your nail art is stunning 💅', 'Those sets on your page are gorgeous 😍', 'Love the designs on your page 💅', 'Such clean, detailed work on your page ✨'],
+      barber: ['Proper sharp cuts on your page 💈', 'Those fades are spot on 👌', 'Clean work, the cuts on your page look class 👏', 'Love the cuts on your page 💈'],
+      groomer: ['The pups on your page look so happy 🐶', 'Those freshly groomed dogs are adorable 🐾', 'Love the before-and-afters of the dogs on your page 🐶', 'The dogs on your page look like they\'re having the best time 🐾'],
+      cafe: ['Your food looks unreal 😍', 'The food on your page has me hungry 😂', 'Love the look of the place ☕', 'Everything on your page looks delicious 😍'],
+      takeaway: ['That food looks unreal 🔥', 'Your page has me starving 😂', 'Everything on your menu looks class 🔥', 'Those portions look proper 👌'],
+      gym: ['Love the community you\'ve built 💪', 'The energy in your classes looks unreal 🔥', 'Great to see so many members smashing their goals 💪', 'Your class videos look brilliant 👏'],
+      tattoo: ['The pieces on your page are incredible 🔥', 'Your linework is so clean 👌', 'Love the work on your page 🔥', 'Some seriously good pieces on your page 👏'],
+      trade: ['Your finished jobs look spot on 👌', 'Really tidy work on your page 👏', 'Great quality work on your page 👌', 'Love the before-and-afters of your jobs 👏'],
+      shop: ['Love the products on your page 😍', 'Your shop looks gorgeous 😍', 'Such a lovely range on your page 👏', 'Your window displays look brilliant ✨'],
+      other: ['Love what you\'re doing 👏', 'Your page looks brilliant 👏', 'Great to see a local business doing so well 👏', 'Love your page 😍']
+    };
+    function ideas(l) { return COMPLIMENTS[l.type] || COMPLIMENTS.other; }
+    function autoCompliment(l) { var c = ideas(l); return c[seed(l) % c.length]; }
     function dmText(l) {
       var me = state.me.name || 'Jonathan';
       var opener = (l.compliment || '').trim();
-      if (opener && !/[.!?…😍👏🙌😊🔥💈🐶☕💪🍕🌿]$/.test(opener)) opener += '!';
-      if (!opener) opener = 'Love what you\'re doing at ' + l.name + '!';
+      if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}\uFE0F?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
+      if (!opener) opener = autoCompliment(l);
       var rev = '';
       var n = parseInt(l.reviews, 10);
       if (l.verified && !isNaN(n) && n < 60) rev = ' You\'ve got a great rating but only ' + n + ' reviews on Google, which doesn\'t reflect how many happy customers you must have.';
@@ -379,6 +396,11 @@
     function hookField(l) {
       return '<label class="f" for="fHook">Mention something new on their page <span class="o">(optional)</span></label>' +
         '<input type="text" id="fHook" value="' + esc(l.fuHook || '') + '" placeholder="e.g. Saw the Halloween photos, brilliant 🎃">';
+    }
+    function compNote(l) {
+      if (!l.compliment) return 'Using a ready-made compliment for this type of business. Tap an idea or type your own. A real detail from their page works best.';
+      if (l.compSrc === 'gemini') return 'Suggested by Gemini from their Google reviews. Glance at their page to check it fits.';
+      return '';
     }
     function igButton(l, cls) {
       var m = igMessage(l), h = handle(l.ig);
@@ -515,7 +537,8 @@
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
         'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source,Google Maps Link\n\n' +
+        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source,Google Maps Link,Compliment\n\n' +
+        'For Compliment: write one short, friendly compliment (under 15 words, one emoji) about something customers genuinely praise in this business\'s Google reviews, e.g. "Your Sunday roast gets rave reviews 😍". Base it only on real reviews. If nothing specific stands out, leave it blank.\n\n' +
         'Important: only give an Instagram username you found on the business\'s own Google listing or website. Don\'t guess usernames. If you can\'t verify one, choose a different business.';
     }
     $('cTypes').addEventListener('click', function (e) {
@@ -578,7 +601,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cMaps = col(/maps|link/);
+        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cMaps = col(/maps|link/), cComp = col(/compliment/);
       if (cName < 0) cName = 0;
       var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
       var added = 0;
@@ -593,7 +616,8 @@
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
           reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, maps: cMaps > -1 && /^https?:/.test(r[cMaps] || '') ? r[cMaps] : '', notes: 'Imported ' + nice(todayIso())
+          ig: ig, maps: cMaps > -1 && /^https?:/.test(r[cMaps] || '') ? r[cMaps] : '', notes: 'Imported ' + nice(todayIso()),
+          compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
         }));
         have[name.toLowerCase()] = 1; added++;
       });
@@ -742,7 +766,8 @@
         html += '<div class="card"><h2>Your DM</h2>' +
           '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
-          (l.compliment ? '' : '<p class="help">Owners can tell a copy-and-paste message. One real detail makes all the difference.</p>') +
+          '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:8px 0 0">' + ideas(l).map(function (c, i) { return '<button class="chip" data-idea="' + i + '"' + (l.compliment === c ? ' aria-pressed="true"' : '') + '>' + esc(c) + '</button>'; }).join('') + '</div>' +
+          '<p class="help" id="compNote">' + compNote(l) + '</p>' +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
           (l.status === 'followed' ? '<div class="row">' + (h ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyDm">Copy DM</button>') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
             (h ? '' : '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>')) +
@@ -777,6 +802,12 @@
 
     function setStatus(s, extra) { cur.status = s; Object.assign(cur, extra || {}); save(); renderSheet(); }
     $('shBody').addEventListener('click', function (e) {
+      var idea = e.target.closest('[data-idea]');
+      if (idea && cur) {
+        cur.compliment = ideas(cur)[+idea.dataset.idea]; cur.compSrc = 'idea'; save();
+        var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
+        return;
+      }
       var ig = e.target.closest('a[data-ig]');
       if (ig && cur) {
         var m = igMessage(cur);
@@ -814,7 +845,7 @@
       var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
     });
     $('shBody').addEventListener('input', function (e) {
-      if (e.target.id === 'fComp' && cur) { cur.compliment = e.target.value; $('dmPrev').textContent = dmText(cur); save(); }
+      if (e.target.id === 'fComp' && cur) { cur.compliment = e.target.value; cur.compSrc = ''; $('dmPrev').textContent = dmText(cur); $('compNote').textContent = compNote(cur); save(); }
       if (e.target.id === 'fHook' && cur) { cur.fuHook = e.target.value; $('fuPrev').textContent = cur.status === 'fu' ? finalText(cur) : fuText(cur); save(); }
     });
     window.addEventListener('popstate', function () { if (!$('sheet').hidden) closeSheet(); });
