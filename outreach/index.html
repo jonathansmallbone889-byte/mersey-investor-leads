@@ -368,6 +368,17 @@
       if (l.verified && !isNaN(n) && n < 60) rev = ' You\'ve got a great rating but only ' + n + ' reviews on Google, which doesn\'t reflect how many happy customers you must have.';
       return 'Hi! ' + opener + ' I\'m ' + me + ', I\'m local to Liverpool.' + rev + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' I\'m looking for a few founding businesses to try it free. Could I show you in 2 minutes? 😊';
     }
+    // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
+    function igMessage(l) {
+      if (l.status === 'followed') return { text: dmText(l), label: 'DM' };
+      if (l.status === 'dm' || l.status === 'fu') return { text: fuText(), label: 'Follow-up' };
+      if (l.status === 'replied') return { text: replyText(), label: 'Reply' };
+      return null;
+    }
+    function igButton(l, cls) {
+      var m = igMessage(l), h = handle(l.ig);
+      return '<a class="btn btn-ig' + (cls || '') + '" data-ig href="' + igUrl(h) + '" target="_blank" rel="noopener">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open @' + esc(h) : 'Open @' + esc(h)) + '</a>';
+    }
     function fuText() { return 'Hi again! Just checking you saw my message, no worries if not. Happy to pop in any time 😊'; }
     function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
 
@@ -688,7 +699,7 @@
       html += '<div class="card"><h2>Instagram & Google</h2>' +
         '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
-        (h ? '<a class="btn btn-ig" href="' + igUrl(h) + '" target="_blank" rel="noopener">Open @' + esc(h) + '</a>' : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
+        (h ? igButton(l) : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
         '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
         '<p class="help">Maps app won\'t connect? Use Google search: the business panel shows the star rating and number of reviews.</p>' +
@@ -707,12 +718,12 @@
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
           (l.compliment ? '' : '<p class="help">Owners can tell a copy-and-paste message. One real detail makes all the difference.</p>') +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
-          (l.status === 'followed' ? '<div class="row"><button class="btn btn-primary" data-act="copyDm">Copy DM</button>' + (h ? '<button class="btn btn-ig" data-act="copyOpen">Copy & open Instagram</button>' : '') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
+          (l.status === 'followed' ? '<div class="row"><button class="btn btn-primary" data-act="copyDm">Copy DM</button>' + (h ? igButton(l) : '') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
             '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>') +
           '</div>';
       }
       if (l.status === 'dm') {
-        html += '<div class="card"><h2>Follow-up message</h2><div class="msg">' + esc(fuText()) + '</div><div class="row"><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>' + (h ? '<a class="btn btn-ig" href="' + igUrl(h) + '" target="_blank" rel="noopener">Open Instagram</a>' : '') + '</div><button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
+        html += '<div class="card"><h2>Follow-up message</h2><div class="msg">' + esc(fuText()) + '</div><div class="row"><button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>' + (h ? igButton(l) : '') + '</div><button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
       }
 
       // Details
@@ -729,13 +740,18 @@
 
     function setStatus(s, extra) { cur.status = s; Object.assign(cur, extra || {}); save(); renderSheet(); }
     $('shBody').addEventListener('click', function (e) {
+      var ig = e.target.closest('a[data-ig]');
+      if (ig && cur) {
+        var m = igMessage(cur);
+        if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
+        return;
+      }
       var b = e.target.closest('[data-act]'); if (!b) return;
       var a = b.dataset.act, t = todayIso();
       if (a === 'good') { if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; } setStatus('follow'); toast('Ready to follow'); }
       else if (a === 'nofit') setStatus('nofit');
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
       else if (a === 'copyDm') copy(dmText(cur), 'DM copied');
-      else if (a === 'copyOpen') { copy(dmText(cur), 'DM copied. Paste it in their DMs'); setTimeout(function () { window.open(igUrl(cur.ig), '_blank', 'noopener'); }, 150); }
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
       else if (a === 'sendFu') copy(fuText(), 'Follow-up copied');
       else if (a === 'fuSent') setStatus('fu', { fuAt: t });
