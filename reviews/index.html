@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b2f4a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mersey Stars">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <title>Mersey Stars | More Google Reviews for Liverpool Businesses</title>
   <meta name="description" content="Free tool for Liverpool businesses: ask every customer for a Google review in one tap, print QR table cards, hear complaints privately first, and reply to reviews in seconds. No sign-up.">
   <meta property="og:title" content="Mersey Stars: more Google reviews for Liverpool businesses">
@@ -643,6 +648,17 @@
                 <button class="btn btn-ghost" id="backupBtn">Download backup</button>
                 <label class="btn btn-ghost" for="restoreFile">Restore backup</label>
                 <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+              </div>
+            </div>
+            <div class="card">
+              <h2>Install on your phone</h2>
+              <p class="lead">Put Mersey Stars on your home screen so asking for a review is one tap away, like any other app.</p>
+              <button class="btn btn-gold" id="installBtn" style="margin-top:10px" hidden>Install app</button>
+              <p class="help" id="installDone" hidden>✓ Installed. Open it from your home screen.</p>
+              <div id="installSteps" style="margin-top:10px;font-size:14px;line-height:1.55">
+                <b>Android (Chrome):</b> tap <b>⋮</b> (top right) → <b>Add to home screen</b> or <b>Install app</b>.<br>
+                <b>iPhone (Safari):</b> tap <b>Share</b> (square with an arrow) → <b>Add to Home Screen</b>.<br>
+                <span class="muted">Opened this from inside another app? Open it in Chrome or Safari first.</span>
               </div>
             </div>
             <div class="card">
@@ -1332,6 +1348,24 @@
       setTimeout(function () { $('founding').scrollIntoView(); }, 50);
     });
     $('foundHide').addEventListener('click', function () { state.foundHidden = Date.now(); save(); $('foundNote').hidden = true; });
+
+    // ---------- Install to home screen ----------
+    var installEvt = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      installEvt = e;
+      $('installBtn').hidden = false;
+    });
+    $('installBtn').addEventListener('click', function () {
+      if (!installEvt) return;
+      installEvt.prompt();
+      installEvt.userChoice.then(function (r) {
+        if (r && r.outcome === 'accepted') { $('installBtn').hidden = true; $('installDone').hidden = false; }
+        installEvt = null;
+      });
+    });
+    window.addEventListener('appinstalled', function () { $('installBtn').hidden = true; $('installDone').hidden = false; toast('Mersey Stars installed ⭐'); });
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) { $('installSteps').hidden = true; $('installDone').hidden = false; }
 
     // ---------- Start ----------
     var m = location.hash.match(/^#setup=([A-Za-z0-9_-]+)$/);
