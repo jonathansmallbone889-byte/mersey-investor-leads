@@ -323,10 +323,30 @@
 
     var toastT;
     function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 2400); }
+    function copySync(text) {
+      // Synchronous copy, so the text is on the clipboard before we leave the page.
+      var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0'; document.body.appendChild(ta);
+      ta.select(); ta.setSelectionRange(0, text.length);
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) { /* ignore */ }
+      ta.remove(); return ok;
+    }
     function copy(text, msg) {
-      function fb() { var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) { /* ignore */ } ta.remove(); }
-      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).catch(fb); else fb();
+      var ok = copySync(text);
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).catch(function () { if (!ok) copySync(text); });
       if (msg) toast(msg);
+    }
+    // Open a profile in the Instagram app. In-app browsers and home-screen apps often block
+    // target="_blank", so open it directly: an Android intent (falls back to the website), else the web link.
+    function openInstagram(h) {
+      var web = igUrl(h);
+      if (/Android/i.test(navigator.userAgent)) {
+        location.href = 'intent://instagram.com/_u/' + encodeURIComponent(h) + '/#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+        return;
+      }
+      var w = window.open(web, '_blank');
+      if (w) { try { w.opener = null; } catch (e) { /* ignore */ } }
+      else location.href = web;
     }
     function download(name, text, type) {
       var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name;
@@ -810,8 +830,10 @@
       }
       var ig = e.target.closest('a[data-ig]');
       if (ig && cur) {
+        e.preventDefault();
         var m = igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
+        openInstagram(handle(cur.ig));
         return;
       }
       var b = e.target.closest('[data-act]'); if (!b) return;
