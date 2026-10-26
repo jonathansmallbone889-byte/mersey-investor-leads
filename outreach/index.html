@@ -406,6 +406,12 @@
     // Open other links (Google Maps, Google search, Gemini) the same robust way, since
     // home-screen apps can ignore target="_blank" and leave the button doing nothing.
     function openLink(url) {
+      // On Android, open Google Maps links in the Maps app: in a browser tab Google now shows a
+      // "limited view" of Maps without reviews unless you're signed in.
+      if (/Android/i.test(navigator.userAgent) && /^https:\/\/(www\.)?google\.[a-z.]+\/maps|^https:\/\/maps\.(google\.[a-z.]+|app\.goo\.gl)\//.test(url)) {
+        location.href = 'intent://' + url.replace(/^https:\/\//, '') + '#Intent;package=com.google.android.apps.maps;scheme=https;S.browser_fallback_url=' + encodeURIComponent(url) + ';end';
+        return;
+      }
       var w = window.open(url, '_blank');
       if (w) { try { w.opener = null; } catch (e) { /* ignore */ } }
       else location.href = url;
