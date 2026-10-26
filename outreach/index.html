@@ -76,7 +76,7 @@
     :root[data-theme="dark"] .btn-primary { background: #2563a8; }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-primary { background: #2563a8; } }
     .btn-gold { background: var(--star); color: #1f1600; }
-    .btn-ig { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); color: #fff; }
+    .btn-ig { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); color: #fff; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
     .btn-ghost { background: var(--card); color: var(--text); border-color: var(--border); }
     .btn-danger { background: var(--card); color: var(--bad); border-color: var(--border); }
     .btn-sm { padding: 7px 11px; font-size: 13px; border-radius: 10px; }
@@ -424,7 +424,7 @@
     }
     function igButton(l, cls) {
       var m = igMessage(l), h = handle(l.ig);
-      return '<a class="btn btn-ig' + (cls || '') + '" data-ig href="' + igUrl(h) + '" target="_blank" rel="noopener">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open @' + esc(h) : 'Open @' + esc(h)) + '</a>';
+      return '<a class="btn btn-ig' + (cls || '') + '" data-ig href="' + igUrl(h) + '" target="_blank" rel="noopener">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open Instagram' : 'Open @' + esc(h)) + '</a>';
     }
     // Follow-ups: four wordings, each business gets its own by default, and "Another version" cycles them.
     var PEOPLE = { salon: 'clients', nails: 'clients', barber: 'customers', groomer: 'dog owners', cafe: 'regulars', takeaway: 'regulars', gym: 'members', tattoo: 'clients', trade: 'customers', shop: 'customers', other: 'customers' };
