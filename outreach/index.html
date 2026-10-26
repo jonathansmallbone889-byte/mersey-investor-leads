@@ -341,7 +341,8 @@
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
     function handle(h) { return String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '').trim(); }
     function igUrl(h) { return 'https://www.instagram.com/' + encodeURIComponent(handle(h)) + '/'; }
-    function mapsUrl(l) { return l.maps || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool'].filter(Boolean).join(' '))); }
+    // Only trust Maps links from live search: links typed by Gemini are often made up and lead nowhere.
+    function mapsUrl(l) { return (l.mapsReal && l.maps) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool'].filter(Boolean).join(' '))); }
     function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool reviews'].filter(Boolean).join(' ')); }
     function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
 
@@ -402,6 +403,18 @@
       if (w) { try { w.opener = null; } catch (e) { /* ignore */ } }
       else location.href = web;
     }
+    // Open other links (Google Maps, Google search, Gemini) the same robust way, since
+    // home-screen apps can ignore target="_blank" and leave the button doing nothing.
+    function openLink(url) {
+      var w = window.open(url, '_blank');
+      if (w) { try { w.opener = null; } catch (e) { /* ignore */ } }
+      else location.href = url;
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[target="_blank"]');
+      if (!a || a.hasAttribute('data-ig') || !/^https?:/.test(a.href)) return;
+      e.preventDefault(); openLink(a.href);
+    });
     function download(name, text, type) {
       var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: type })); a.download = name;
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
@@ -763,7 +776,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cMaps = col(/maps|link/), cComp = col(/compliment/);
+        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cComp = col(/compliment/);
       if (cName < 0) cName = 0;
       var have = knownNames();
       var added = 0;
@@ -778,7 +791,7 @@
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
           reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, maps: cMaps > -1 && /^https?:/.test(r[cMaps] || '') ? r[cMaps] : '', notes: 'Imported ' + nice(todayIso()),
+          ig: ig, notes: 'Imported ' + nice(todayIso()),
           compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
         }));
         have[name.toLowerCase()] = 1; added++;
@@ -840,7 +853,7 @@
     $('liveRes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-add]'); if (!b) return;
       var p = liveResults[+b.dataset.add];
-      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, rating: p.rating, reviews: p.reviews, maps: p.maps, verified: true, notes: p.web ? 'Website: ' + p.web : '' }));
+      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, rating: p.rating, reviews: p.reviews, maps: p.maps, mapsReal: !!p.maps, verified: true, notes: p.web ? 'Website: ' + p.web : '' }));
       save(); b.textContent = 'Added ✓'; b.disabled = true;
     });
 
