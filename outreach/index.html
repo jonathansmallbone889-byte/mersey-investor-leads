@@ -117,7 +117,8 @@
     .steps i { flex: 1; height: 5px; border-radius: 99px; background: var(--border); }
     .steps i.on { background: var(--star); }
     .toast { position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translate(-50%, 16px); opacity: 0; pointer-events: none; background: #111827; color: #fff; padding: 11px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; transition: all .2s; z-index: 60; max-width: calc(100% - 32px); text-align: center; }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+    .toast button { margin-left: 12px; background: none; border: 0; color: #f5b301; font: inherit; font-weight: 800; padding: 4px 2px; cursor: pointer; }
     .res { border-top: 1px solid var(--border); padding: 11px 0; display: flex; gap: 10px; align-items: center; }
     .res:first-child { border-top: 0; }
   </style>
@@ -347,7 +348,8 @@
     var defaults = {
       me: { name: 'Jonathan', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
       crit: { min: 4.0, max: 4.8, reviews: 100, count: 5, types: ['salon', 'nails', 'barber', 'groomer', 'cafe', 'gym'], areas: 'Crosby, Waterloo, Formby, Maghull, Southport, Wavertree, Aigburth, Childwall, West Derby, Allerton, Woolton, Liverpool city centre' },
-      leads: []
+      leads: [],
+      skipped: []
     };
     var state;
     try { state = JSON.parse(localStorage.getItem(KEY)); } catch (e) { state = null; }
@@ -355,10 +357,26 @@
     state.me = Object.assign({}, defaults.me, state.me || {});
     state.crit = Object.assign({}, defaults.crit, state.crit || {});
     state.leads = state.leads || [];
+    // Businesses marked "Not a fit" are removed but remembered, so they never come back in searches or imports.
+    function tidy() {
+      state.skipped = state.skipped || [];
+      state.leads = state.leads.filter(function (l) { if (l.status !== 'nofit') return true; if (state.skipped.indexOf(l.name) < 0) state.skipped.push(l.name); return false; });
+    }
+    tidy(); save();
+    function knownNames() { var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; }); state.skipped.forEach(function (n) { have[n.toLowerCase()] = 1; }); return have; }
+    function unskip(name) { name = name.toLowerCase(); state.skipped = state.skipped.filter(function (n) { return n.toLowerCase() !== name; }); }
     function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast('Could not save on this phone'); } }
 
     var toastT;
-    function toast(m) { var t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove('show'); }, 2400); }
+    function toast(m, undo) {
+      var t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT);
+      if (undo) {
+        var b = document.createElement('button'); b.textContent = 'Undo';
+        b.onclick = function () { undo(); t.classList.remove('show'); };
+        t.appendChild(b);
+      }
+      toastT = setTimeout(function () { t.classList.remove('show'); }, undo ? 5000 : 2400);
+    }
     function copySync(text) {
       // Synchronous copy, so the text is on the clipboard before we leave the page.
       var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', '');
@@ -657,7 +675,7 @@
       if (['dm', 'wait', 'replied'].indexOf(st) > -1) o.dmAt = t;
       if (st === 'wait' || st === 'replied') { o.repliedAt = t; o.waitAt = t; }
       var l = newLead(o);
-      state.leads.push(l); save();
+      unskip(name); state.leads.push(l); save();
       $('addForm').hidden = true; $('addManual').hidden = false;
       toast(name + ' added');
       openLead(l.id);
@@ -676,7 +694,7 @@
     function buildPrompt() {
       var c = state.crit;
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
-      var names = state.leads.map(function (l) { return l.name; });
+      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
       return 'Find ' + c.count + ' independent small businesses in Liverpool and Merseyside, UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
         'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
@@ -747,7 +765,7 @@
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
         cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cMaps = col(/maps|link/), cComp = col(/compliment/);
       if (cName < 0) cName = 0;
-      var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+      var have = knownNames();
       var added = 0;
       rows.slice(1).forEach(function (r) {
         var name = (r[cName] || '').replace(/\*\*/g, '').trim();
@@ -805,7 +823,7 @@
           fields: ['displayName', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'googleMapsURI', 'websiteURI']
         });
       }).then(function (res) {
-        var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+        var have = knownNames();
         var c = state.crit;
         liveResults = (res.places || []).filter(function (p) {
           return p.businessStatus === 'OPERATIONAL' && p.rating >= c.min && p.rating <= c.max && (p.userRatingCount || 0) < c.reviews && !have[(p.displayName || '').toLowerCase()];
@@ -851,14 +869,14 @@
       var f = this.files[0]; if (!f) return;
       var r = new FileReader();
       r.onload = function () {
-        try { var d = JSON.parse(r.result); if (!d.leads) throw 0; state = Object.assign(JSON.parse(JSON.stringify(defaults)), d); save(); toast('Backup restored'); setView('today'); }
+        try { var d = JSON.parse(r.result); if (!d.leads) throw 0; state = Object.assign(JSON.parse(JSON.stringify(defaults)), d); tidy(); save(); toast('Backup restored'); setView('today'); }
         catch (e) { toast('That isn\'t an outreach backup file'); }
       };
       r.readAsText(f); this.value = '';
     });
     $('wipe').addEventListener('click', function () {
       if (!confirm('Delete every lead on this phone? Save a backup first if unsure.')) return;
-      state.leads = []; save(); toast('All leads deleted'); setView('today');
+      state.leads = []; state.skipped = []; save(); toast('All leads deleted'); setView('today');
     });
 
     // ---------- Lead sheet ----------
@@ -955,6 +973,15 @@
       $('shBody').innerHTML = html;
     }
 
+    function notAFit() {
+      var l = cur, i = state.leads.indexOf(l);
+      state.leads.splice(i, 1); state.skipped.push(l.name);
+      if (filter === 'nofit') filter = 'all';
+      save(); closeSheet();
+      toast(l.name + ' removed', function () {
+        unskip(l.name); state.leads.splice(Math.min(i, state.leads.length), 0, l); save(); render();
+      });
+    }
     function setStatus(s, extra) { cur.status = s; Object.assign(cur, extra || {}); save(); renderSheet(); }
     $('shBody').addEventListener('click', function (e) {
       var idea = e.target.closest('[data-idea]');
@@ -981,7 +1008,7 @@
       var b = e.target.closest('[data-act]'); if (!b) return;
       var a = b.dataset.act, t = todayIso();
       if (a === 'good') { if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; } setStatus('follow'); toast('Ready to follow'); }
-      else if (a === 'nofit') setStatus('nofit');
+      else if (a === 'nofit') notAFit();
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
       else if (a === 'copyDm') copy(dmText(cur), 'DM copied');
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
@@ -1007,6 +1034,7 @@
       var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt' };
       if (id === 'fVerified') cur.verified = e.target.checked;
       else if (id === 'fStatus') {
+        if (e.target.value === 'nofit') { notAFit(); return; }
         cur.status = e.target.value;
         if (['replied', 'wait', 'demo', 'signed'].indexOf(cur.status) > -1 && !cur.repliedAt) cur.repliedAt = todayIso();
         if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
@@ -1029,7 +1057,7 @@
       try {
         var s = m[1].replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
         var arr = JSON.parse(decodeURIComponent(escape(atob(s))));
-        var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; });
+        var have = knownNames();
         var n = 0;
         arr.forEach(function (o) { if (o && o.name && !have[o.name.toLowerCase()]) { state.leads.push(newLead(o)); have[o.name.toLowerCase()] = 1; n++; } });
         save();
