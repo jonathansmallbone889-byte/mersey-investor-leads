@@ -903,6 +903,21 @@
     var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
     var qrKey = '';
+    // Past today's DM limit, a first DM needs a second tap. The copy still happens inside the tap,
+    // so it works on phones that block copying after a pop-up.
+    function overLimit(btn) {
+      if (!cur || cur.status !== 'followed' || btn.dataset.armed) return false;
+      var t = todayIso(), sent = state.leads.filter(function (l) { return l.dmAt === t; }).length;
+      if (sent < state.me.limit) return false;
+      btn.dataset.armed = '1';
+      btn.className = btn.className.replace(/\bbtn-(ig|primary)\b/, 'btn-danger');
+      btn.textContent = 'Send anyway? Tap again';
+      var w = document.createElement('p');
+      w.className = 'help'; w.style.color = 'var(--bad)';
+      w.textContent = 'You\'ve sent ' + sent + ' DMs today (limit ' + state.me.limit + '). Too many in a day can get your Instagram blocked. Best to send this one tomorrow.';
+      btn.parentNode.insertAdjacentElement('afterend', w);
+      return true;
+    }
     function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
@@ -1019,6 +1034,7 @@
       if (ig && cur) {
         e.preventDefault();
         var qk = ig.dataset.qrsend && QUICK.filter(function (x) { return x[0] === ig.dataset.qrsend; })[0];
+        if (!qk && overLimit(ig)) return;
         var m = qk ? { text: qk[2](cur), label: 'Reply' } : igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
         openInstagram(handle(cur.ig));
@@ -1029,7 +1045,7 @@
       if (a === 'good') { if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; } setStatus('follow'); toast('Ready to follow'); }
       else if (a === 'nofit') notAFit();
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
-      else if (a === 'copyDm') copy(dmText(cur), 'DM copied');
+      else if (a === 'copyDm') { if (!overLimit(b)) copy(dmText(cur), 'DM copied'); }
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
       else if (a === 'sendFu') copy(fuText(cur), 'Follow-up copied');
       else if (a === 'fuNext') { cur.fuVar = ((cur.fuVar == null ? seed(cur) : cur.fuVar) + 1) % FU.length; save(); $('fuPrev').textContent = fuText(cur); }
