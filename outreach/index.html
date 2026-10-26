@@ -68,6 +68,7 @@
     .p-followed { background: var(--violet-soft); color: var(--violet); }
     .p-dm, .p-fu { background: var(--warn-soft); color: var(--warn); }
     .p-replied, .p-demo { background: var(--ok-soft); color: var(--ok); }
+    .p-wait { background: var(--info-soft); color: var(--info); }
     .p-signed { background: #fff3c4; color: #7a5400; }
     .p-no { background: var(--bad-soft); color: var(--bad); }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid transparent; border-radius: 12px; padding: 11px 14px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; }
@@ -133,7 +134,7 @@
     <section data-view="today">
       <div class="stats">
         <div class="stat"><b id="sDm">0</b><span>DMs sent today</span></div>
-        <div class="stat"><b id="sReplies">0</b><span>replies</span></div>
+        <div class="stat"><b id="sReplies">0</b><span id="sRate">replies</span></div>
         <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
       </div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
@@ -274,7 +275,7 @@
     var DAY = 86400000;
     var STATUS = [
       ['check', 'To check'], ['follow', 'Ready to follow'], ['followed', 'Followed'], ['dm', 'DM sent'],
-      ['fu', 'Followed up'], ['replied', 'Replied'], ['demo', 'Demo booked'], ['signed', 'Signed up'],
+      ['fu', 'Followed up'], ['wait', 'Replied: maybe'], ['replied', 'Replied'], ['demo', 'Demo booked'], ['signed', 'Signed up'],
       ['no', 'Not interested'], ['nofit', 'Not a fit']
     ];
     var STATUS_NAME = {}; STATUS.forEach(function (s) { STATUS_NAME[s[0]] = s[1]; });
@@ -411,6 +412,7 @@
       if (l.status === 'dm') return { text: fuText(l), label: 'Follow-up' };
       if (l.status === 'fu') return { text: finalText(l), label: 'Final message' };
       if (l.status === 'replied') return { text: replyText(), label: 'Reply' };
+      if (l.status === 'wait') return { text: nudgeText(l), label: 'Nudge' };
       return null;
     }
     function hookField(l) {
@@ -441,6 +443,7 @@
       if (hook && !/[.!?…]$/.test(hook) && !/\p{Extended_Pictographic}$/u.test(hook)) hook += '!';
       return greet + ' ' + (hook ? hook + ' ' : '') + fill(body, l);
     }
+    function nudgeText(l) { return 'Hi! Just checking whether you (or the team) have had a chance to look at this. I\'m happy to pop in to ' + l.name + ' whenever suits, it only takes 2 minutes 😊'; }
     function fuText(l) {
       var v = FU[((l.fuVar == null ? seed(l) : l.fuVar) % FU.length + FU.length) % FU.length];
       return withHook(v[0], v[1], l);
@@ -484,7 +487,10 @@
       var t = todayIso(), L = state.leads, fd = state.me.fuDays;
       var dmToday = L.filter(function (l) { return l.dmAt === t; }).length;
       $('sDm').textContent = dmToday;
-      $('sReplies').textContent = L.filter(function (l) { return ['replied', 'demo', 'signed'].indexOf(l.status) > -1; }).length;
+      var replied = L.filter(function (l) { return l.repliedAt || ['replied', 'wait', 'demo', 'signed'].indexOf(l.status) > -1; }).length;
+      var sent = L.filter(function (l) { return l.dmAt; }).length;
+      $('sReplies').textContent = replied;
+      $('sRate').textContent = sent ? 'replies · ' + Math.round(replied / sent * 100) + '% of ' + sent + ' DMs' : 'replies';
       $('sSigned').textContent = L.filter(function (l) { return l.status === 'signed'; }).length;
 
       var hot = L.filter(function (l) { return l.status === 'replied' || l.status === 'demo'; });
@@ -492,10 +498,14 @@
       list('lHot', hot, function (l) { return l.status === 'demo' ? 'Demo ' + nice(l.demoAt) : 'Replied, book a demo'; }, '');
 
       var fu = L.filter(function (l) {
-        return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t);
+        return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t) ||
+          (l.status === 'wait' && addDays(l.waitAt || l.repliedAt || t, 3) <= t);
       });
       $('nFu').textContent = fu.length;
-      list('lFu', fu, function (l) { return l.status === 'fu' ? 'Followed up ' + nice(l.fuAt) + '. Visit or call?' : 'DM sent ' + nice(l.dmAt); }, 'Nothing due today 👍');
+      list('lFu', fu, function (l) {
+        if (l.status === 'wait') return 'Said maybe ' + nice(l.repliedAt) + '. Send a nudge';
+        return l.status === 'fu' ? 'Followed up ' + nice(l.fuAt) + '. Visit or call?' : 'DM sent ' + nice(l.dmAt);
+      }, 'Nothing due today 👍');
 
       var left = Math.max(0, state.me.limit - dmToday);
       var ready = L.filter(function (l) { return l.status === 'followed'; });
@@ -716,7 +726,7 @@
     });
     $('exportBtn').addEventListener('click', function () { download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json'); });
     $('exportCsv').addEventListener('click', function () {
-      var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'notes'];
+      var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'repliedAt', 'notes'];
       var csv = [cols.join(',')].concat(state.leads.map(function (l) {
         return cols.map(function (c) { var v = c === 'status' ? STATUS_NAME[l.status] : l[c]; v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(',');
       })).join('\n');
@@ -738,7 +748,7 @@
 
     // ---------- Lead sheet ----------
     var cur = null;
-    var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
+    var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
     function openLead(id) { cur = find(id); if (!cur) return; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
@@ -757,13 +767,21 @@
       if (l.status === 'check') next = '<h2>Next: check they fit</h2><p class="sub">Open Google Maps, type in the real rating and review count, and confirm the Instagram account.</p>';
       else if (l.status === 'follow') next = '<h2>Next: follow and like</h2><p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts. Then tap "Done".</p><div class="row"><button class="btn btn-gold" data-act="followed">Done: followed and liked</button></div>';
       else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
-      else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button></div>';
-      else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Visit or call if they\'re nearby, or send one polite final message to close the loop.</p><div class="row"><button class="btn btn-gold" data-act="replied">They replied 🎉</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
+      else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p>';
+      else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Visit or call if they\'re nearby, or send one polite final message to close the loop.</p>';
       else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyReply">Copy reply</button>') + '</div><button class="btn btn-gold btn-block" data-act="demo" style="margin-top:8px">Demo booked</button>';
+      else if (l.status === 'wait') next = '<h2>They said maybe</h2><p class="sub">Replied ' + nice(l.repliedAt) + (l.waitAt && l.waitAt !== l.repliedAt ? ', nudged ' + nice(l.waitAt) : '') + '. Give them a few days, then send a friendly nudge.</p>' +
+        '<div class="msg">' + esc(nudgeText(l)) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyNudge">Copy nudge</button>') + '</div>' +
+        '<button class="btn btn-ghost btn-block" data-act="nudgeSent" style="margin-top:8px">I\'ve sent the nudge</button>' +
+        '<div class="row" style="margin-top:8px"><button class="btn btn-gold" data-act="rYes">Now interested 🎉</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div>';
       else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
       html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div></div>';
+      if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
+        html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
+          '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>';
+      }
 
       // Instagram + Maps
       html += '<div class="card"><h2>Instagram & Google</h2>' +
@@ -814,7 +832,7 @@
         '<label class="f" for="fArea">Area</label><input type="text" id="fArea" value="' + esc(l.area) + '">' +
         '<label class="f" for="fStatus">Status</label><select id="fStatus">' + STATUS.map(function (s) { return '<option value="' + s[0] + '"' + (l.status === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>' +
         '<label class="f" for="fNotes">Notes</label><textarea id="fNotes" placeholder="Anything useful: owner\'s name, best time to visit…">' + esc(l.notes) + '</textarea>' +
-        '<p class="help">' + [l.followedAt ? 'Followed ' + nice(l.followedAt) : '', l.dmAt ? 'DM ' + nice(l.dmAt) : '', l.fuAt ? 'Follow-up ' + nice(l.fuAt) : ''].filter(Boolean).join(' · ') + '</p>' +
+        '<p class="help">' + [l.followedAt ? 'Followed ' + nice(l.followedAt) : '', l.dmAt ? 'DM ' + nice(l.dmAt) : '', l.fuAt ? 'Follow-up ' + nice(l.fuAt) : '', l.repliedAt ? 'Replied ' + nice(l.repliedAt) : ''].filter(Boolean).join(' · ') + '</p>' +
         '<button class="btn btn-danger btn-block" data-act="delete" style="margin-top:10px">Delete this business</button></div>';
 
       $('shBody').innerHTML = html;
@@ -848,7 +866,11 @@
       else if (a === 'sendFinal') copy(finalText(cur), 'Final message copied');
       else if (a === 'finalSent') { setStatus('no', { notes: ((cur.notes || '') + (cur.notes ? '\n' : '') + 'Final message sent ' + nice(t)).trim() }); toast('Lead closed. You can reopen it any time'); }
       else if (a === 'fuSent') setStatus('fu', { fuAt: t, fuHook: '' });
-      else if (a === 'replied') { setStatus('replied'); toast('Brilliant! Reply quickly 🎉'); }
+      else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
+      else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
+      else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
+      else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
+      else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
       else if (a === 'signed') { setStatus('signed'); toast('Founding business signed up ⭐'); }
@@ -859,7 +881,11 @@
       var id = e.target.id; if (!cur) return;
       var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt' };
       if (id === 'fVerified') cur.verified = e.target.checked;
-      else if (id === 'fStatus') cur.status = e.target.value;
+      else if (id === 'fStatus') {
+        cur.status = e.target.value;
+        if (['replied', 'wait', 'demo', 'signed'].indexOf(cur.status) > -1 && !cur.repliedAt) cur.repliedAt = todayIso();
+        if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
+      }
       else if (map[id]) cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim();
       else return;
       save();
