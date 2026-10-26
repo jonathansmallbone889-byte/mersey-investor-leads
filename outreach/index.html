@@ -137,6 +137,11 @@
         <div class="stat"><b id="sReplies">0</b><span id="sRate">replies</span></div>
         <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
       </div>
+      <div class="card" id="cardBackup" hidden style="background:var(--warn-soft);border-color:transparent">
+        <h2>Back up your leads 💾</h2>
+        <p class="sub" id="backupText">Your leads are only saved on this phone.</p>
+        <button class="btn btn-gold btn-block" id="backupNow">Save a backup now</button>
+      </div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
       <div class="card"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
       <div class="card">
@@ -155,7 +160,32 @@
       <input type="search" id="q" placeholder="Search businesses" aria-label="Search businesses" style="margin-bottom:10px">
       <div class="chips" id="filters"></div>
       <div class="card" style="padding-top:6px;padding-bottom:6px"><div id="lAll"></div></div>
-      <button class="btn btn-ghost btn-block" id="addManual">+ Add a business manually</button>
+      <button class="btn btn-ghost btn-block" id="addManual">+ Add a business</button>
+      <div class="card" id="addForm" hidden style="margin-top:14px">
+        <h2>Add a business</h2>
+        <p class="sub">Found one yourself on Instagram? Add it here and it's ready to go.</p>
+        <label class="f" for="aName">Business name</label><input type="text" id="aName" placeholder="e.g. Hair of the Dog">
+        <label class="f" for="aIg">Instagram username</label><input type="text" id="aIg" placeholder="their_username" autocomplete="off" spellcheck="false">
+        <div class="two">
+          <div><label class="f" for="aType">Type</label><select id="aType"></select></div>
+          <div><label class="f" for="aArea">Area</label><input type="text" id="aArea" placeholder="e.g. Crosby"></div>
+        </div>
+        <div class="two">
+          <div><label class="f" for="aRating">Google rating <span class="o">(optional)</span></label><input type="number" id="aRating" step="0.1" min="1" max="5" inputmode="decimal"></div>
+          <div><label class="f" for="aReviews">Reviews <span class="o">(optional)</span></label><input type="number" id="aReviews" min="0" inputmode="numeric"></div>
+        </div>
+        <label class="f" for="aStatus">Where are you with them?</label>
+        <select id="aStatus">
+          <option value="check">Not checked yet</option>
+          <option value="follow">Checked, ready to follow</option>
+          <option value="followed" selected>Followed and liked posts</option>
+          <option value="dm">Already sent a DM</option>
+          <option value="wait">They replied: maybe</option>
+          <option value="replied">They replied: interested</option>
+        </select>
+        <p class="err" id="aErr" style="color:var(--bad);font-size:13px;margin:8px 0 0"></p>
+        <div class="row" style="margin-top:12px"><button class="btn btn-ghost" id="aCancel">Cancel</button><button class="btn btn-gold" id="aSave">Add business</button></div>
+      </div>
     </section>
 
     <!-- FIND -->
@@ -220,6 +250,11 @@
         <label class="f" for="sName">Your first name</label><input type="text" id="sName">
         <label class="f" for="sIg">Your Instagram username</label><input type="text" id="sIg" placeholder="merseystars">
         <label class="f" for="sLink">Your Mersey Stars link</label><input type="text" id="sLink">
+        <div class="two">
+          <div><label class="f" for="sPhone">Your phone</label><input type="text" id="sPhone" inputmode="tel"></div>
+          <div><label class="f" for="sEmail">Your email</label><input type="text" id="sEmail" inputmode="email"></div>
+        </div>
+        <p class="help">Used in the "leave your details" quick reply.</p>
         <div class="two">
           <div><label class="f" for="sLimit">DMs per day</label><input type="number" id="sLimit" min="1" max="20" inputmode="numeric"></div>
           <div><label class="f" for="sFu">Follow up after (days)</label><input type="number" id="sFu" min="1" max="14" inputmode="numeric"></div>
@@ -310,7 +345,7 @@
     function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
 
     var defaults = {
-      me: { name: 'Jonathan', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', limit: 5, fuDays: 3, key: '' },
+      me: { name: 'Jonathan', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
       crit: { min: 4.0, max: 4.8, reviews: 100, count: 5, types: ['salon', 'nails', 'barber', 'groomer', 'cafe', 'gym'], areas: 'Crosby, Waterloo, Formby, Maghull, Southport, Wavertree, Aigburth, Childwall, West Derby, Allerton, Woolton, Liverpool city centre' },
       leads: []
     };
@@ -451,6 +486,51 @@
     function finalText(l) {
       return withHook('Hi!', 'Last message from me, I promise 😊 If getting more Google reviews isn\'t a priority right now, no problem at all. If it ever is, I\'m local and always happy to help. All the best with {name}!', l);
     }
+    // Ready-made answers to what owners usually reply with.
+    var QUICK = [
+      ['details', 'Leave your details', function (l) {
+        var m = state.me;
+        return 'No problem at all, thanks for getting back to me! 😊 Here are my details:\n\n' + (m.name || 'Jonathan') + ', Mersey Stars\n' +
+          (m.phone ? '📱 ' + m.phone + ' (call or WhatsApp)\n' : '') + (m.email ? '✉️ ' + m.email + '\n' : '') + (m.link ? '🌐 ' + m.link.replace(/^https?:\/\//, '') + '\n' : '') +
+          '\nIn short: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in and set it up in 2 minutes whenever suits. No rush at all!';
+      }],
+      ['team', 'Passing to the team', function (l) {
+        return 'Thank you, that\'s brilliant! 😊 For whoever picks this up: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in to ' + l.name + ' and set it all up in 2 minutes. Just let me know a day and time that suits.';
+      }],
+      ['busy', 'We\'re busy', function (l) {
+        return 'No problem at all, I know how busy it gets! 😊 I\'ll leave it with you. Whenever you\'ve got 2 minutes, I\'m happy to pop in' + (state.me.phone ? ', or you can reach me on ' + state.me.phone : '') + '.';
+      }],
+      ['price', 'How much is it?', function () {
+        return 'It\'s completely free while I\'m launching 😊 Founding businesses also keep a discount for life when paid plans start, and I\'ll always tell you well before anything changes. Could I pop in and show you? It only takes 2 minutes.';
+      }],
+      ['catch', 'What\'s the catch?', function () {
+        return 'Fair question! No catch: I\'m local to Liverpool and launching Mersey Stars, so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊';
+      }],
+      ['book', 'Book a time', function () { return replyText(); }],
+      ['no', 'No thanks', function (l) {
+        return 'No worries at all, thanks for getting back to me! 😊 If you ever want a hand getting more Google reviews, I\'m local and always happy to help. All the best with ' + l.name + '!';
+      }]
+    ];
+    function pitch(l) {
+      var p = {
+        groomer: 'after a groom, you send the owner a quick WhatsApp with their dog\'s "after" photo and your Google review link, so happy owners leave a review in one tap.',
+        salon: 'after an appointment, you send the client a quick WhatsApp with your Google review link, so happy clients leave a review in one tap. There\'s a QR card for the desk too.',
+        nails: 'after an appointment, you send the client a quick WhatsApp with your Google review link, so happy clients leave a review in one tap. There\'s a QR card for the desk too.',
+        barber: 'after a cut, you send the customer a quick WhatsApp with your Google review link, or they scan a QR card at the chair, so happy customers leave a review in one tap.',
+        gym: 'after a milestone, you send the member a quick WhatsApp with your Google review link, or they scan a QR card on the wall, so happy members leave a review in one tap.',
+        trade: 'when a job\'s finished, you send the customer a quick WhatsApp with your Google review link, so happy customers leave a review in one tap.'
+      };
+      return p[l.type] || 'happy customers scan a QR card on your counter or tables, or get a quick WhatsApp from you, and leave a Google review in one tap.';
+    }
+    function quickCard(l) {
+      var h = handle(l.ig), k = qrKey;
+      var q = QUICK.filter(function (x) { return x[0] === k; })[0];
+      return '<div class="card"><h2>Quick replies</h2><p class="sub">Tap what they said and your answer is ready to send.</p>' +
+        '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0">' + QUICK.map(function (x) { return '<button class="chip" data-qr="' + x[0] + '" aria-pressed="' + (x[0] === k) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+        (q ? '<div class="msg" style="margin-top:12px">' + esc(q[2](l)) + '</div><div class="row">' +
+          (h ? '<a class="btn btn-ig btn-block" data-ig data-qrsend="' + q[0] + '" href="' + igUrl(h) + '" target="_blank" rel="noopener">Copy reply & open Instagram</a>' : '<button class="btn btn-primary" data-act="copyQr">Copy reply</button>') + '</div>' : '') +
+        '</div>';
+    }
     function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
 
     // ---------- Views ----------
@@ -483,7 +563,20 @@
       if (view === 'settings') renderSettings();
     }
 
+    function backupDue() {
+      if (state.leads.length < 3) return false;
+      return !state.me.lastBackup || addDays(state.me.lastBackup, 7) <= todayIso();
+    }
+    function saveBackup() {
+      state.me.lastBackup = todayIso(); save();
+      download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json');
+      toast('Backup saved to your Downloads');
+    }
     function renderToday() {
+      $('cardBackup').hidden = !backupDue();
+      $('backupText').textContent = state.me.lastBackup
+        ? 'Last backup ' + nice(state.me.lastBackup) + '. Your leads are only saved on this phone, so save one each week.'
+        : 'Your leads are only saved on this phone. Save a backup so you never lose them.';
       var t = todayIso(), L = state.leads, fd = state.me.fuDays;
       var dmToday = L.filter(function (l) { return l.dmAt === t; }).length;
       $('sDm').textContent = dmToday;
@@ -543,10 +636,31 @@
       if (it && !$('sheet').contains(it)) openLead(it.dataset.id);
     });
     $('addManual').addEventListener('click', function () {
-      var name = prompt('Business name?');
-      if (!name || !name.trim()) return;
-      var l = newLead({ name: name.trim() });
-      state.leads.push(l); save(); openLead(l.id);
+      $('aType').innerHTML = TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+      ['aName', 'aIg', 'aArea', 'aRating', 'aReviews'].forEach(function (id) { $(id).value = ''; });
+      $('aStatus').value = 'followed'; $('aErr').textContent = '';
+      $('addForm').hidden = false; $('addManual').hidden = true;
+      $('addForm').scrollIntoView({ block: 'start', behavior: 'smooth' });
+      $('aName').focus();
+    });
+    $('aCancel').addEventListener('click', function () { $('addForm').hidden = true; $('addManual').hidden = false; });
+    $('aName').addEventListener('change', function () {
+      var t = guessType(this.value); if (t !== 'other') $('aType').value = t;
+    });
+    $('aSave').addEventListener('click', function () {
+      var name = $('aName').value.trim(), ig = handle($('aIg').value), st = $('aStatus').value, t = todayIso();
+      if (!name) { $('aErr').textContent = 'Add the business name.'; $('aName').focus(); return; }
+      if (state.leads.some(function (l) { return l.name.toLowerCase() === name.toLowerCase(); })) { $('aErr').textContent = 'That business is already on your list.'; return; }
+      if (st !== 'check' && !ig) { $('aErr').textContent = 'Add their Instagram username (or choose "Not checked yet").'; $('aIg').focus(); return; }
+      var o = { name: name, ig: ig, type: $('aType').value, area: $('aArea').value.trim(), rating: $('aRating').value, reviews: $('aReviews').value, status: st, notes: 'Added ' + nice(t) };
+      if (['followed', 'dm', 'wait', 'replied'].indexOf(st) > -1) o.followedAt = t;
+      if (['dm', 'wait', 'replied'].indexOf(st) > -1) o.dmAt = t;
+      if (st === 'wait' || st === 'replied') { o.repliedAt = t; o.waitAt = t; }
+      var l = newLead(o);
+      state.leads.push(l); save();
+      $('addForm').hidden = true; $('addManual').hidden = false;
+      toast(name + ' added');
+      openLead(l.id);
     });
 
     // ---------- Find ----------
@@ -715,16 +829,17 @@
     // ---------- Settings ----------
     function renderSettings() {
       var m = state.me;
-      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key;
+      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key; $('sPhone').value = m.phone; $('sEmail').value = m.email;
       $('myIg').href = igUrl(m.ig || 'merseystars');
     }
-    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key']].forEach(function (f) {
+    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
     });
     [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { var v = parseInt(this.value, 10); if (v > 0) { state.me[f[1]] = v; save(); } });
     });
-    $('exportBtn').addEventListener('click', function () { download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json'); });
+    $('exportBtn').addEventListener('click', saveBackup);
+    $('backupNow').addEventListener('click', function () { saveBackup(); renderToday(); });
     $('exportCsv').addEventListener('click', function () {
       var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'repliedAt', 'notes'];
       var csv = [cols.join(',')].concat(state.leads.map(function (l) {
@@ -750,7 +865,8 @@
     var cur = null;
     var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
-    function openLead(id) { cur = find(id); if (!cur) return; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    var qrKey = '';
+    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
@@ -778,6 +894,7 @@
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
       html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div></div>';
+      if (['followed', 'dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1) html += quickCard(l);
       if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
         html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
           '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>';
@@ -846,10 +963,17 @@
         var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
         return;
       }
+      var qr = e.target.closest('[data-qr]');
+      if (qr && cur) {
+        qrKey = qrKey === qr.dataset.qr ? '' : qr.dataset.qr;
+        var y2 = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y2;
+        return;
+      }
       var ig = e.target.closest('a[data-ig]');
       if (ig && cur) {
         e.preventDefault();
-        var m = igMessage(cur);
+        var qk = ig.dataset.qrsend && QUICK.filter(function (x) { return x[0] === ig.dataset.qrsend; })[0];
+        var m = qk ? { text: qk[2](cur), label: 'Reply' } : igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
         openInstagram(handle(cur.ig));
         return;
@@ -869,6 +993,7 @@
       else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
       else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
+      else if (a === 'copyQr') { var qq = QUICK.filter(function (x) { return x[0] === qrKey; })[0]; if (qq) copy(qq[2](cur), 'Reply copied'); }
       else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
