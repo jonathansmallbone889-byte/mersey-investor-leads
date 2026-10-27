@@ -691,6 +691,7 @@
       if (st !== 'check' && !ig) { $('aErr').textContent = 'Add their Instagram username (or choose "Not checked yet").'; $('aIg').focus(); return; }
       var o = { name: name, ig: ig, type: $('aType').value, area: $('aArea').value.trim(), rating: $('aRating').value, reviews: $('aReviews').value, status: st, notes: 'Added ' + nice(t) };
       if (['followed', 'dm', 'wait', 'replied'].indexOf(st) > -1) o.followedAt = t;
+      if (st !== 'check') o.igOk = true;
       if (['dm', 'wait', 'replied'].indexOf(st) > -1) o.dmAt = t;
       if (st === 'wait' || st === 'replied') { o.repliedAt = t; o.waitAt = t; }
       var l = newLead(o);
@@ -718,9 +719,13 @@
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
         'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source,Google Maps Link,Compliment\n\n' +
+        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment\n\n' +
         'For Compliment: write one short, friendly compliment (under 15 words, one emoji) about something customers genuinely praise in this business\'s Google reviews, e.g. "Your Sunday roast gets rave reviews 😍". Base it only on real reviews. If nothing specific stands out, leave it blank.\n\n' +
-        'Important: only give an Instagram username you found on the business\'s own Google listing or website. Don\'t guess usernames. If you can\'t verify one, choose a different business.';
+        'Instagram rules (very important):\n' +
+        '- Only give an Instagram username that is linked on the business\'s own website, Google listing or Facebook page.\n' +
+        '- Copy it exactly as written in that link, character for character (dots and underscores matter).\n' +
+        '- In Instagram Source URL, give the full web address of the page where you found that link.\n' +
+        '- Never guess or build a username from the business name. If you can\'t find a linked one, leave Instagram Username and Instagram Source URL blank rather than guess.';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -782,7 +787,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cComp = col(/compliment/);
+        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cComp = col(/compliment/);
       if (cName < 0) cName = 0;
       var have = knownNames();
       var added = 0;
@@ -797,7 +802,7 @@
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
           reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, notes: 'Imported ' + nice(todayIso()),
+          ig: ig, igSrc: ig && cSrc > -1 && /^https?:\/\//.test((r[cSrc] || '').trim()) ? r[cSrc].trim() : '', notes: 'Imported ' + nice(todayIso()),
           compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
         }));
         have[name.toLowerCase()] = 1; added++;
@@ -965,6 +970,12 @@
         '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google</label>' +
         (m === null ? '<div class="badge wait">Add the rating and review count to check the criteria</div>' :
           m ? '<div class="badge ok">✓ Meets your criteria</div>' : '<div class="badge no">✕ Outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews)</div>') +
+        (l.status === 'check' && h ? '<div class="notice" style="margin-top:12px">' + (l.igOk
+            ? '✓ Instagram checked: @' + esc(h)
+            : '<b>Check @' + esc(h) + ' is really them.</b> AI tools sometimes guess usernames that don\'t exist. Open it and check the name, photos and location match.' +
+              (l.igSrc ? ' <a href="' + esc(l.igSrc) + '" target="_blank" rel="noopener">See where it was found</a>' : '') +
+              '<div class="row" style="margin-top:10px">' + igButton(l, ' btn-sm') + '</div>' +
+              '<div class="row"><button class="btn btn-primary btn-sm" data-act="igOk">Yes, it\'s them</button><button class="btn btn-ghost btn-sm" data-act="igBad">Wrong or not found</button></div>') + '</div>' : '') +
         (l.status === 'check' ? '<div class="row" style="margin-top:12px"><button class="btn btn-gold" data-act="good">Good fit: ready to follow</button><button class="btn btn-ghost" data-act="nofit">Not a fit</button></div>' : '') +
         '</div>';
 
@@ -1042,8 +1053,13 @@
       }
       var b = e.target.closest('[data-act]'); if (!b) return;
       var a = b.dataset.act, t = todayIso();
-      if (a === 'good') { if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; } setStatus('follow'); toast('Ready to follow'); }
+      if (a === 'good') {
+        if (!handle(cur.ig)) { toast('Add their Instagram username first'); $('fIg').focus(); return; }
+        if (!cur.igOk) { toast('Check their Instagram is real first'); return; }
+        setStatus('follow'); toast('Ready to follow'); }
       else if (a === 'nofit') notAFit();
+      else if (a === 'igOk') { setStatus(cur.status, { igOk: true }); toast('Instagram confirmed'); }
+      else if (a === 'igBad') { setStatus(cur.status, { ig: '', igSrc: '', igOk: false }); toast('Removed. Tap "Find their Instagram", or Not a fit if they have none'); }
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
       else if (a === 'copyDm') { if (!overLimit(b)) copy(dmText(cur), 'DM copied'); }
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
@@ -1074,7 +1090,7 @@
         if (['replied', 'wait', 'demo', 'signed'].indexOf(cur.status) > -1 && !cur.repliedAt) cur.repliedAt = todayIso();
         if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
       }
-      else if (map[id]) cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim();
+      else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = false; cur.igSrc = ''; } }
       else return;
       save();
       if (id === 'fNotes' || id === 'fHook') return;
