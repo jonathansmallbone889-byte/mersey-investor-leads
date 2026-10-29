@@ -201,7 +201,15 @@
     :root[data-theme="dark"] .chip[aria-pressed="true"] { background: #1f4a70; border-color: #1f4a70; }
 
     .sheet header { background: var(--navy-grad); padding-bottom: 16px; }
-    .sheet header button { border-radius: 12px; background: rgba(255, 255, 255, .12); }
+    .sheet header button { border-radius: 12px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .14); width: 40px; height: 40px; display: grid; place-items: center; padding: 0; transition: background .15s, transform .12s; }
+    .sheet header button:active { transform: scale(.94); background: rgba(255, 255, 255, .2); }
+    .sheet header button svg { width: 20px; height: 20px; }
+    .sheet header { gap: 12px; }
+    .igbtns { display: grid; gap: 8px; margin-top: 12px; }
+    .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pair .btn, .igbtns > .btn { min-height: 46px; padding: 10px 12px; font-size: 14.5px; }
+    .row { gap: 10px; }
+    .chips[style*="flex-wrap"] .chip { max-width: 100%; white-space: normal; text-align: left; line-height: 1.35; }
     .sheet header .av { width: 42px; height: 42px; border: 2px solid rgba(255, 255, 255, .25); }
     .sheet { animation: slideIn .28s cubic-bezier(.2, .8, .2, 1); }
     @keyframes slideIn { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -396,7 +404,7 @@
   <!-- Lead detail -->
   <div class="sheet" id="sheet" hidden>
     <header>
-      <button id="sheetBack" aria-label="Back">←</button>
+      <button id="sheetBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
       <span id="shAv"></span>
       <div class="t"><b id="shName"></b><span id="shMeta"></span></div>
     </header>
@@ -1098,9 +1106,9 @@
             ? '✓ Instagram checked: @' + esc(h)
             : '<b>Check @' + esc(h) + ' is really them.</b> AI tools sometimes guess usernames that don\'t exist. Open it and check the name, photos and location match.' +
               (l.igSrc ? ' <a href="' + esc(l.igSrc) + '" target="_blank" rel="noopener">See where it was found</a>' : '') +
-              '<div class="row" style="margin-top:10px">' + igButton(l, ' btn-sm') + '</div>' +
-              '<div class="row"><button class="btn btn-primary btn-sm" data-act="igOk">Yes, it\'s them</button><button class="btn btn-ghost btn-sm" data-act="igBad">Wrong or not found</button></div>') + '</div>' : '') +
-        (l.status === 'check' ? '<div class="row" style="margin-top:12px"><button class="btn btn-gold" data-act="good">Good fit: ready to follow</button><button class="btn btn-ghost" data-act="nofit">Not a fit</button></div>' : '') +
+              '<div class="igbtns">' + igButton(l, ' btn-block') +
+              '<div class="pair"><button class="btn btn-primary" data-act="igOk">Yes, it\'s them</button><button class="btn btn-ghost" data-act="igBad">Not them</button></div></div>') + '</div>' : '') +
+        (l.status === 'check' ? '<div class="pair" style="margin-top:12px"><button class="btn btn-gold" data-act="good">Good fit ✓</button><button class="btn btn-ghost" data-act="nofit">Not a fit</button></div>' : '') +
         '</div>';
 
       // DM
