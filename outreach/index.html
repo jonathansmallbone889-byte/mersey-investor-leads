@@ -121,6 +121,95 @@
     .toast button { margin-left: 12px; background: none; border: 0; color: #f5b301; font: inherit; font-weight: 800; padding: 4px 2px; cursor: pointer; }
     .res { border-top: 1px solid var(--border); padding: 11px 0; display: flex; gap: 10px; align-items: center; }
     .res:first-child { border-top: 0; }
+    /* ---------- Premium layer ---------- */
+    :root { --shadow: 0 1px 2px rgba(17, 24, 39, .04), 0 6px 20px -6px rgba(17, 24, 39, .1); --navy-grad: radial-gradient(70% 90% at 100% 0%, rgba(245, 179, 1, .18), transparent 60%), linear-gradient(160deg, #082135 0%, #0b2f4a 55%, #0f3d61 100%); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -8px rgba(0, 0, 0, .5); } }
+    :root[data-theme="dark"] { --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -8px rgba(0, 0, 0, .5); }
+    body { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+    header.top {
+      background: rgba(8, 33, 53, .86); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+    }
+    header.top h1 { font-size: 19px; letter-spacing: -.02em; }
+    header.top .date { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .12); padding: 4px 10px; border-radius: 99px; opacity: 1; color: rgba(255, 255, 255, .85); font-weight: 600; font-size: 12.5px; }
+    main { padding: 16px 16px 8px; }
+    section[data-view] { animation: fadeUp .35s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .hello { margin: -16px -16px 16px; padding: 22px 20px 20px; color: #fff; background: var(--navy-grad); border-radius: 0 0 28px 28px; position: relative; overflow: hidden; }
+    .hello::before { content: ''; position: absolute; inset: 0; opacity: .35; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px); background-size: 32px 32px; mask-image: linear-gradient(180deg, #000, transparent 85%); -webkit-mask-image: linear-gradient(180deg, #000, transparent 85%); }
+    .hello .row1 { position: relative; display: flex; align-items: center; gap: 16px; }
+    .hello .gr { flex: 1; min-width: 0; }
+    .hello .gr small { display: block; font-size: 13px; color: rgba(255, 255, 255, .65); font-weight: 600; }
+    .hello .gr b { display: block; font-size: 24px; letter-spacing: -.03em; line-height: 1.15; margin-top: 2px; }
+    .hello .gr p { margin: 6px 0 0; font-size: 13.5px; color: rgba(255, 255, 255, .75); }
+    .ring { position: relative; width: 82px; height: 82px; flex: none; }
+    .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring circle { fill: none; stroke-width: 8; }
+    .ring .bgc { stroke: rgba(255, 255, 255, .12); }
+    .ring .fgc { stroke: url(#ringGrad); stroke-linecap: round; transition: stroke-dashoffset .8s cubic-bezier(.2, .8, .2, 1); }
+    .ring .lbl { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; line-height: 1; }
+    .ring .lbl b { font-size: 21px; letter-spacing: -.03em; }
+    .ring .lbl span { display: block; font-size: 10px; color: rgba(255, 255, 255, .65); margin-top: 3px; font-weight: 600; }
+    .hello .stats { position: relative; margin: 18px 0 0; gap: 8px; }
+    .hello .stat { background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .1); border-radius: 16px; padding: 12px; color: #fff; }
+    .hello .stat b { font-size: 26px; letter-spacing: -.03em; }
+    .hello .stat span { color: rgba(255, 255, 255, .65); font-size: 11.5px; line-height: 1.3; display: block; }
+
+    .pipe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 4px; }
+    .pipe div { text-align: center; }
+    .pipe .bar { height: 54px; display: flex; align-items: flex-end; background: var(--soft); border-radius: 10px; overflow: hidden; }
+    .pipe .bar i { display: block; width: 100%; border-radius: 10px 10px 0 0; background: linear-gradient(180deg, #ffd25e, #f5b301); min-height: 3px; transition: height .6s cubic-bezier(.2, .8, .2, 1); }
+    .pipe b { display: block; font-size: 17px; margin-top: 6px; letter-spacing: -.02em; }
+    .pipe span { display: block; font-size: 10.5px; color: var(--muted); font-weight: 600; }
+
+    .card { border-radius: 20px; padding: 18px; box-shadow: var(--shadow); border-color: transparent; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card { border-color: var(--border); } }
+    :root[data-theme="dark"] .card { border-color: var(--border); }
+    .card h2 { font-size: 17px; letter-spacing: -.02em; }
+    .card h2 .n { font-weight: 700; }
+    .stat { border-radius: 16px; box-shadow: var(--shadow); border-color: transparent; }
+    .item { padding: 12px 0; transition: opacity .15s; }
+    .item:active { opacity: .6; }
+    .av { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; flex: none; font-weight: 800; font-size: 14px; letter-spacing: -.02em; color: #fff; }
+    .item .chev { width: 18px; height: 18px; color: var(--muted); opacity: .6; flex: none; }
+    .pill { letter-spacing: .01em; }
+    .empty { text-align: center; padding: 14px 0 8px; }
+
+    .btn { border-radius: 14px; transition: transform .12s ease, filter .15s, background .15s; -webkit-tap-highlight-color: transparent; }
+    .btn:active { transform: scale(.97); }
+    .btn-gold { background: linear-gradient(180deg, #ffc933, #f5b301); box-shadow: 0 6px 16px -6px rgba(245, 179, 1, .6), inset 0 1px 0 rgba(255, 255, 255, .45); }
+    .btn-primary { box-shadow: 0 6px 16px -8px rgba(11, 47, 74, .7); }
+    .btn-ig { box-shadow: 0 8px 20px -8px rgba(220, 39, 67, .6); }
+    .chip { transition: background .15s, color .15s, border-color .15s; }
+    input[type=text], input[type=number], input[type=date], input[type=search], select, textarea { border-radius: 12px; }
+    input[type=search] { padding-left: 38px; background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa5b1' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 12px center / 18px; box-shadow: var(--shadow); border-color: transparent; }
+
+    nav.tabs {
+      left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom)); padding: 6px; gap: 4px; border-radius: 22px;
+      background: rgba(255, 255, 255, .82); backdrop-filter: saturate(180%) blur(18px); -webkit-backdrop-filter: saturate(180%) blur(18px);
+      border: 1px solid rgba(17, 24, 39, .06); box-shadow: 0 12px 32px -10px rgba(17, 24, 39, .3); max-width: 520px; margin: 0 auto;
+    }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) nav.tabs { background: rgba(22, 27, 34, .82); border-color: rgba(255, 255, 255, .08); } }
+    :root[data-theme="dark"] nav.tabs { background: rgba(22, 27, 34, .82); border-color: rgba(255, 255, 255, .08); }
+    nav.tabs button { border-radius: 16px; padding: 8px 0; transition: background .2s, color .2s; }
+    nav.tabs button[aria-selected="true"] { background: var(--brand); color: #fff; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) nav.tabs button[aria-selected="true"] { background: #1f4a70; } }
+    :root[data-theme="dark"] nav.tabs button[aria-selected="true"] { background: #1f4a70; }
+    nav.tabs button svg { width: 22px; height: 22px; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .chip[aria-pressed="true"] { background: #1f4a70; border-color: #1f4a70; } }
+    :root[data-theme="dark"] .chip[aria-pressed="true"] { background: #1f4a70; border-color: #1f4a70; }
+
+    .sheet header { background: var(--navy-grad); padding-bottom: 16px; }
+    .sheet header button { border-radius: 12px; background: rgba(255, 255, 255, .12); }
+    .sheet header .av { width: 42px; height: 42px; border: 2px solid rgba(255, 255, 255, .25); }
+    .sheet { animation: slideIn .28s cubic-bezier(.2, .8, .2, 1); }
+    @keyframes slideIn { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .steps i { height: 6px; transition: background .3s; }
+    .steps i.on { background: linear-gradient(90deg, #f5b301, #ffd25e); }
+    .msg { border-radius: 18px 18px 4px 18px; box-shadow: 0 1px 1px rgba(0, 0, 0, .06); }
+    .toast { border-radius: 14px; box-shadow: 0 12px 30px -8px rgba(0, 0, 0, .45); bottom: calc(96px + env(safe-area-inset-bottom)); }
+    @media (prefers-reduced-motion: reduce) { section[data-view], .sheet { animation: none; } .ring .fgc, .pipe .bar i { transition: none; } }
   </style>
 </head>
 <body>
@@ -133,10 +222,20 @@
   <main>
     <!-- TODAY -->
     <section data-view="today">
-      <div class="stats">
-        <div class="stat"><b id="sDm">0</b><span>DMs sent today</span></div>
-        <div class="stat"><b id="sReplies">0</b><span id="sRate">replies</span></div>
-        <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
+      <div class="hello">
+        <div class="row1">
+          <div class="gr"><small id="helloTime">Good morning</small><b id="helloName">Jonathan</b><p id="helloPlan"></p></div>
+          <div class="ring" aria-hidden="true">
+            <svg viewBox="0 0 82 82"><defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd25e"/><stop offset="1" stop-color="#f5b301"/></linearGradient></defs><circle class="bgc" cx="41" cy="41" r="35"/><circle class="fgc" id="ringFg" cx="41" cy="41" r="35" stroke-dasharray="219.9" stroke-dashoffset="219.9"/></svg>
+            <div class="lbl"><div><b id="ringNum">0/5</b><span>DMs today</span></div></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat" hidden><b id="sDm">0</b></div>
+          <div class="stat"><b id="sDemo">0</b><span>demos booked</span></div>
+          <div class="stat"><b id="sReplies">0</b><span id="sRate">replies</span></div>
+          <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
+        </div>
       </div>
       <div class="card" id="cardBackup" hidden style="background:var(--warn-soft);border-color:transparent">
         <h2>Back up your leads 💾</h2>
@@ -153,6 +252,7 @@
       </div>
       <div class="card"><h2>Follow and like <span class="n" id="nFollow"></span></h2><p class="sub">Follow, then like 2 or 3 posts. DM them tomorrow.</p><div id="lFollow"></div></div>
       <div class="card"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following.</p><div id="lCheck"></div></div>
+      <div class="card"><h2>Your pipeline</h2><p class="sub">Every business you're working on, by stage.</p><div class="pipe" id="pipe"></div></div>
       <button class="btn btn-gold btn-block" data-go="find">Find new businesses</button>
     </section>
 
@@ -297,6 +397,7 @@
   <div class="sheet" id="sheet" hidden>
     <header>
       <button id="sheetBack" aria-label="Back">←</button>
+      <span id="shAv"></span>
       <div class="t"><b id="shName"></b><span id="shMeta"></span></div>
     </header>
     <main id="shBody"></main>
@@ -583,9 +684,15 @@
     document.querySelectorAll('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.tab); }); });
     document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.go); }); });
 
+    var AV = ['#0b5cad', '#7c3aed', '#db2777', '#059669', '#d97706', '#0891b2', '#4f46e5', '#be123c'];
+    function avatar(l) {
+      var w = String(l.name || '?').replace(/[^\p{L}\p{N} ]/gu, '').trim().split(/\s+/);
+      var ini = ((w[0] || '?')[0] + (w[1] ? w[1][0] : '')).toUpperCase();
+      return '<span class="av" style="background:' + AV[seed(l) % AV.length] + '">' + esc(ini) + '</span>';
+    }
     function itemHtml(l, meta, right) {
-      return '<div class="item" data-id="' + l.id + '"><div class="main"><div class="nm">' + esc(l.name) + '</div><div class="meta">' + esc(meta) + '</div></div>' +
-        (right || '<span class="pill p-' + l.status + '">' + STATUS_NAME[l.status] + '</span>') + '<span class="chev">›</span></div>';
+      return '<div class="item" data-id="' + l.id + '">' + avatar(l) + '<div class="main"><div class="nm">' + esc(l.name) + '</div><div class="meta">' + esc(meta) + '</div></div>' +
+        (right || '<span class="pill p-' + l.status + '">' + STATUS_NAME[l.status] + '</span>') + '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></div>';
     }
     function list(id, arr, metaFn, empty) {
       $(id).innerHTML = arr.length ? arr.map(function (l) { return itemHtml(l, metaFn(l)); }).join('') : '<p class="empty">' + empty + '</p>';
@@ -622,6 +729,17 @@
       $('sReplies').textContent = replied;
       $('sRate').textContent = sent ? 'replies · ' + Math.round(replied / sent * 100) + '% of ' + sent + ' DMs' : 'replies';
       $('sSigned').textContent = L.filter(function (l) { return l.status === 'signed'; }).length;
+      $('sDemo').textContent = L.filter(function (l) { return l.status === 'demo'; }).length;
+      var hr = new Date().getHours();
+      $('helloTime').textContent = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+      $('helloName').textContent = state.me.name || 'Welcome back';
+      var lim = state.me.limit || 5;
+      $('ringNum').textContent = dmToday + '/' + lim;
+      $('ringFg').style.strokeDashoffset = 219.9 * (1 - Math.min(1, dmToday / lim));
+      var stages = [['To check', ['check']], ['Follow', ['follow', 'followed']], ['DM sent', ['dm', 'fu']], ['Replied', ['wait', 'replied', 'demo']], ['Signed', ['signed']]];
+      var counts = stages.map(function (s) { return L.filter(function (l) { return s[1].indexOf(l.status) > -1; }).length; });
+      var mx = Math.max.apply(null, counts.concat([1]));
+      $('pipe').innerHTML = stages.map(function (s, i) { return '<div><div class="bar"><i style="height:' + Math.round(counts[i] / mx * 100) + '%"></i></div><b>' + counts[i] + '</b><span>' + s[0] + '</span></div>'; }).join('');
 
       var hot = L.filter(function (l) { return l.status === 'replied' || l.status === 'demo'; });
       $('cardHot').hidden = !hot.length; $('nHot').textContent = hot.length;
@@ -650,6 +768,12 @@
 
       var chk = L.filter(function (l) { return l.status === 'check'; });
       $('nCheck').textContent = chk.length;
+      var plan = [];
+      if (hot.length) plan.push(hot.length + ' to reply to');
+      if (fu.length) plan.push(fu.length + ' follow-up' + (fu.length > 1 ? 's' : ''));
+      if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
+      if (fol.length) plan.push(fol.length + ' to follow');
+      $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : 'You\'re all caught up. Time to find new businesses ✨';
       list('lCheck', chk, function (l) { return typeArea(l) + ' · ' + (ratingText(l) || 'not checked'); }, 'No new leads. Tap "Find new businesses".');
     }
 
@@ -929,7 +1053,7 @@
 
     function renderSheet() {
       var l = cur, h = handle(l.ig), m = meets(l);
-      $('shName').textContent = l.name;
+      $('shName').textContent = l.name; $('shAv').innerHTML = avatar(l);
       $('shMeta').textContent = [TYPE_NAME[l.type], l.area].filter(Boolean).join(' · ');
       var step = STEP[l.status], steps = '';
       for (var i = 0; i < 6; i++) steps += '<i class="' + (i <= step ? 'on' : '') + '"></i>';
