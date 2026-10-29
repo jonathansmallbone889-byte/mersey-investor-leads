@@ -53,7 +53,7 @@
       --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .35);
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 76px; }
     body {
       margin: 0;
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -71,16 +71,26 @@
     .small { font-size: 13px; }
 
     /* Header */
-    header.top { background: var(--brand); color: var(--on-brand); }
-    .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: inherit; text-decoration: none; }
-    .logo svg { width: 30px; height: 30px; }
+    header.top {
+      position: sticky; top: 0; z-index: 40; color: #fff;
+      background: rgba(8, 33, 53, .82); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+    }
+    .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 64px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: inherit; text-decoration: none; letter-spacing: -.01em; }
+    .logo svg { width: 32px; height: 32px; }
+    .nav { display: flex; gap: 4px; margin-left: auto; margin-right: 8px; }
+    .nav a { color: rgba(255, 255, 255, .72); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 12px; border-radius: 10px; transition: color .15s, background .15s; }
+    .nav a:hover { color: #fff; background: rgba(255, 255, 255, .07); }
+    @media (max-width: 860px) { .nav { display: none; } }
     .top-actions { display: flex; gap: 8px; align-items: center; }
     .top-btn {
-      background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .2);
-      border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none;
+      background: rgba(255, 255, 255, .08); color: #fff; border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 10px; padding: 8px 14px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .15s;
     }
-    .top-btn:hover { background: rgba(255, 255, 255, .2); }
+    .top-btn:hover { background: rgba(255, 255, 255, .16); }
+    .top-btn.gold { background: var(--star); color: #1f1600; border-color: transparent; }
+    .top-btn.gold:hover { background: #ffc21a; }
 
     /* Buttons and forms */
     .btn {
@@ -125,55 +135,189 @@
     .card > .lead { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
 
     /* Landing */
-    .hero { background: var(--brand); color: var(--on-brand); padding: 48px 0 72px; overflow: hidden; }
-    .hero .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; }
-    @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } }
-    .eyebrow { display: inline-flex; gap: 8px; align-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .18); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 18px; }
-    .eyebrow .s { color: var(--star); letter-spacing: 1px; }
-    .hero h1 { font-size: clamp(32px, 5vw, 50px); font-weight: 800; margin-bottom: 18px; }
-    .hero h1 em { font-style: normal; color: var(--star); }
-    .hero p.sub { font-size: 18px; color: rgba(255, 255, 255, .82); max-width: 560px; margin-bottom: 26px; }
-    .hero .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .35); }
-    .hero .btn { padding: 14px 20px; font-size: 16px; }
-    .ticks { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 22px; font-size: 14px; color: rgba(255, 255, 255, .8); }
-    .ticks span::before { content: '✓ '; color: var(--star); font-weight: 800; }
-
-    .phone {
-      width: 300px; max-width: 100%; margin: 0 auto; background: #0a0f14; border-radius: 40px; padding: 12px;
-      box-shadow: 0 30px 60px rgba(0, 0, 0, .35), inset 0 0 0 2px #27313b; position: relative;
+    #landing { overflow: hidden; }
+    .hero {
+      position: relative; color: #fff; padding: 72px 0 96px; margin-top: -64px; padding-top: 136px;
+      background:
+        radial-gradient(60% 50% at 85% 10%, rgba(245, 179, 1, .16), transparent 60%),
+        radial-gradient(70% 60% at 0% 0%, rgba(37, 99, 168, .45), transparent 60%),
+        linear-gradient(180deg, #082135 0%, #0b2f4a 60%, #0d3757 100%);
     }
-    .phone iframe { display: block; width: 100%; height: 560px; border: 0; border-radius: 30px; background: #f5f6f8; }
-    .phone-cap { text-align: center; font-size: 13px; color: rgba(255, 255, 255, .75); margin-top: 14px; }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+      background-image: linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+      background-size: 56px 56px; mask-image: radial-gradient(80% 70% at 50% 30%, #000, transparent 75%); -webkit-mask-image: radial-gradient(80% 70% at 50% 30%, #000, transparent 75%);
+    }
+    .hero .wrap { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+    @media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; gap: 48px; } .hero { padding-bottom: 72px; } }
+    .badge {
+      display: inline-flex; gap: 10px; align-items: center; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .14);
+      padding: 6px 14px 6px 6px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-bottom: 24px; color: rgba(255, 255, 255, .9);
+    }
+    .badge b { background: var(--star); color: #1f1600; border-radius: 999px; padding: 3px 10px; font-size: 12px; }
+    .hero h1 { font-size: clamp(38px, 6vw, 64px); font-weight: 800; line-height: 1.04; letter-spacing: -.035em; margin-bottom: 22px; }
+    .hero h1 em {
+      font-style: normal; background: linear-gradient(92deg, #ffd25e, #f5b301 50%, #ffcf4d); -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero p.sub { font-size: clamp(17px, 2vw, 19px); line-height: 1.6; color: rgba(255, 255, 255, .78); max-width: 560px; margin-bottom: 32px; }
+    .hero .btn { padding: 15px 22px; font-size: 16px; border-radius: 14px; }
+    .hero .btn-gold { box-shadow: 0 10px 30px rgba(245, 179, 1, .3), inset 0 1px 0 rgba(255, 255, 255, .4); }
+    .hero .btn-gold:hover { transform: translateY(-1px); }
+    .hero .btn-ghost { background: rgba(255, 255, 255, .06); color: #fff; border-color: rgba(255, 255, 255, .2); }
+    .hero .btn-ghost:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
+    .btn { transition: transform .15s, filter .15s, background .15s, border-color .15s; }
+    .ticks { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 28px; font-size: 14px; color: rgba(255, 255, 255, .72); }
+    .ticks span { display: inline-flex; align-items: center; gap: 7px; }
+    .ticks svg { width: 16px; height: 16px; color: var(--star); flex: none; }
 
-    section.block { padding: 64px 0; }
-    section.block h2.t { font-size: clamp(26px, 3.4vw, 36px); text-align: center; margin-bottom: 10px; }
-    section.block p.st { text-align: center; color: var(--muted); font-size: 17px; max-width: 640px; margin: 0 auto 36px; }
-    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 900px) { .grid3 { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 600px) { .grid3 { grid-template-columns: 1fr; } }
-    .pcard { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; }
-    .pcard .prob { font-size: 13px; font-weight: 700; color: var(--bad); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
-    .pcard h3 { font-size: 18px; margin-bottom: 8px; }
-    .pcard p { color: var(--muted); font-size: 15px; }
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 760px; margin: 0 auto; }
-    .chip { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 600; }
-    .steps { counter-reset: s; }
-    .steps .pcard h3::before { counter-increment: s; content: counter(s); display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--star); color: #1f1600; font-size: 15px; margin-right: 10px; vertical-align: middle; }
-    .rules { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; background: var(--ok-soft); border: 1px solid transparent; border-radius: 18px; padding: 24px; max-width: 860px; margin: 0 auto; }
-    .rules svg { width: 40px; height: 40px; color: var(--ok); }
-    .rules h3 { font-size: 20px; margin-bottom: 6px; }
-    .rules p { color: var(--text); opacity: .85; }
+    .stage { position: relative; max-width: 420px; margin: 0 auto; width: 100%; }
+    .phone {
+      position: relative; z-index: 2; width: 290px; max-width: 80%; margin: 0 auto; background: #05080c; border-radius: 46px; padding: 11px;
+      box-shadow: 0 50px 100px -20px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 255, 255, .08), inset 0 0 0 2px #1f2933;
+    }
+    .phone::before { content: ''; position: absolute; top: 20px; left: 50%; width: 84px; height: 24px; transform: translateX(-50%); background: #05080c; border-radius: 99px; z-index: 3; }
+    .phone iframe { display: block; width: 100%; height: 560px; border: 0; border-radius: 36px; background: #f5f6f8; }
+    .glow { position: absolute; inset: 10% -10% 0; background: radial-gradient(50% 50% at 50% 50%, rgba(245, 179, 1, .25), transparent 70%); filter: blur(20px); z-index: 0; }
+    .float {
+      position: absolute; z-index: 4; background: rgba(255, 255, 255, .97); color: #111827; border-radius: 16px; padding: 12px 14px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, .45); font-size: 13px; line-height: 1.35; width: 210px; animation: bob 6s ease-in-out infinite;
+    }
+    .float .h { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+    .float .h i { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font-style: normal; color: #fff; font-size: 12px; }
+    .float .st { color: #f5b301; letter-spacing: 2px; font-size: 14px; }
+    .f1 { top: 330px; left: -44px; }
+    .f2 { bottom: 120px; right: -30px; animation-delay: -3s; }
+    .f3 { bottom: 24px; left: -10px; width: auto; display: flex; align-items: center; gap: 10px; font-weight: 700; animation-delay: -1.5s; }
+    .f3 b { font-size: 22px; letter-spacing: -.02em; }
+    @media (max-width: 520px) { .f1 { left: -6px; top: 320px; } .f2 { right: -6px; } .f3 { left: 0; } .float { width: 180px; font-size: 12px; } }
+    @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    .phone-cap { text-align: center; font-size: 13px; color: rgba(255, 255, 255, .6); margin-top: 22px; position: relative; z-index: 2; }
+
+    .strip { border-bottom: 1px solid var(--border); background: var(--card); }
+    .strip .wrap { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 36px; padding-top: 22px; padding-bottom: 22px; font-size: 14px; color: var(--muted); font-weight: 600; }
+    .strip span { display: inline-flex; align-items: center; gap: 8px; }
+    .strip svg { width: 18px; height: 18px; }
+
+    section.block { padding: 96px 0; position: relative; }
+    @media (max-width: 640px) { section.block { padding: 64px 0; } }
+    .kicker { display: block; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    section.block h2.t { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; letter-spacing: -.03em; line-height: 1.08; text-align: center; margin: 0 auto 16px; max-width: 760px; }
+    section.block p.st { text-align: center; color: var(--muted); font-size: 18px; line-height: 1.6; max-width: 620px; margin: 0 auto 56px; }
+
+    .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .bento > div { grid-column: span 2; }
+    .bento > .wide { grid-column: span 3; }
+    .bento > .full { grid-column: span 6; }
+    @media (max-width: 960px) { .bento > div, .bento > .wide { grid-column: span 3; } }
+    @media (max-width: 760px) { .goalgrid { grid-template-columns: 1fr !important; } }
+    @media (max-width: 640px) { .bento { grid-template-columns: 1fr; } .bento > div, .bento > .wide, .bento > .full { grid-column: auto; } }
+    .feat {
+      background: var(--card); border: 1px solid var(--border); border-radius: 22px; padding: 26px; display: flex; flex-direction: column;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .feat:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: transparent; }
+    .feat .ico { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); margin-bottom: 18px; }
+    .feat .ico svg { width: 22px; height: 22px; }
+    .feat h3 { font-size: 19px; letter-spacing: -.015em; margin-bottom: 8px; }
+    .feat p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .feat .prob { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); opacity: .8; margin-bottom: 6px; }
+    .mock { margin-top: 22px; background: var(--soft); border-radius: 16px; padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 8px; min-height: 120px; }
+    .bub { background: #dcf8c6; color: #111; border-radius: 14px 14px 4px 14px; padding: 10px 12px; font-size: 13px; line-height: 1.4; max-width: 88%; margin-left: auto; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); }
+    .bub small { display: block; text-align: right; color: #667781; font-size: 10px; margin-top: 2px; }
+    .rv { background: var(--card); border-radius: 12px; padding: 10px 12px; font-size: 13px; border: 1px solid var(--border); }
+    .rv .s { color: #f5b301; letter-spacing: 1px; }
+    .rv .r { margin-top: 6px; padding: 8px 10px; background: var(--accent-soft); border-radius: 8px; font-size: 12.5px; }
+    .goal { font-size: 13px; color: var(--muted); }
+    .goal b { font-size: 26px; color: var(--text); letter-spacing: -.02em; display: block; }
+    .meter { height: 10px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+    .meter i { display: block; height: 100%; width: 62%; background: linear-gradient(90deg, #f5b301, #ffd25e); border-radius: 99px; }
+    .nudge { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; font-size: 13px; }
+    .nudge em { font-style: normal; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--warn-soft); color: var(--warn); }
+    .nudge em.ok { background: var(--ok-soft); color: var(--ok); }
+    .qrmini { display: flex; align-items: center; gap: 14px; }
+    .qrmini .q { width: 74px; height: 74px; border-radius: 10px; background: #fff; padding: 6px; flex: none; border: 1px solid var(--border); }
+    .qrmini .q svg { width: 100%; height: 100%; display: block; }
+    .qrmini b { display: block; font-size: 15px; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 820px; margin: 0 auto; }
+    .chip { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 10px 16px; font-size: 15px; font-weight: 600; transition: transform .15s, border-color .15s; }
+    .chip:hover { transform: translateY(-2px); border-color: var(--star); }
+
+    .steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; position: relative; }
+    .steps3::before { content: ''; position: absolute; top: 27px; left: 16%; right: 16%; height: 2px; background: linear-gradient(90deg, transparent, var(--star), transparent); opacity: .5; }
+    @media (max-width: 760px) { .steps3 { grid-template-columns: 1fr; } .steps3::before { display: none; } }
+    .step { text-align: center; padding: 0 12px; position: relative; }
+    .step .n { width: 56px; height: 56px; margin: 0 auto 20px; border-radius: 18px; display: grid; place-items: center; font-weight: 800; font-size: 22px; background: var(--brand); color: var(--star); box-shadow: 0 10px 24px -8px rgba(11, 47, 74, .6); }
+    .step h3 { font-size: 20px; margin-bottom: 8px; }
+    .step p { color: var(--muted); font-size: 15px; line-height: 1.6; max-width: 300px; margin: 0 auto; }
+
+    .dark { background: linear-gradient(180deg, #082135, #0b2f4a); color: #fff; }
+    .dark h2.t { color: #fff; }
+    .dark p.st { color: rgba(255, 255, 255, .7) !important; }
+    .dark .kicker { color: var(--star); }
+    .results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 860px) { .results { grid-template-columns: 1fr; } }
+    .res { border: 1px dashed rgba(255, 255, 255, .22); border-radius: 22px; padding: 26px; background: rgba(255, 255, 255, .03); }
+    .res .tag { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: rgba(255, 255, 255, .55); }
+    .res .ba { display: flex; align-items: baseline; gap: 12px; margin: 18px 0 6px; font-weight: 800; letter-spacing: -.03em; }
+    .res .ba span { font-size: 40px; color: rgba(255, 255, 255, .35); }
+    .res .ba svg { width: 22px; height: 22px; color: var(--star); align-self: center; }
+    .res .ba b { font-size: 40px; color: var(--star); }
+    .res p { font-size: 14px; color: rgba(255, 255, 255, .6); }
+    .res-note { text-align: center; margin-top: 28px; font-size: 15px; color: rgba(255, 255, 255, .7); }
+    .res-note a { color: var(--star); font-weight: 700; }
+
+    .pricing { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; margin: 0 auto; }
+    @media (max-width: 760px) { .pricing { grid-template-columns: 1fr; } }
+    .plan { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 32px; display: flex; flex-direction: column; }
+    .plan.hl { border: 2px solid var(--star); box-shadow: 0 30px 60px -20px rgba(245, 179, 1, .35); position: relative; }
+    .plan.hl::before { content: 'Limited spots'; position: absolute; top: -13px; left: 32px; background: var(--star); color: #1f1600; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 99px; }
+    .plan h3 { font-size: 18px; }
+    .plan .price { font-size: 48px; font-weight: 800; letter-spacing: -.04em; margin: 14px 0 2px; }
+    .plan .price small { font-size: 16px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+    .plan .per { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+    .plan ul { list-style: none; padding: 0; margin: 0 0 28px; display: grid; gap: 10px; font-size: 15px; }
+    .plan li { display: flex; gap: 10px; align-items: flex-start; }
+    .plan li svg { width: 18px; height: 18px; color: var(--ok); flex: none; margin-top: 2px; }
+    .plan .btn { margin-top: auto; padding: 14px; }
+
+    .rules { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; background: var(--ok-soft); border-radius: 24px; padding: 30px; max-width: 900px; margin: 0 auto; }
+    .rules svg { width: 44px; height: 44px; color: var(--ok); }
+    .rules h3 { font-size: 21px; margin-bottom: 8px; }
+    .rules p { color: var(--text); opacity: .85; line-height: 1.65; }
     @media (max-width: 600px) { .rules { grid-template-columns: 1fr; } }
     #setupSection { background: var(--soft); }
-    .setup-card { max-width: 680px; margin: 0 auto; }
+    .setup-card { max-width: 680px; margin: 0 auto; border-radius: 24px; }
     .faq { max-width: 760px; margin: 0 auto; }
-    .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; }
-    .faq summary { font-weight: 700; cursor: pointer; }
-    .faq details p { color: var(--muted); margin-top: 10px; }
-    .dfy { background: var(--brand); color: var(--on-brand); border-radius: 20px; padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; max-width: 860px; margin: 0 auto; }
-    .dfy p { color: rgba(255, 255, 255, .8); margin-top: 8px; }
-    @media (max-width: 700px) { .dfy { grid-template-columns: 1fr; padding: 24px; } }
-    footer.foot { padding: 32px 0 48px; text-align: center; color: var(--muted); font-size: 14px; }
+    .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 10px; transition: border-color .15s; }
+    .faq details[open] { border-color: var(--star); }
+    .faq summary { font-weight: 700; cursor: pointer; list-style: none; display: flex; justify-content: space-between; gap: 12px; font-size: 16px; }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: '+'; font-size: 22px; line-height: 1; color: var(--muted); transition: transform .2s; }
+    .faq details[open] summary::after { transform: rotate(45deg); }
+    .faq details p { color: var(--muted); margin-top: 12px; line-height: 1.65; }
+    .dfy {
+      position: relative; overflow: hidden; color: #fff; border-radius: 28px; padding: 48px; display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; max-width: 960px; margin: 0 auto;
+      background: radial-gradient(60% 80% at 100% 0%, rgba(245, 179, 1, .22), transparent 60%), linear-gradient(135deg, #082135, #0d3757);
+    }
+    .dfy h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -.03em; }
+    .dfy p { color: rgba(255, 255, 255, .75); margin-top: 10px; font-size: 17px; line-height: 1.6; max-width: 520px; }
+    .dfy .btn-ghost { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .3); }
+    @media (max-width: 760px) { .dfy { grid-template-columns: 1fr; padding: 32px 24px; } }
+    footer.foot { border-top: 1px solid var(--border); padding: 48px 0 56px; color: var(--muted); font-size: 14px; }
+    footer.foot .wrap { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: flex-start; }
+    footer.foot .logo { color: var(--text); margin-bottom: 8px; }
+    footer.foot .links { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+    footer.foot a { color: var(--muted); text-decoration: none; }
+    footer.foot a:hover { color: var(--text); }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .float { animation: none; }
+    }
 
     /* App */
     .bizbar { background: var(--brand); color: var(--on-brand); padding: 18px 0 0; }
@@ -283,13 +427,16 @@
   <header class="top">
     <div class="wrap">
       <a class="logo" href="#" id="logoLink">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#ffffff" fill-opacity=".12"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#ffffff" fill-opacity=".1"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>
         Mersey Stars
       </a>
+      <nav class="nav" id="landNav" aria-label="Page sections">
+        <a href="#problems">Features</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+      </nav>
       <div class="top-actions">
         <button class="top-btn" id="toAbout" hidden>How it works</button>
         <button class="top-btn" id="toApp" hidden>My dashboard</button>
-        <a class="top-btn" href="#setupSection" id="toSetup">Start free</a>
+        <a class="top-btn gold" href="#founding" id="toSetup">Join free</a>
       </div>
     </div>
   </header>
@@ -299,64 +446,166 @@
     <section class="hero">
       <div class="wrap">
         <div>
-          <div class="eyebrow"><span class="s">★★★★★</span> Made for Liverpool businesses</div>
-          <h1>Your happiest customers aren't leaving reviews. <em>Nobody asked them.</em></h1>
-          <p class="sub">Mersey Stars helps cafés, salons, trades and shops across Merseyside ask every customer for a Google review in one tap, hear about problems before they go public, and reply to reviews in seconds.</p>
+          <div class="badge"><b>New</b> Now welcoming founding businesses in Liverpool</div>
+          <h1>Turn happy customers into <em>5-star Google reviews.</em></h1>
+          <p class="sub">Your happiest customers aren't leaving reviews, because nobody asks them. Mersey Stars helps Liverpool businesses ask every customer in one tap, hear about problems first, and reply to reviews in seconds.</p>
           <div class="btn-row">
-            <a class="btn btn-gold" href="#setupSection">Try it free</a>
-            <a class="btn btn-ghost" href="#problems">See how it helps</a>
+            <a class="btn btn-gold" href="#founding">Join free as a founding business</a>
+            <a class="btn btn-ghost" href="#how">See how it works</a>
           </div>
-          <div class="ticks"><span>Free while we launch</span><span>No sign-up</span><span>Ready in 2 minutes</span><span>Works on your phone</span></div>
+          <div class="ticks">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Free while we launch</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Set up in 2 minutes</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>No contract</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Local to Liverpool</span>
+          </div>
         </div>
-        <div>
+        <div class="stage">
+          <div class="glow"></div>
+          <div class="float f1"><div class="h"><i style="background:#1fa855">✓</i>WhatsApp · just now</div>Thanks for coming in today! Got a minute to leave us a quick review? ⭐</div>
           <div class="phone"><iframe title="Example of the page your customers see" src="r.html?n=Lark+Lane+Coffee&g=https%3A%2F%2Fwww.google.com%2Fmaps&o=Sam&e=hello%40example.com&w=447700900000&c=7c2d12&demo=1" loading="lazy"></iframe></div>
-          <p class="phone-cap">What your customers see. Try tapping a star.</p>
+          <div class="float f2"><div class="h"><i style="background:#4285f4">G</i>New Google review</div><span class="st">★★★★★</span><br>"Lovely staff and the best flat white in Liverpool!"</div>
+          <div class="float f3"><span style="color:#f5b301;font-size:20px">★</span><span>Rating goal<br><b>4.8</b></span></div>
+          <p class="phone-cap">What your customers see. Tap a star to try it.</p>
         </div>
       </div>
     </section>
+
+    <div class="strip">
+      <div class="wrap">
+        <span><svg viewBox="0 0 24 24" fill="#f5b301" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>Built for Google reviews</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="#1fa855" stroke-width="2" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg>Ask by WhatsApp, text or email</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>Printable QR cards</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/></svg>Follows Google's rules</span>
+      </div>
+    </div>
 
     <section class="block" id="problems">
       <div class="wrap">
-        <h2 class="t">The six things stopping you getting reviews, fixed</h2>
-        <p class="st">Customers choose who to visit by looking at Google. More recent, genuine reviews means more people walking through your door.</p>
-        <div class="grid3">
-          <div class="pcard"><div class="prob">You forget to ask</div><h3>Ask in one tap</h3><p>Send a friendly review request by WhatsApp, text or email straight from your phone. Paste a list of today's customers and work through it in a minute.</p></div>
-          <div class="pcard"><div class="prob">Customers can't find where to click</div><h3>One link, one QR code</h3><p>Your link opens your Google review box directly. Print QR table cards, a counter sign or business cards to hand out with receipts.</p></div>
-          <div class="pcard"><div class="prob">One bad day ends up on Google</div><h3>Hear it first</h3><p>Customers who weren't happy get an easy way to message you privately, so you can put it right. Your Google button stays on show for everyone.</p></div>
-          <div class="pcard"><div class="prob">People say "I'll do it later"</div><h3>Gentle nudges</h3><p>Mersey Stars keeps track of who you've asked and reminds you who to follow up after three days, with a polite nudge ready to send.</p></div>
-          <div class="pcard"><div class="prob">Replying takes ages</div><h3>Replies in seconds</h3><p>Ready-to-post replies to five-star praise and one-star complaints, in a warm or professional voice, signed by you.</p></div>
-          <div class="pcard"><div class="prob">No idea what you're aiming for</div><h3>A clear target</h3><p>Enter your current rating and see exactly how many five-star reviews you need to reach 4.5 or 4.8, then track your progress week by week.</p></div>
+        <span class="kicker reveal">Features</span>
+        <h2 class="t reveal">Six reasons you're not getting reviews. All fixed.</h2>
+        <p class="st reveal">People pick who to visit by checking Google. More recent, genuine reviews means more customers walking through your door.</p>
+        <div class="bento">
+          <div class="feat wide reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/></svg></div>
+            <div class="prob">You forget to ask</div><h3>Ask in one tap</h3>
+            <p>A friendly review request by WhatsApp, text or email, already written and signed by you. Paste today's customers and work through them in a minute.</p>
+            <div class="mock"><div class="bub">Hi Emma, thanks for coming in today! 😊 If you've got a minute, a quick Google review would mean the world to us ⭐<small>12:41 ✓✓</small></div></div>
+          </div>
+          <div class="feat wide reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 20h1"/></svg></div>
+            <div class="prob">Customers can't find where to click</div><h3>One link, one QR code</h3>
+            <p>Your link opens your Google review box directly. Print table cards, a counter sign or business cards in your colours.</p>
+            <div class="mock"><div class="qrmini"><div class="q" id="landQr"></div><div><b>Enjoyed your visit?</b><span class="muted small">Scan to leave us a quick Google review</span></div></div></div>
+          </div>
+          <div class="feat reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="prob">One bad day ends up online</div><h3>Hear it first</h3>
+            <p>Unhappy customers get an easy way to message you privately, so you can put it right. Your Google button always stays on show.</p>
+          </div>
+          <div class="feat reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></div>
+            <div class="prob">"I'll do it later"</div><h3>Gentle nudges</h3>
+            <p>It remembers who you've asked and tells you who to nudge after three days.</p>
+            <div class="mock"><div class="nudge">Emma W. <em>Nudge today</em></div><div class="nudge">Jamal K. <em class="ok">Reviewed ✓</em></div></div>
+          </div>
+          <div class="feat reveal">
+            <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>
+            <div class="prob">Replying takes ages</div><h3>Replies in seconds</h3>
+            <p>Ready-to-post replies to 5-star praise and 1-star complaints, signed by you.</p>
+            <div class="mock"><div class="rv"><span class="s">★★★★★</span> Brilliant service!<div class="r">Thank you so much! We loved having you in. Sam</div></div></div>
+          </div>
+          <div class="feat full reveal">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center" class="goalgrid">
+              <div>
+                <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></div>
+                <div class="prob">No idea what you're aiming for</div><h3>A clear target</h3>
+                <p>Enter your rating and see exactly how many 5-star reviews you need to reach 4.5 or 4.8, then track it week by week.</p>
+              </div>
+              <div class="mock" style="margin-top:0"><div class="goal">To reach 4.8 you need<b>12 more 5-star reviews</b></div><div class="meter"><i></i></div><div class="goal" style="margin-top:6px">Example: 4.6 from 31 reviews</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="how" style="padding-top:0">
+      <div class="wrap">
+        <span class="kicker reveal">How it works</span>
+        <h2 class="t reveal">Live in two minutes. No app to install.</h2>
+        <p class="st reveal">Works on any phone, straight from your browser. I can set it up with you in person too.</p>
+        <div class="steps3">
+          <div class="step reveal"><div class="n">1</div><h3>Add your business</h3><p>Your name and your Google review link. We show you exactly where to find it.</p></div>
+          <div class="step reveal"><div class="n">2</div><h3>Ask every customer</h3><p>Send a WhatsApp after their visit, and put a QR card on the counter or tables.</p></div>
+          <div class="step reveal"><div class="n">3</div><h3>Watch the stars add up</h3><p>Happy customers post on Google. Unhappy ones tell you first, so you can fix it.</p></div>
         </div>
       </div>
     </section>
 
     <section class="block" style="padding-top:0">
       <div class="wrap">
-        <h2 class="t">Built for businesses like yours</h2>
-        <p class="st">If your customers search Google before they pick you, this is for you.</p>
-        <div class="chips">
-          <span class="chip">☕ Cafés &amp; restaurants</span><span class="chip">💈 Barbers &amp; salons</span><span class="chip">🔧 Plumbers, sparkies &amp; builders</span>
-          <span class="chip">🦷 Dentists &amp; clinics</span><span class="chip">🏋️ Gyms &amp; PTs</span><span class="chip">🛍️ Independent shops</span>
-          <span class="chip">🍕 Takeaways</span><span class="chip">🚗 Garages &amp; valeters</span><span class="chip">🏠 Letting agents</span><span class="chip">🐶 Groomers</span>
+        <span class="kicker reveal">Who it's for</span>
+        <h2 class="t reveal" style="font-size:clamp(26px,3.4vw,34px)">Built for businesses like yours</h2>
+        <p class="st reveal" style="margin-bottom:32px">If your customers search Google before they choose you, this is for you.</p>
+        <div class="chips reveal">
+          <span class="chip">☕ Cafés &amp; restaurants</span><span class="chip">💈 Barbers &amp; salons</span><span class="chip">💅 Nail bars</span><span class="chip">🐶 Dog groomers</span>
+          <span class="chip">🏋️ Gyms &amp; PTs</span><span class="chip">🔧 Trades</span><span class="chip">🛍️ Independent shops</span>
+          <span class="chip">🍕 Takeaways</span><span class="chip">🦷 Clinics</span><span class="chip">🚗 Garages &amp; valeters</span>
         </div>
       </div>
     </section>
 
-    <section class="block steps" style="padding-top:0">
+    <section class="block dark" id="results">
       <div class="wrap">
-        <h2 class="t">How it works</h2>
-        <p class="st">No app to install, no account, nothing to pay while we launch.</p>
-        <div class="grid3">
-          <div class="pcard"><h3>Add your business</h3><p>Your business name and your Google review link. We show you exactly where to find it.</p></div>
-          <div class="pcard"><h3>Share your link</h3><p>WhatsApp or text customers after their visit, and put a QR card on the counter or tables.</p></div>
-          <div class="pcard"><h3>Watch the stars add up</h3><p>Happy customers post on Google. Unhappy ones tell you first, so you get the chance to fix it.</p></div>
+        <span class="kicker reveal">Results</span>
+        <h2 class="t reveal">Real results, shown in public</h2>
+        <p class="st reveal">Our founding businesses are starting now. As they grow, their real before-and-after Google numbers will appear here. No made-up figures, ever.</p>
+        <div class="results">
+          <div class="res reveal"><div class="tag">Founding business #1</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Google reviews, before and after</p></div>
+          <div class="res reveal"><div class="tag">Founding business #2</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Google reviews, before and after</p></div>
+          <div class="res reveal"><div class="tag">Could be you</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Join free and be one of the first</p></div>
+        </div>
+        <p class="res-note reveal">Want your business here? <a href="#founding">Become a founding business →</a></p>
+      </div>
+    </section>
+
+    <section class="block" id="pricing">
+      <div class="wrap">
+        <span class="kicker reveal">Pricing</span>
+        <h2 class="t reveal">Free while we launch</h2>
+        <p class="st reveal">Join now as a founding business. You'll always hear from us well before anything changes, and there's never a contract.</p>
+        <div class="pricing">
+          <div class="plan hl reveal">
+            <h3>Founding business</h3>
+            <div class="price">£0 <small>/ month</small></div>
+            <div class="per">Free during launch, then a discount for life</div>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Every feature, from day one</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Set up in person if you'd like</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Lifetime founding discount on any future plan</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>No contract, cancel any time</li>
+            </ul>
+            <a class="btn btn-gold" href="#founding">Claim a founding spot</a>
+          </div>
+          <div class="plan reveal">
+            <h3>Done for you</h3>
+            <div class="price" style="font-size:36px">Free <small>while we launch</small></div>
+            <div class="per">For businesses who'd rather not lift a finger</div>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>I'll find your Google review link</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>QR cards and window signs in your colours</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Show your team how to ask</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Across Liverpool and Merseyside</li>
+            </ul>
+            <a class="btn btn-ghost" href="#founding">Ask for a visit</a>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="block" style="padding-top:0">
       <div class="wrap">
-        <div class="rules">
+        <div class="rules reveal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
           <div>
             <h3>Plays by Google's rules and UK law</h3>
@@ -368,6 +617,7 @@
 
     <section class="block" id="setupSection">
       <div class="wrap">
+        <span class="kicker">Get started</span>
         <h2 class="t">Set up your business</h2>
         <p class="st">Takes about two minutes. Everything is saved on this device only.</p>
         <div class="card setup-card" id="setupHome"></div>
@@ -376,8 +626,9 @@
 
     <section class="block" id="founding">
       <div class="wrap">
+        <span class="kicker">Limited spots</span>
         <h2 class="t">Become a founding business</h2>
-        <p class="st">We're looking for Liverpool businesses to use Mersey Stars free during launch and tell us what they think. Founding businesses keep a discount for life.</p>
+        <p class="st">Use Mersey Stars free during launch, tell us what you think, and keep a discount for life.</p>
         <div class="card setup-card">
           <form id="foundForm" novalidate>
             <div class="row2">
@@ -420,25 +671,27 @@
       </div>
     </section>
 
-    <section class="block">
+    <section class="block" style="padding-top:0">
       <div class="wrap">
-        <div class="dfy">
+        <div class="dfy reveal">
           <div>
-            <h2 style="font-size:24px">Rather someone did it for you?</h2>
-            <p>We'll set up your review link, design table cards and window stickers in your colours, and show your team how to ask, for businesses across Liverpool and Merseyside.</p>
+            <h2>Rather someone did it for you?</h2>
+            <p>I'll set up your review link, design table cards and window signs in your colours, and show your team how to ask. Anywhere in Liverpool and Merseyside.</p>
           </div>
           <div class="btn-row">
-            <a class="btn btn-gold" href="mailto:jonathansmallbone889@gmail.com?subject=Mersey%20Stars%20setup">Email us</a>
-            <a class="btn btn-ghost" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.35)" href="tel:+447576618414">07576 618414</a>
+            <a class="btn btn-gold" href="mailto:jonathansmallbone889@gmail.com?subject=Mersey%20Stars%20setup">Email me</a>
+            <a class="btn btn-ghost" href="tel:+447576618414">07576 618414</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="block" style="padding-top:0">
+    <section class="block" id="faq" style="padding-top:0">
       <div class="wrap faq">
-        <h2 class="t" style="margin-bottom:24px">Questions</h2>
+        <span class="kicker">FAQ</span>
+        <h2 class="t" style="margin-bottom:32px">Questions</h2>
         <details><summary>Is it free?</summary><p>Yes, completely free while we launch. Paid plans will come later with extra features. Founding businesses who join now keep a discount for life, and we'll always tell you well before anything changes.</p></details>
+        <details><summary>Will it always be free?</summary><p>It's free for now while we launch. Paid plans may come later, and founding businesses keep a discount for life. We'll always tell you well before anything changes, and there's never a contract.</p></details>
         <details><summary>What's a founding business?</summary><p>One of the first Liverpool businesses to use Mersey Stars. You use it free during launch, tell us what works and what doesn't, and lock in a lifetime discount on any paid plan. Sign up with the form above. It takes a minute.</p></details>
         <details><summary>What do I need?</summary><p>A Google Business Profile (it's free from Google and is what shows your business on Google Maps and Search). If you can see "Ask for reviews" when you search for your business while signed in, you're ready.</p></details>
         <details><summary>Where does the private feedback go?</summary><p>Straight to your email or WhatsApp, whichever you choose during setup. We never see it.</p></details>
@@ -447,7 +700,18 @@
         <details><summary>Does it work for businesses without a shop?</summary><p>Yes. Trades and mobile businesses usually get the best results by sending a WhatsApp message the same day the job is finished.</p></details>
       </div>
     </section>
-    <footer class="foot">Mersey Stars · Made in Liverpool · <a href="flyer.html">Printable flyer</a> · <a href="../">Back to main site</a></footer>
+    <footer class="foot">
+      <div class="wrap">
+        <div>
+          <span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b2f4a"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>Mersey Stars</span>
+          <div>More Google reviews for Liverpool businesses. Made in Liverpool.</div>
+        </div>
+        <div class="links">
+          <a href="#problems">Features</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="flyer.html">Printable flyer</a>
+          <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a><a href="tel:+447576618414">07576 618414</a>
+        </div>
+      </div>
+    </footer>
   </div>
 
   <!-- ===================== APP ===================== -->
@@ -838,6 +1102,7 @@
       $('toApp').hidden = !(hasBiz && v === 'landing');
       $('toAbout').hidden = v !== 'app';
       $('toSetup').hidden = hasBiz;
+      $('landNav').hidden = v !== 'landing';
       if (v === 'landing') {
         foundPrefill();
         $('setupHome').appendChild(form);
@@ -1383,6 +1648,19 @@
     }
     var savedTab;
     try { savedTab = sessionStorage.getItem(KEY + '-tab'); } catch (e) { savedTab = null; }
+    // ---------- Landing touches ----------
+    // Example QR for the feature card (points at this site).
+    try { $('landQr').innerHTML = QR.toSvg(QR.encode(new URL('./', location.href).href), { margin: 0 }); } catch (e) { /* not essential */ }
+    // Fade sections in as they scroll into view.
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) { els.forEach(function (el) { el.classList.add('in'); }); return; }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+      }, { rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+
     setView(state.biz ? 'app' : 'landing');
     if (state.biz) setTab(savedTab && document.querySelector('[data-panel="' + savedTab + '"]') ? savedTab : 'ask');
   })();
