@@ -315,8 +315,8 @@
         </div>
       </div>
       <div class="card">
-        <h2>1. Your criteria</h2>
-        <p class="sub">The businesses you want to find.</p>
+        <h2>Your criteria</h2>
+        <p class="sub">The assistant only looks for businesses that fit these.</p>
         <div class="two">
           <div><label class="f" for="cMin">Min rating</label><input type="number" id="cMin" step="0.1" min="1" max="5" inputmode="decimal"></div>
           <div><label class="f" for="cMax">Max rating</label><input type="number" id="cMax" step="0.1" min="1" max="5" inputmode="decimal"></div>
@@ -327,56 +327,12 @@
         </div>
         <label class="f">Types of business</label>
         <div class="chips" id="cTypes" style="flex-wrap:wrap;overflow:visible"></div>
-        <label class="f" for="cAreas">Areas <span class="o">(comma separated)</span></label>
-        <input type="text" id="cAreas">
-      </div>
-
-      <div class="card" id="nearCard">
-        <h2>Find near a postcode <span class="n">free</span></h2>
-        <p class="sub">Searches OpenStreetMap for independent businesses near you. No key, no sign-up, works on your phone. It skips chains and businesses already on your list.</p>
         <div class="two">
-          <div><label class="f" for="nPc">Postcode</label><input type="text" id="nPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
-          <div><label class="f" for="nMi">Within</label><select id="nMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option></select></div>
-        </div>
-        <p class="help">Uses the types of business ticked above.</p>
-        <button class="btn btn-gold btn-block" id="nGo" style="margin-top:12px">Find businesses near me</button>
-        <div id="nRes" style="margin-top:12px"></div>
-      </div>
-
-      <div class="card">
-        <h2>2. Ask Google AI</h2>
-        <p class="sub">Copy this prompt into Gemini. It already excludes every business on your list.</p>
-        <textarea id="prompt" readonly style="min-height:150px;font-size:13.5px"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btn-primary" id="copyPrompt">Copy prompt</button>
-          <a class="btn btn-ghost" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
+          <div><label class="f" for="cPc">Near postcode</label><input type="text" id="cPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
+          <div><label class="f" for="cMi">Within</label><select id="cMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option><option value="10">10 miles</option></select></div>
         </div>
       </div>
 
-      <div class="card">
-        <h2>3. Import the results</h2>
-        <p class="sub">Paste the table Gemini gives you (or export it as CSV and choose the file). New businesses land in "Check these".</p>
-        <textarea id="importText" placeholder="Paste the table or CSV here"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btn-primary" id="doImport">Import</button>
-          <label class="btn btn-ghost" for="importFile">Choose CSV file</label>
-          <input type="file" id="importFile" accept=".csv,text/csv,text/plain" hidden>
-        </div>
-      </div>
-
-      <div class="card" id="liveCard">
-        <h2>Live Google Maps search <span class="n">optional</span></h2>
-        <div id="liveOff"><p class="sub">Search Google Maps directly from the app, with real ratings and review counts. Needs a free Google Maps key, which you can add in Settings.</p></div>
-        <div id="liveOn" hidden>
-          <p class="sub">Searches Google Maps and keeps only open businesses that match your criteria.</p>
-          <div class="two">
-            <div><label class="f" for="lvType">Type</label><select id="lvType"></select></div>
-            <div><label class="f" for="lvArea">Area</label><input type="text" id="lvArea" placeholder="e.g. Crosby"></div>
-          </div>
-          <button class="btn btn-primary btn-block" id="liveGo" style="margin-top:12px">Search</button>
-          <div id="liveRes" style="margin-top:10px"></div>
-        </div>
-      </div>
     </section>
 
     <!-- SETTINGS -->
@@ -409,11 +365,6 @@
         <input type="text" id="sAi" placeholder="AIza…" autocomplete="off" spellcheck="false">
         <button class="btn btn-ghost btn-block" id="aiTest" style="margin-top:10px">Test the assistant</button>
         <p class="help" id="aiTestOut"></p>
-      </div>
-      <div class="card">
-        <h2>Google Maps key <span class="n">optional</span></h2>
-        <p class="sub">Turns on live search in the Find tab. Create one in Google Cloud (Maps JavaScript API and Places API (New)), restrict it to your website, and paste it here. It stays on this phone.</p>
-        <input type="text" id="sKey" placeholder="AIza…" autocomplete="off" spellcheck="false">
       </div>
       <div class="card">
         <h2>Backup</h2>
@@ -900,32 +851,17 @@
     // ---------- Find ----------
     function renderFind() {
       var c = state.crit;
-      $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count; $('cAreas').value = c.areas;
+      $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count;
+      $('cPc').value = c.postcode || ''; $('cMi').value = String(c.miles || 2);
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
-      $('prompt').value = buildPrompt();
       $('aiOff').hidden = !!state.me.aiKey; $('aiOn').hidden = !state.me.aiKey;
-      if (!$('aiQ').value) $('aiQ').value = 'Find 10 independent ' + c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ').replace(/, ([^,]*)$/, ' and $1') + ' within ' + (c.miles || 2) + ' miles of ' + (c.postcode || 'L9 8EH') + ' that are active on Instagram';
-      if (!$('nPc').value) $('nPc').value = c.postcode || '';
-      $('nMi').value = String(c.miles || 2);
-      var on = !!state.me.key;
-      $('liveOff').hidden = on; $('liveOn').hidden = !on;
-      if (on && !$('lvType').options.length) $('lvType').innerHTML = TYPES.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+      if (!aiQEdited) $('aiQ').value = aiDefaultQ();
     }
-    function buildPrompt() {
+    var aiQEdited = false;
+    function aiDefaultQ() {
       var c = state.crit;
-      var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
-      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
-      return 'Find ' + c.count + ' independent small businesses in Liverpool and Merseyside, UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
-        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
-        'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
-        (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment\n\n' +
-        'For Compliment: write one short, friendly compliment (under 15 words, one emoji) about something customers genuinely praise in this business\'s Google reviews, e.g. "Your Sunday roast gets rave reviews 😍". Base it only on real reviews. If nothing specific stands out, leave it blank.\n\n' +
-        'Instagram rules (very important):\n' +
-        '- Only give an Instagram username that is linked on the business\'s own website, Google listing or Facebook page.\n' +
-        '- Copy it exactly as written in that link, character for character (dots and underscores matter).\n' +
-        '- In Instagram Source URL, give the full web address of the page where you found that link.\n' +
-        '- Never guess or build a username from the business name. If you can\'t find a linked one, leave Instagram Username and Instagram Source URL blank rather than guess.';
+      return 'Find ' + (c.count || 10) + ' independent ' + (c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ').replace(/, ([^,]*)$/, ' and $1') || 'local businesses') +
+        (c.postcode ? ' within ' + (c.miles || 2) + ' miles of ' + c.postcode : ' in Liverpool') + ' that are active on Instagram';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -933,37 +869,20 @@
       if (i > -1) state.crit.types.splice(i, 1); else state.crit.types.push(b.dataset.t);
       save(); renderFind();
     });
-    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cAreas', 'areas', String]].forEach(function (f) {
+    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cMi', 'miles', parseFloat], ['cPc', 'postcode', String]].forEach(function (f) {
       $(f[0]).addEventListener('change', function () {
-        var v = f[2](this.value, 10);
+        var v = f[2] === String ? this.value.trim().toUpperCase() : f[2](this.value, 10);
         if (f[2] !== String && isNaN(v)) return;
-        state.crit[f[1]] = v; save(); $('prompt').value = buildPrompt();
+        state.crit[f[1]] = v; save(); if (!aiQEdited) $('aiQ').value = aiDefaultQ();
       });
     });
-    $('copyPrompt').addEventListener('click', function () { copy($('prompt').value, 'Prompt copied. Paste it into Gemini.'); });
+    $('aiQ').addEventListener('input', function () { aiQEdited = true; });
 
-    // CSV / table import
-    function parseRows(text) {
-      text = text.replace(/\r/g, '').trim();
-      if (!text) return [];
-      var lines = text.split('\n').filter(function (x) { return x.trim() && !/^\s*\|?\s*:?-{3,}/.test(x); });
-      var isPipe = lines[0].indexOf('|') > -1;
-      var isTab = !isPipe && lines[0].indexOf('\t') > -1;
-      return lines.map(function (line) {
-        if (isPipe) return line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
-        if (isTab) return line.split('\t').map(function (c) { return c.trim(); });
-        var out = [], cur = '', q = false;
-        for (var i = 0; i < line.length; i++) {
-          var ch = line[i];
-          if (q) { if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
-          else if (ch === '"') q = true;
-          else if (ch === ',') { out.push(cur.trim()); cur = ''; }
-          else cur += ch;
-        }
-        out.push(cur.trim());
-        return out;
-      });
+    function fetchT(url, opts, ms) {
+      var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, ms);
+      return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {})).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
     }
+
     function guessType(s) {
       s = (s || '').toLowerCase();
       if (/nail/.test(s)) return 'nails';
@@ -982,195 +901,7 @@
       return Object.assign({ id: uid(), name: '', type: 'other', area: '', address: '', ig: '', maps: '', rating: '', reviews: '', verified: false,
         status: 'check', compliment: '', notes: '', createdAt: todayIso(), followedAt: '', dmAt: '', fuAt: '', demoAt: '' }, o);
     }
-    function importRows(rows) {
-      if (rows.length < 2) return 0;
-      var h = rows[0].map(function (x) { return x.toLowerCase(); });
-      function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
-      var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cComp = col(/compliment/);
-      if (cName < 0) cName = 0;
-      var have = knownNames();
-      var added = 0;
-      rows.slice(1).forEach(function (r) {
-        var name = (r[cName] || '').replace(/\*\*/g, '').trim();
-        if (!name || have[name.toLowerCase()]) return;
-        var addr = cAddr > -1 ? r[cAddr] || '' : '';
-        var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
-        var ig = cIg > -1 ? handle(r[cIg]) : '';
-        if (/^(not found|n\/a|none|-)$/i.test(ig)) ig = '';
-        state.leads.push(newLead({
-          name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
-          rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
-          reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, igSrc: ig && cSrc > -1 && /^https?:\/\//.test((r[cSrc] || '').trim()) ? r[cSrc].trim() : '', notes: 'Imported ' + nice(todayIso()),
-          compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
-        }));
-        have[name.toLowerCase()] = 1; added++;
-      });
-      save();
-      return added;
-    }
-    $('doImport').addEventListener('click', function () {
-      var n = importRows(parseRows($('importText').value));
-      if (n) { $('importText').value = ''; toast(n + ' new business' + (n === 1 ? '' : 'es') + ' added'); setView('today'); }
-      else toast('Nothing new found. Check the table has a header row.');
-    });
-    $('importFile').addEventListener('change', function () {
-      var f = this.files[0]; if (!f) return;
-      var r = new FileReader();
-      r.onload = function () { var n = importRows(parseRows(r.result)); toast(n ? n + ' new businesses added' : 'Nothing new in that file'); if (n) setView('today'); };
-      r.readAsText(f); this.value = '';
-    });
-
-    // Optional live search with the Google Maps JavaScript API (Places, new).
-    var mapsLoading = null;
-    function loadMaps() {
-      if (window.google && google.maps && google.maps.importLibrary) return Promise.resolve();
-      if (mapsLoading) return mapsLoading;
-      mapsLoading = new Promise(function (resolve, reject) {
-        window.__msMapsReady = resolve;
-        var s = document.createElement('script');
-        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(state.me.key) + '&v=weekly&loading=async&callback=__msMapsReady';
-        s.onerror = function () { mapsLoading = null; reject(new Error('load')); };
-        document.head.appendChild(s);
-      });
-      return mapsLoading;
-    }
-    // ---------- Find near a postcode (OpenStreetMap: free, no key) ----------
-    // Postcode -> location via postcodes.io, then independent businesses from the Overpass API.
-    var OSM = {
-      salon: ['["shop"="hairdresser"]', '["shop"="beauty"]'],
-      nails: ['["shop"="beauty"]["beauty"~"nails"]'],
-      barber: ['["shop"="hairdresser"]'],
-      groomer: ['["shop"="pet_grooming"]'],
-      cafe: ['["amenity"="cafe"]', '["amenity"="restaurant"]'],
-      takeaway: ['["amenity"="fast_food"]'],
-      gym: ['["leisure"="fitness_centre"]'],
-      tattoo: ['["shop"="tattoo"]'],
-      shop: ['["shop"~"^(gift|books|florist|boutique|clothes|bakery|deli|jewelry|art|stationery|charity)$"]'],
-      trade: ['["craft"~"^(plumber|electrician|carpenter|painter|roofer|builder|glaziery|tiler)$"]']
-    };
-    var nearResults = [];
-    function miles(a, b, c, d) {
-      var r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2);
-      return 7917.5 * Math.asin(Math.sqrt(x * x + Math.cos(a * r) * Math.cos(c * r) * y * y));
-    }
-    function osmType(t) {
-      var n = (t.name || '') + ' ' + (t.hairdresser || '') + ' ' + (t.beauty || '');
-      if (t.shop === 'hairdresser') return /barber/i.test(n) ? 'barber' : 'salon';
-      if (t.shop === 'beauty') return /nail/i.test(n) ? 'nails' : 'salon';
-      if (t.shop === 'pet_grooming') return 'groomer';
-      if (t.shop === 'tattoo') return 'tattoo';
-      if (t.amenity === 'cafe' || t.amenity === 'restaurant') return 'cafe';
-      if (t.amenity === 'fast_food') return 'takeaway';
-      if (t.leisure === 'fitness_centre') return 'gym';
-      if (t.craft) return 'trade';
-      return 'shop';
-    }
-    // Each step has backup servers: if one is down, slow or overloaded, the next is tried automatically.
-    var OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
-    function fetchT(url, opts, ms) {
-      var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, ms);
-      return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {})).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
-    }
-    function nearStatus(msg) { $('nGo').textContent = msg; }
-    function locate(pc) {
-      var q = pc.replace(/\s+/g, '');
-      if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(q)) return Promise.reject(new Error('postcode'));
-      var notFound = 0;
-      function pio(path) {
-        return fetchT('https://api.postcodes.io/' + path + encodeURIComponent(q), {}, 10000).then(function (r) {
-          if (r.status === 404) { notFound++; throw new Error('nf'); }
-          if (!r.ok) throw new Error('down');
-          return r.json();
-        }).then(function (j) {
-          var x = j.result; if (!x || x.latitude == null) throw new Error('nf');
-          return { lat: x.latitude, lon: x.longitude, area: x.admin_ward || x.admin_district || '' };
-        });
-      }
-      function nominatim() {
-        nearStatus('Searching… (backup postcode server)');
-        return fetchT('https://nominatim.openstreetmap.org/search?format=json&countrycodes=gb&limit=1&addressdetails=1&postalcode=' + encodeURIComponent(pc), {}, 12000)
-          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
-          .then(function (a) {
-            if (!a || !a.length) { notFound++; throw new Error('nf'); }
-            var ad = a[0].address || {};
-            return { lat: +a[0].lat, lon: +a[0].lon, area: ad.suburb || ad.town || ad.city || '' };
-          });
-      }
-      return pio('postcodes/').catch(function () { return pio('terminated_postcodes/'); }).catch(nominatim)
-        .catch(function () { throw new Error(notFound >= 2 ? 'postcode' : 'offline'); });
-    }
-    function overpass(query) {
-      var i = 0;
-      function attempt() {
-        if (i >= OVERPASS.length) return Promise.reject(new Error('busy'));
-        var url = OVERPASS[i++];
-        if (i > 1) nearStatus('Searching… (backup map server ' + (i - 1) + ')');
-        return fetchT(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(query) }, 28000)
-          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
-          .then(function (d) {
-            // Overpass can answer 200 with a partial result when it runs out of time: treat that as a failure too.
-            if (!d || !d.elements || (d.remark && /runtime error|timed out|out of memory/i.test(d.remark))) throw new Error('partial');
-            return d;
-          })
-          .catch(attempt);
-      }
-      return attempt();
-    }
-    function nearSearch() {
-      var pc = $('nPc').value.trim().toUpperCase(), mi = parseFloat($('nMi').value) || 2;
-      var wanted = state.crit.types.filter(function (t) { return OSM[t]; });
-      if (!pc) { $('nPc').focus(); toast('Type a postcode first'); return; }
-      if (!wanted.length) { toast('Tick at least one type of business above'); return; }
-      state.crit.postcode = pc; state.crit.miles = mi; save();
-      $('nGo').disabled = true; $('nGo').textContent = 'Searching…'; $('nRes').innerHTML = '';
-      function done() { $('nGo').disabled = false; $('nGo').textContent = 'Find businesses near me'; }
-      locate(pc)
-        .then(function (loc) {
-          var m = Math.round(mi * 1609);
-          var sel = []; wanted.forEach(function (t) { OSM[t].forEach(function (q) { sel.push('nwr' + q + '["name"](around:' + m + ',' + loc.lat + ',' + loc.lon + ');'); }); });
-          return overpass('[out:json][timeout:25];(' + sel.join('') + ');out center tags;')
-            .then(function (d) { return { d: d, lat: loc.lat, lon: loc.lon, area: loc.area }; });
-        })
-        .then(function (o) {
-          var have = knownNames(), seen = {}, chains = 0;
-          nearResults = (o.d.elements || []).map(function (e) {
-            var t = e.tags || {}, la = e.lat || (e.center && e.center.lat), lo = e.lon || (e.center && e.center.lon);
-            if (t.brand || t['brand:wikidata']) { chains++; return null; }
-            var k = (t.name || '').toLowerCase(), ty = osmType(t);
-            if (!k || seen[k] || have[k] || wanted.indexOf(ty) < 0) return null; seen[k] = 1;
-            var ig = handle(t['contact:instagram'] || t.instagram || '');
-            return {
-              name: t.name, type: ty, dist: la ? miles(o.lat, o.lon, la, lo) : 0,
-              address: [[t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' '), t['addr:postcode']].filter(Boolean).join(', '),
-              area: t['addr:suburb'] || t['addr:street'] || o.area, ig: ig,
-              igSrc: ig ? 'https://www.openstreetmap.org/' + e.type + '/' + e.id : '',
-              web: t.website || t['contact:website'] || '', phone: t.phone || t['contact:phone'] || ''
-            };
-          }).filter(Boolean).sort(function (a, b) { return a.dist - b.dist; }).slice(0, 60);
-          renderNear(chains);
-        })
-        .catch(function (err) {
-          $('nRes').innerHTML = '<div class="notice">' + (err && err.message === 'postcode' ? 'That postcode wasn\'t recognised. Check it (e.g. L9 8EH) and try again.' : err && err.message === 'busy' ? 'All map servers are busy right now, which is rare. Try again in a few minutes.' : 'Couldn\'t search just now. Check you have signal or Wi-Fi and try again.') + '</div>';
-        })
-        .then(done);
-    }
-    function renderNear(chains) {
-      if (!nearResults.length) { $('nRes').innerHTML = '<p class="empty">No new independent businesses found. Try a wider distance or more types.</p>'; return; }
-      $('nRes').innerHTML = '<p class="help" style="margin:0 0 6px">' + nearResults.length + ' new business' + (nearResults.length > 1 ? 'es' : '') + (chains ? ', ' + chains + ' chain' + (chains > 1 ? 's' : '') + ' skipped' : '') + '. OpenStreetMap has no Google ratings, so you\'ll check those at the "To check" stage.</p>' +
-        '<button class="btn btn-primary btn-block" id="nAll" style="margin-bottom:6px">Add all ' + nearResults.length + ' to my list</button>' +
-        nearResults.map(function (p, i) {
-          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc((TYPE_NAME[p.type] || '').replace(/s( &|$)/, '$1')) + ' · ' + p.dist.toFixed(1) + ' mi' + (p.area ? ' · ' + esc(p.area) : '') + (p.ig ? ' · @' + esc(p.ig) : '') + '</div></div><button class="btn btn-ghost btn-sm" data-near="' + i + '">Add</button></div>';
-        }).join('');
-    }
-    function addNear(p) {
-      var notes = ['Found on OpenStreetMap ' + nice(todayIso()), p.web ? 'Website: ' + p.web : '', p.phone ? 'Phone: ' + p.phone : ''].filter(Boolean).join('\n');
-      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, ig: p.ig, igSrc: p.igSrc, notes: notes }));
-      p.added = true;
-    }
-    $('nGo').addEventListener('click', nearSearch);
+    // ---------- Assistant buttons ----------
     $('aiFind').addEventListener('click', aiFind);
     $('aiAsk').addEventListener('click', aiAskQ);
     $('aiOut').addEventListener('click', function (e) {
@@ -1191,57 +922,16 @@
         .catch(function (e) { $('aiTestOut').textContent = aiMessage(e); })
         .then(function () { aiBusy(btn, false, 'Test the assistant'); });
     });
-    $('nRes').addEventListener('click', function (e) {
-      if (e.target.id === 'nAll') {
-        var n = 0; nearResults.forEach(function (p) { if (!p.added) { addNear(p); n++; } });
-        save(); toast(n + ' businesses added to "To check"'); nearResults = []; $('nRes').innerHTML = '<p class="empty">Added ✓ Find them on Today under "Check these".</p>'; return;
-      }
-      var b = e.target.closest('[data-near]'); if (!b) return;
-      var p = nearResults[+b.dataset.near]; if (p.added) return;
-      addNear(p); save(); b.textContent = 'Added ✓'; b.disabled = true;
-    });
-
-    var liveResults = [];
-    $('liveGo').addEventListener('click', function () {
-      var type = $('lvType').value, area = $('lvArea').value.trim() || 'Liverpool';
-      var q = TYPES.filter(function (t) { return t[0] === type; })[0][2] + ' in ' + area + ', Merseyside';
-      $('liveRes').innerHTML = '<p class="empty">Searching…</p>';
-      loadMaps().then(function () { return google.maps.importLibrary('places'); }).then(function (lib) {
-        return lib.Place.searchByText({
-          textQuery: q, region: 'gb', maxResultCount: 20,
-          fields: ['displayName', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'googleMapsURI', 'websiteURI']
-        });
-      }).then(function (res) {
-        var have = knownNames();
-        var c = state.crit;
-        liveResults = (res.places || []).filter(function (p) {
-          return p.businessStatus === 'OPERATIONAL' && p.rating >= c.min && p.rating <= c.max && (p.userRatingCount || 0) < c.reviews && !have[(p.displayName || '').toLowerCase()];
-        }).map(function (p) {
-          return { name: p.displayName, address: p.formattedAddress || '', area: area, type: type, rating: String(p.rating), reviews: String(p.userRatingCount || 0), maps: p.googleMapsURI || '', web: p.websiteURI || '' };
-        });
-        $('liveRes').innerHTML = liveResults.length ? liveResults.map(function (p, i) {
-          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc(p.rating) + '★ · ' + esc(p.reviews) + ' reviews · ' + esc(p.address) + '</div></div><button class="btn btn-ghost btn-sm" data-add="' + i + '">Add</button></div>';
-        }).join('') : '<p class="empty">No matches for your criteria. Try another area or type.</p>';
-      }).catch(function (err) {
-        $('liveRes').innerHTML = '<div class="notice">Live search didn\'t work. Check your key allows the Maps JavaScript API and Places API (New), and that billing is set up in Google Cloud.' + (err && err.message ? '<br><small>' + esc(err.message) + '</small>' : '') + '</div>';
-      });
-    });
-    $('liveRes').addEventListener('click', function (e) {
-      var b = e.target.closest('[data-add]'); if (!b) return;
-      var p = liveResults[+b.dataset.add];
-      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, rating: p.rating, reviews: p.reviews, maps: p.maps, mapsReal: !!p.maps, verified: true, notes: p.web ? 'Website: ' + p.web : '' }));
-      save(); b.textContent = 'Added ✓'; b.disabled = true;
-    });
 
     // ---------- Settings ----------
     function renderSettings() {
       var m = state.me;
-      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key; $('sPhone').value = m.phone; $('sEmail').value = m.email;
+      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sPhone').value = m.phone; $('sEmail').value = m.email;
       $('calDaily2').href = dailyCalUrl();
       $('sAi').value = m.aiKey || '';
       $('myIg').href = igUrl(m.ig || 'merseystars');
     }
-    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email'], ['sAi', 'aiKey']].forEach(function (f) {
+    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sPhone', 'phone'], ['sEmail', 'email'], ['sAi', 'aiKey']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
     });
     [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
@@ -1359,7 +1049,10 @@
         'type is one of: salon, nails, barber, groomer, cafe, takeaway, gym, tattoo, shop, trade, other. rating and reviews are the Google rating and number of Google reviews if you found them, else null. ' +
         'instagram: ONLY a username that is linked from the business\'s own website, Google listing or Facebook page, copied exactly; put the full URL of that page in instagram_source. Never guess or build a username from the business name: if you cannot find a linked one, use null for both. ' +
         'compliment: one short friendly compliment under 15 words with one emoji, based on what real customers praise, or null. Never invent businesses or details.';
-      var prompt = q + (known.length ? '\n\nDo not include any of these, they are already on my list: ' + known.join(', ') : '');
+      var c = state.crit;
+      var prompt = q + '\n\nMy criteria: Google rating between ' + c.min + ' and ' + c.max + ', fewer than ' + c.reviews + ' Google reviews' +
+        (c.postcode ? ', within ' + (c.miles || 2) + ' miles of ' + c.postcode : '') + '. Leave out businesses you can see fall outside this.' +
+        (known.length ? '\n\nDo not include any of these, they are already on my list: ' + known.join(', ') : '');
       $('aiOut').innerHTML = '<p class="help">Searching Google… this can take up to a minute.</p>';
       aiBusy($('aiFind'), true, 'Searching…'); aiBusy($('aiAsk'), true);
       aiCall(prompt, sys, true).then(function (o) {
