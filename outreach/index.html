@@ -286,7 +286,7 @@
         <p class="sub">Three steps to your first DM.</p>
         <div class="todo">
           <button class="td" data-go="settings"><b id="tdMe">1</b><span><strong>Add your details</strong><small>Name, business and Instagram, used in every message</small></span></button>
-          <button class="td" data-go="find"><b>2</b><span><strong>Find businesses near you</strong><small>Free AI search with your criteria and postcode</small></span></button>
+          <button class="td" data-go="find"><b>2</b><span><strong>Find businesses near you</strong><small>Free AI search for the areas you choose</small></span></button>
           <div class="td"><b>3</b><span><strong>Add this app to your home screen</strong><small>Android: ⋮ menu → Add to home screen. iPhone: Share → Add to Home Screen</small></span></div>
         </div>
       </div>
@@ -384,10 +384,9 @@
         </div>
         <label class="f">Types of business</label>
         <div class="chips" id="cTypes" style="flex-wrap:wrap;overflow:visible"></div>
-        <div class="two">
-          <div><label class="f" for="cPc">Near postcode</label><input type="text" id="cPc" autocomplete="postal-code" autocapitalize="characters" placeholder="e.g. L9 8EH"></div>
-          <div><label class="f" for="cMi">Within</label><select id="cMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option><option value="10">10 miles</option></select></div>
-        </div>
+        <label class="f" for="cAreas">Areas to search</label>
+        <input type="text" id="cAreas" placeholder="e.g. Walton, Aintree, Orrell Park">
+        <p class="help">Neighbourhood names, separated by commas. The AI only looks in these areas.</p>
       </div>
 
     </section>
@@ -1089,7 +1088,7 @@
     function renderFind() {
       var c = state.crit;
       $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count;
-      $('cPc').value = c.postcode || ''; $('cMi').value = String(c.miles || 2);
+      $('cAreas').value = c.areas || '';
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
       $('prompt').value = buildPrompt();
     }
@@ -1099,7 +1098,8 @@
       var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
       return 'Find ' + c.count + ' independent small businesses in and around ' + CITY() + ', UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
-        'Types: ' + types + '.\n' + (c.postcode ? 'Location: within ' + (c.miles || 2) + ' miles of ' + c.postcode + ' (' + CITY() + '). Search Google Maps for this area.\n\n' : 'Areas: ' + c.areas + '.\n\n') +
+        'Types: ' + types + '.\n' +
+        (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. If you can\'t find enough, give fewer rather than going outside these areas.\n\n' : '') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
         'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
         'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website or Instagram. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; Instagram shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
@@ -1115,10 +1115,11 @@
       if (i > -1) state.crit.types.splice(i, 1); else state.crit.types.push(b.dataset.t);
       save(); renderFind();
     });
-    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cMi', 'miles', parseFloat], ['cPc', 'postcode', String]].forEach(function (f) {
+    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cAreas', 'areas', String]].forEach(function (f) {
       $(f[0]).addEventListener('change', function () {
-        var v = f[2] === String ? this.value.trim().toUpperCase() : f[2](this.value, 10);
+        var v = f[2] === String ? this.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ') : f[2](this.value, 10);
         if (f[2] !== String && isNaN(v)) return;
+        if (f[2] === String) this.value = v;
         state.crit[f[1]] = v; save(); $('prompt').value = buildPrompt();
       });
     });
