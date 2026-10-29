@@ -321,6 +321,18 @@
         <input type="text" id="cAreas">
       </div>
 
+      <div class="card" id="nearCard">
+        <h2>Find near a postcode <span class="n">free</span></h2>
+        <p class="sub">Searches OpenStreetMap for independent businesses near you. No key, no sign-up, works on your phone. It skips chains and businesses already on your list.</p>
+        <div class="two">
+          <div><label class="f" for="nPc">Postcode</label><input type="text" id="nPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
+          <div><label class="f" for="nMi">Within</label><select id="nMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option></select></div>
+        </div>
+        <p class="help">Uses the types of business ticked above.</p>
+        <button class="btn btn-gold btn-block" id="nGo" style="margin-top:12px">Find businesses near me</button>
+        <div id="nRes" style="margin-top:12px"></div>
+      </div>
+
       <div class="card">
         <h2>2. Ask Google AI</h2>
         <p class="sub">Copy this prompt into Gemini. It already excludes every business on your list.</p>
@@ -873,6 +885,8 @@
       $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count; $('cAreas').value = c.areas;
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
       $('prompt').value = buildPrompt();
+      if (!$('nPc').value) $('nPc').value = c.postcode || '';
+      $('nMi').value = String(c.miles || 2);
       var on = !!state.me.key;
       $('liveOff').hidden = on; $('liveOn').hidden = !on;
       if (on && !$('lvType').options.length) $('lvType').innerHTML = TYPES.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
@@ -1002,6 +1016,103 @@
       });
       return mapsLoading;
     }
+    // ---------- Find near a postcode (OpenStreetMap: free, no key) ----------
+    // Postcode -> location via postcodes.io, then independent businesses from the Overpass API.
+    var OSM = {
+      salon: ['["shop"="hairdresser"]', '["shop"="beauty"]'],
+      nails: ['["shop"="beauty"]["beauty"~"nails"]'],
+      barber: ['["shop"="hairdresser"]'],
+      groomer: ['["shop"="pet_grooming"]'],
+      cafe: ['["amenity"="cafe"]', '["amenity"="restaurant"]'],
+      takeaway: ['["amenity"="fast_food"]'],
+      gym: ['["leisure"="fitness_centre"]'],
+      tattoo: ['["shop"="tattoo"]'],
+      shop: ['["shop"~"^(gift|books|florist|boutique|clothes|bakery|deli|jewelry|art|stationery|charity)$"]'],
+      trade: ['["craft"~"^(plumber|electrician|carpenter|painter|roofer|builder|glaziery|tiler)$"]']
+    };
+    var nearResults = [];
+    function miles(a, b, c, d) {
+      var r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2);
+      return 7917.5 * Math.asin(Math.sqrt(x * x + Math.cos(a * r) * Math.cos(c * r) * y * y));
+    }
+    function osmType(t) {
+      var n = (t.name || '') + ' ' + (t.hairdresser || '') + ' ' + (t.beauty || '');
+      if (t.shop === 'hairdresser') return /barber/i.test(n) ? 'barber' : 'salon';
+      if (t.shop === 'beauty') return /nail/i.test(n) ? 'nails' : 'salon';
+      if (t.shop === 'pet_grooming') return 'groomer';
+      if (t.shop === 'tattoo') return 'tattoo';
+      if (t.amenity === 'cafe' || t.amenity === 'restaurant') return 'cafe';
+      if (t.amenity === 'fast_food') return 'takeaway';
+      if (t.leisure === 'fitness_centre') return 'gym';
+      if (t.craft) return 'trade';
+      return 'shop';
+    }
+    function nearSearch() {
+      var pc = $('nPc').value.trim().toUpperCase(), mi = parseFloat($('nMi').value) || 2;
+      var wanted = state.crit.types.filter(function (t) { return OSM[t]; });
+      if (!pc) { $('nPc').focus(); toast('Type a postcode first'); return; }
+      if (!wanted.length) { toast('Tick at least one type of business above'); return; }
+      state.crit.postcode = pc; state.crit.miles = mi; save();
+      $('nGo').disabled = true; $('nGo').textContent = 'Searching…'; $('nRes').innerHTML = '';
+      function done() { $('nGo').disabled = false; $('nGo').textContent = 'Find businesses near me'; }
+      fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc.replace(/\s+/g, '')))
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j || j.status !== 200 || !j.result) throw new Error('postcode');
+          var lat = j.result.latitude, lon = j.result.longitude, m = Math.round(mi * 1609);
+          var sel = []; wanted.forEach(function (t) { OSM[t].forEach(function (q) { sel.push('nwr' + q + '["name"](around:' + m + ',' + lat + ',' + lon + ');'); }); });
+          var body = 'data=' + encodeURIComponent('[out:json][timeout:25];(' + sel.join('') + ');out center tags;');
+          return fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
+            .then(function (r) { if (!r.ok) throw new Error('busy'); return r.json(); })
+            .then(function (d) { return { d: d, lat: lat, lon: lon, area: j.result.admin_ward || j.result.admin_district || '' }; });
+        })
+        .then(function (o) {
+          var have = knownNames(), seen = {}, chains = 0;
+          nearResults = (o.d.elements || []).map(function (e) {
+            var t = e.tags || {}, la = e.lat || (e.center && e.center.lat), lo = e.lon || (e.center && e.center.lon);
+            if (t.brand || t['brand:wikidata']) { chains++; return null; }
+            var k = (t.name || '').toLowerCase(), ty = osmType(t);
+            if (!k || seen[k] || have[k] || wanted.indexOf(ty) < 0) return null; seen[k] = 1;
+            var ig = handle(t['contact:instagram'] || t.instagram || '');
+            return {
+              name: t.name, type: ty, dist: la ? miles(o.lat, o.lon, la, lo) : 0,
+              address: [[t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' '), t['addr:postcode']].filter(Boolean).join(', '),
+              area: t['addr:suburb'] || t['addr:street'] || o.area, ig: ig,
+              igSrc: ig ? 'https://www.openstreetmap.org/' + e.type + '/' + e.id : '',
+              web: t.website || t['contact:website'] || '', phone: t.phone || t['contact:phone'] || ''
+            };
+          }).filter(Boolean).sort(function (a, b) { return a.dist - b.dist; }).slice(0, 60);
+          renderNear(chains);
+        })
+        .catch(function (err) {
+          $('nRes').innerHTML = '<div class="notice">' + (err && err.message === 'postcode' ? 'That postcode wasn\'t found. Check it and try again.' : err && err.message === 'busy' ? 'The map server is busy right now. Try again in a minute.' : 'Couldn\'t search just now. Check you\'re online and try again.') + '</div>';
+        })
+        .then(done);
+    }
+    function renderNear(chains) {
+      if (!nearResults.length) { $('nRes').innerHTML = '<p class="empty">No new independent businesses found. Try a wider distance or more types.</p>'; return; }
+      $('nRes').innerHTML = '<p class="help" style="margin:0 0 6px">' + nearResults.length + ' new business' + (nearResults.length > 1 ? 'es' : '') + (chains ? ', ' + chains + ' chain' + (chains > 1 ? 's' : '') + ' skipped' : '') + '. OpenStreetMap has no Google ratings, so you\'ll check those at the "To check" stage.</p>' +
+        '<button class="btn btn-primary btn-block" id="nAll" style="margin-bottom:6px">Add all ' + nearResults.length + ' to my list</button>' +
+        nearResults.map(function (p, i) {
+          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc((TYPE_NAME[p.type] || '').replace(/s( &|$)/, '$1')) + ' · ' + p.dist.toFixed(1) + ' mi' + (p.area ? ' · ' + esc(p.area) : '') + (p.ig ? ' · @' + esc(p.ig) : '') + '</div></div><button class="btn btn-ghost btn-sm" data-near="' + i + '">Add</button></div>';
+        }).join('');
+    }
+    function addNear(p) {
+      var notes = ['Found on OpenStreetMap ' + nice(todayIso()), p.web ? 'Website: ' + p.web : '', p.phone ? 'Phone: ' + p.phone : ''].filter(Boolean).join('\n');
+      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, ig: p.ig, igSrc: p.igSrc, notes: notes }));
+      p.added = true;
+    }
+    $('nGo').addEventListener('click', nearSearch);
+    $('nRes').addEventListener('click', function (e) {
+      if (e.target.id === 'nAll') {
+        var n = 0; nearResults.forEach(function (p) { if (!p.added) { addNear(p); n++; } });
+        save(); toast(n + ' businesses added to "To check"'); nearResults = []; $('nRes').innerHTML = '<p class="empty">Added ✓ Find them on Today under "Check these".</p>'; return;
+      }
+      var b = e.target.closest('[data-near]'); if (!b) return;
+      var p = nearResults[+b.dataset.near]; if (p.added) return;
+      addNear(p); save(); b.textContent = 'Added ✓'; b.disabled = true;
+    });
+
     var liveResults = [];
     $('liveGo').addEventListener('click', function () {
       var type = $('lvType').value, area = $('lvArea').value.trim() || 'Liverpool';
