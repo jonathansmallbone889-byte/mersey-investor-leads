@@ -211,6 +211,10 @@
     .steps2 strong { display: block; font-size: 15px; }
     .steps2 span { display: block; font-size: 13px; color: var(--muted); margin-top: 1px; }
     details.peek { margin-top: 10px; }
+    .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 10px; padding: 3px; border-radius: 13px; background: var(--soft); }
+    .seg button { background: none; border: 0; border-radius: 10px; font: inherit; font-size: 12px; font-weight: 700; color: var(--muted); padding: 8px 2px; cursor: pointer; line-height: 1.2; }
+    .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(17, 24, 39, .14); }
+    .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .pair .btn, .igbtns > .btn { min-height: 46px; padding: 10px 12px; font-size: 14.5px; }
@@ -558,21 +562,99 @@
     };
     // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
     // as the default when no compliment has been written (each lead gets its own by default).
+    // Compliment ideas by angle. Kept general on purpose: never claim something specific about a business that may not be true.
+    var ANGLES = [['work', 'Their work'], ['place', 'The place'], ['people', 'Customers'], ['fill', 'Fill in']];
     var COMPLIMENTS = {
-      salon: ['Love the transformations on your page 😍', 'The before-and-afters on your page are brilliant 👏', 'Your clients always leave looking amazing ✨', 'Gorgeous work on your page 😍'],
-      nails: ['Your nail art is stunning 💅', 'Those sets on your page are gorgeous 😍', 'Love the designs on your page 💅', 'Such clean, detailed work on your page ✨'],
-      barber: ['Proper sharp cuts on your page 💈', 'Those fades are spot on 👌', 'Clean work, the cuts on your page look class 👏', 'Love the cuts on your page 💈'],
-      groomer: ['The pups on your page look so happy 🐶', 'Those freshly groomed dogs are adorable 🐾', 'Love the before-and-afters of the dogs on your page 🐶', 'The dogs on your page look like they\'re having the best time 🐾'],
-      cafe: ['Your food looks unreal 😍', 'The food on your page has me hungry 😂', 'Love the look of the place ☕', 'Everything on your page looks delicious 😍'],
-      takeaway: ['That food looks unreal 🔥', 'Your page has me starving 😂', 'Everything on your menu looks class 🔥', 'Those portions look proper 👌'],
-      gym: ['Love the community you\'ve built 💪', 'The energy in your classes looks unreal 🔥', 'Great to see so many members smashing their goals 💪', 'Your class videos look brilliant 👏'],
-      tattoo: ['The pieces on your page are incredible 🔥', 'Your linework is so clean 👌', 'Love the work on your page 🔥', 'Some seriously good pieces on your page 👏'],
-      trade: ['Your finished jobs look spot on 👌', 'Really tidy work on your page 👏', 'Great quality work on your page 👌', 'Love the before-and-afters of your jobs 👏'],
-      shop: ['Love the products on your page 😍', 'Your shop looks gorgeous 😍', 'Such a lovely range on your page 👏', 'Your window displays look brilliant ✨'],
-      other: ['Love what you\'re doing 👏', 'Your page looks brilliant 👏', 'Great to see a local business doing so well 👏', 'Love your page 😍']
+      salon: {
+        work: ['Love the transformations on your page 😍', 'Those before-and-afters are seriously impressive 👏', 'Your colour work is gorgeous ✨', 'The blow-dries on your page look flawless 😍', 'Such beautiful work on your page 😍'],
+        place: ['Your salon looks like such a lovely place to relax ✨', 'Love the look of your salon 😍', 'Your page has such a warm, welcoming feel 😊', 'Your team look like a lot of fun 😄'],
+        people: ['Your clients always leave looking amazing ✨', 'You can tell your clients love coming back 😊', 'Love how happy your clients look in every photo 😍', 'Your Google reviews are full of happy clients 👏'],
+        fill: ['That ___ on your page is stunning 😍', 'Love the ___ you posted, gorgeous work ✨', 'Your ___ work is next level 👏']
+      },
+      nails: {
+        work: ['Your nail art is stunning 💅', 'Such clean, detailed work on your page ✨', 'Those sets on your page are gorgeous 😍', 'The colours you use are always spot on 💅', 'Your designs are seriously creative ✨'],
+        place: ['Your studio looks so stylish 😍', 'Love the aesthetic of your page 💅', 'Your page is so satisfying to scroll through ✨', 'Your set-up looks so clean and professional 👏'],
+        people: ['Your clients must love showing their nails off 😍', 'You can tell your regulars keep coming back 💅', 'Love seeing your clients\' sets on your page 😄', 'Your Google reviews are full of happy clients 👏'],
+        fill: ['That ___ set you posted is gorgeous 💅', 'Obsessed with the ___ design on your page 😍', 'Your ___ nails are next level ✨']
+      },
+      barber: {
+        work: ['Proper sharp cuts on your page 💈', 'Those fades are spot on 👌', 'Clean work, the cuts on your page look class 👏', 'Your skin fades are seriously crisp 💈', 'The beard work on your page is top tier 👌'],
+        place: ['Your shop looks like a proper good place to be 💈', 'Love the vibe in your shop 👌', 'Your shop looks class 👏', 'Looks like the banter in your chair is unreal 😂'],
+        people: ['Your regulars must leave feeling brand new 💈', 'You can tell your customers trust you with their cuts 👌', 'Love seeing the same faces back in your chair 👏', 'Your Google reviews are full of happy customers 👏'],
+        fill: ['That ___ you posted is unreal 💈', 'Clean work on the ___, proper sharp 👌', 'The ___ on your page is spot on 👏']
+      },
+      groomer: {
+        work: ['The pups on your page look so happy 🐶', 'Love the before-and-afters of the dogs on your page 🐶', 'Those freshly groomed dogs are adorable 🐾', 'Your teddy bear cuts are so cute 🐶', 'Such neat, careful grooming on your page 🐾'],
+        place: ['Your salon looks so calm and dog friendly 🐾', 'Love how relaxed the dogs look with you 🐶', 'Your page is the cutest thing on my feed 😂', 'The dogs on your page look like they\'re having the best time 🐶'],
+        people: ['You can tell owners trust you with their dogs 🐾', 'Love seeing so many happy regulars on your page 🐶', 'Your Google reviews are full of happy owners 🐾', 'Looks like the dogs can\'t wait to come back 🐶'],
+        fill: ['That fluffy ___ on your page is adorable 🐶', 'Love the ___ cut you posted 🐾', 'The ___ glow-up on your page is amazing 🐶']
+      },
+      cafe: {
+        work: ['Your food looks unreal 😍', 'Everything on your page looks delicious 😍', 'Your coffee looks perfect ☕', 'Those cakes on your page are dangerous 😂', 'Your brunch plates look amazing 🍳'],
+        place: ['Love the look of the place ☕', 'Your café looks so cosy 😍', 'Looks like the perfect spot for a catch-up ☕', 'Love the feel of your place 😊'],
+        people: ['Your regulars clearly love you ☕', 'You can tell people come back for the friendly service 😊', 'Your Google reviews are full of happy customers 👏', 'Looks like a real local favourite 😍'],
+        fill: ['That ___ you posted has me hungry 😂', 'The ___ on your page looks unreal 😍', 'Need to try your ___ 😍']
+      },
+      takeaway: {
+        work: ['That food looks unreal 🔥', 'Your page has me starving 😂', 'Those portions look proper 👌', 'Everything on your menu looks class 🔥', 'Your food photos always hit 🔥'],
+        place: ['Love how busy your kitchen looks 🔥', 'Your page makes me want to order right now 😂', 'Looks like a proper local favourite 👌', 'Love the energy on your page 🔥'],
+        people: ['Your regulars clearly can\'t get enough 😂', 'You can tell people keep coming back 👌', 'Your Google reviews are full of happy customers 👏', 'Looks like you\'ve got a loyal crowd 🔥'],
+        fill: ['That ___ you posted looks unreal 🔥', 'Need to try your ___ 😍', 'The ___ on your page has me starving 😂']
+      },
+      gym: {
+        work: ['Love the community you\'ve built 💪', 'Your class videos look brilliant 👏', 'The transformations on your page are inspiring 💪', 'Your sessions look properly tough 🔥', 'Great coaching in your videos 👏'],
+        place: ['The energy in your classes looks unreal 🔥', 'Your gym looks like such a motivating place 💪', 'Love the atmosphere in your gym 🔥', 'Looks like everyone pushes each other on 💪'],
+        people: ['Great to see so many members smashing their goals 💪', 'You can tell your members love training with you 🔥', 'Your Google reviews are full of happy members 👏', 'Love seeing members hitting PBs on your page 💪'],
+        fill: ['That ___ transformation you posted is inspiring 💪', 'Love the ___ class on your page 🔥', 'The ___ session you posted looks tough 😂']
+      },
+      tattoo: {
+        work: ['The pieces on your page are incredible 🔥', 'Your linework is so clean 👌', 'Some seriously good pieces on your page 👏', 'Your shading is next level 🔥', 'Your fine line work is beautiful ✨'],
+        place: ['Your studio looks so clean and welcoming 👌', 'Love the look of your studio 🔥', 'Your page is a proper portfolio 👏', 'Love the style of your page 🔥'],
+        people: ['Your clients must love showing your work off 🔥', 'You can tell people travel for your work 👏', 'Your Google reviews are full of happy clients 🔥', 'Love seeing healed pieces from your clients 👌'],
+        fill: ['That ___ piece you posted is incredible 🔥', 'The ___ on your page is unreal 👌', 'Love the ___ you did 🔥']
+      },
+      trade: {
+        work: ['Your finished jobs look spot on 👌', 'Really tidy work on your page 👏', 'Love the before-and-afters of your jobs 👏', 'Great attention to detail in your work 👌', 'That finish on your jobs is class 👏'],
+        place: ['Love seeing your jobs on my feed 👌', 'Your page shows real pride in the work 👏', 'Your van and kit always look smart 👌', 'Looks like you take real care on every job 👏'],
+        people: ['Your customers clearly trust you 👌', 'Your Google reviews are full of happy customers 👏', 'You can tell people recommend you to friends 👌', 'Looks like you get a lot of repeat work 👏'],
+        fill: ['That ___ job you posted looks spot on 👌', 'Tidy work on the ___ 👏', 'The ___ before-and-after is impressive 👏']
+      },
+      shop: {
+        work: ['Love the products on your page 😍', 'Such a lovely range on your page 👏', 'Your window displays look brilliant ✨', 'Your new stock looks gorgeous 😍', 'Everything on your page is so well chosen 👏'],
+        place: ['Your shop looks gorgeous 😍', 'Love the feel of your shop ✨', 'Your shop looks like a proper hidden gem 😍', 'Your page makes me want to come in and browse 😊'],
+        people: ['Your customers clearly love you 😊', 'You can tell people come back for the friendly service 👏', 'Your Google reviews are full of happy customers 👏', 'Looks like a real local favourite 😍'],
+        fill: ['That ___ you posted is gorgeous 😍', 'Love the ___ in your window ✨', 'Need to come in for the ___ 😍']
+      },
+      other: {
+        work: ['Love what you\'re doing 👏', 'Your page looks brilliant 👏', 'Great work on your page 👌', 'Really impressive work 👏'],
+        place: ['Love the feel of your page 😊', 'Great to see a local business doing so well 👏', 'Your page has such a friendly feel 😊', 'Love the personality on your page 😄'],
+        people: ['Your customers clearly love you 😊', 'Your Google reviews are full of happy customers 👏', 'You can tell people keep coming back 👌', 'Looks like a real local favourite 😍'],
+        fill: ['That ___ you posted is brilliant 👏', 'Love the ___ on your page 😍', 'The ___ you shared is great 👌']
+      }
     };
-    function ideas(l) { return COMPLIMENTS[l.type] || COMPLIMENTS.other; }
+    TYPES.forEach(function (t) { if (!COMPLIMENTS[t[0]]) COMPLIMENTS[t[0]] = COMPLIMENTS.other; });
+    // Ideas for one angle, with ones built from what we know about this business.
+    function ideasFor(l, angle) {
+      var set = COMPLIMENTS[l.type] || COMPLIMENTS.other, list = set[angle].slice(), r = parseFloat(l.rating);
+      if (angle === 'people' && l.verified && r >= 4.6) list.unshift('A ' + r.toFixed(1) + '★ rating on Google says it all 👏');
+      if (angle === 'place' && l.area && !/liverpool/i.test(l.area)) list.unshift('Love seeing such a great local business in ' + l.area + ' 👏');
+      return list;
+    }
+    function ideas(l) { return ideasFor(l, 'work').concat(ideasFor(l, 'place'), ideasFor(l, 'people')); }
     function autoCompliment(l) { var c = ideas(l); return c[seed(l) % c.length]; }
+    var compAngle = 'work';
+    function usedCount(text, l) { return state.leads.filter(function (x) { return x !== l && x.compliment === text && x.dmAt; }).length; }
+    function ideasHtml(l) {
+      var list = ideasFor(l, compAngle);
+      return '<div class="seg">' + ANGLES.map(function (a) {
+        return '<button type="button" data-angle="' + a[0] + '" aria-pressed="' + (a[0] === compAngle) + '">' + a[1] + '</button>';
+      }).join('') + '</div>' +
+        '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:8px 0 0">' + list.map(function (c, i) {
+          var n = compAngle === 'fill' ? 0 : usedCount(c, l);
+          return '<button class="chip" data-idea="' + i + '"' + (l.compliment === c ? ' aria-pressed="true"' : '') + '>' + esc(c) + (n ? ' <span style="opacity:.6;font-weight:500">· used ' + n + '×</span>' : '') + '</button>';
+        }).join('') + '</div>' +
+        (compAngle === 'fill' ? '<p class="help">Tap one, then swap ___ for something real you saw on their page.</p>' : '');
+    }
     function dmText(l) {
       var me = state.me.name || 'Jonathan';
       var opener = (l.compliment || '').trim();
@@ -629,30 +711,65 @@
       return withHook('Hi!', 'Last message from me, I promise 😊 If getting more Google reviews isn\'t a priority right now, no problem at all. If it ever is, I\'m local and always happy to help. All the best with {name}!', l);
     }
     // Ready-made answers to what owners usually reply with.
+    // Replies to what owners say. Each has a short alternative and the stage to move them to afterwards.
+    function meName() { return state.me.name || 'Jonathan'; }
+    function myDetails() {
+      var m = state.me;
+      return meName() + ', Mersey Stars\n' + (m.phone ? '📱 ' + m.phone + ' (call or WhatsApp)\n' : '') + (m.email ? '✉️ ' + m.email + '\n' : '') + (m.link ? '🌐 ' + m.link.replace(/^https?:\/\//, '') + '\n' : '');
+    }
+    var QGROUPS = [['yes', 'Interested 🎉'], ['q', 'Questions'], ['obj', 'Not sure yet'], ['later', 'Not now']];
     var QUICK = [
-      ['details', 'Leave your details', function (l) {
-        var m = state.me;
-        return 'No problem at all, thanks for getting back to me! 😊 Here are my details:\n\n' + (m.name || 'Jonathan') + ', Mersey Stars\n' +
-          (m.phone ? '📱 ' + m.phone + ' (call or WhatsApp)\n' : '') + (m.email ? '✉️ ' + m.email + '\n' : '') + (m.link ? '🌐 ' + m.link.replace(/^https?:\/\//, '') + '\n' : '') +
-          '\nIn short: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in and set it up in 2 minutes whenever suits. No rush at all!';
-      }],
-      ['team', 'Passing to the team', function (l) {
-        return 'Thank you, that\'s brilliant! 😊 For whoever picks this up: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in to ' + l.name + ' and set it all up in 2 minutes. Just let me know a day and time that suits.';
-      }],
-      ['busy', 'We\'re busy', function (l) {
-        return 'No problem at all, I know how busy it gets! 😊 I\'ll leave it with you. Whenever you\'ve got 2 minutes, I\'m happy to pop in' + (state.me.phone ? ', or you can reach me on ' + state.me.phone : '') + '.';
-      }],
-      ['price', 'How much is it?', function () {
-        return 'It\'s completely free while I\'m launching 😊 Founding businesses also keep a discount for life when paid plans start, and I\'ll always tell you well before anything changes. Could I pop in and show you? It only takes 2 minutes.';
-      }],
-      ['catch', 'What\'s the catch?', function () {
-        return 'Fair question! No catch: I\'m local to Liverpool and launching Mersey Stars, so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊';
-      }],
-      ['book', 'Book a time', function () { return replyText(); }],
-      ['no', 'No thanks', function (l) {
-        return 'No worries at all, thanks for getting back to me! 😊 If you ever want a hand getting more Google reviews, I\'m local and always happy to help. All the best with ' + l.name + '!';
-      }]
+      { k: 'yes', g: 'yes', t: 'Sounds good', next: 'rYes', v: [
+        function (l) { return 'Brilliant, thanks for getting back to me! 😊 I could pop in to ' + l.name + ' this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set everything up for you while I\'m there.'; },
+        function () { return 'Great stuff! 😊 When suits you for a quick 2-minute visit this week? I\'ll set it all up while I\'m there.'; }] },
+      { k: 'book', g: 'yes', t: 'When can you come?', next: 'rYes', v: [
+        function () { return 'Whenever works best for you 😊 Mornings or afternoons this week are both fine. Just give me a day and a quiet time and I\'ll be there. It only takes a couple of minutes.'; },
+        function () { return 'Any day this week works for me 😊 Just tell me a day and time that\'s quiet for you.'; }] },
+      { k: 'details', g: 'yes', t: 'Leave your details', next: 'rMaybe', v: [
+        function (l) { return 'No problem at all, thanks for getting back to me! 😊 Here are my details:\n\n' + myDetails() + '\nIn short: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in and set it up in 2 minutes whenever suits. No rush at all!'; },
+        function () { return 'Of course! 😊\n\n' + myDetails() + '\nWhenever suits, I can pop in and show you in 2 minutes.'; }] },
+      { k: 'call', g: 'yes', t: 'Can you call me?', next: 'rYes', v: [
+        function () { return 'Of course! 😊 What\'s the best number and time to ring you?' + (state.me.phone ? ' Or call me whenever suits on ' + state.me.phone + '.' : ''); }] },
+      { k: 'how', g: 'q', t: 'How does it work?', v: [
+        function (l) { return 'Happy to explain! 😊 In short: ' + pitch(l) + ' If anyone wasn\'t happy, they can message you privately first, so you get the chance to put it right. It takes 2 minutes to set up and I can do it with you in person.'; },
+        function (l) { return 'Really simple: ' + pitch(l) + ' Easiest is if I show you, it takes 2 minutes 😊'; }] },
+      { k: 'price', g: 'q', t: 'How much is it?', v: [
+        function () { return 'It\'s completely free while I\'m launching 😊 Founding businesses also keep a discount for life when paid plans start, and I\'ll always tell you well before anything changes. No contract. Could I pop in and show you? It only takes 2 minutes.'; },
+        function () { return 'Free while I launch 😊 Founding businesses keep a discount for life after that, with no contract. Fancy a quick look?'; }] },
+      { k: 'free', g: 'q', t: 'Is it really free?', v: [
+        function () { return 'Yes, genuinely free while I\'m launching 😊 No contract and no card details. When paid plans start, founding businesses keep a discount for life, and I\'ll tell you well before anything changes, so you can decide then.'; }] },
+      { k: 'google', g: 'q', t: 'Do I need a Google page?', v: [
+        function (l) { return 'You just need your Google Business profile, the listing that shows when people search for you on Google or Maps' + (l.rating ? ', which you\'ve already got' : '') + ' 😊 I\'ll find your review link and set everything up for you, so there\'s nothing technical to do.'; }] },
+      { k: 'long', g: 'q', t: 'How long does it take?', v: [
+        function () { return 'About 2 minutes 😊 I\'ll pop in, find your Google review link and set it up on your phone. After that, asking a customer for a review takes one tap.'; }] },
+      { k: 'see', g: 'q', t: 'What do customers see?', v: [
+        function () { return 'They get a friendly message from you with a link. They tap a star and it takes them straight to your Google review box. If they weren\'t happy, they can message you privately instead, but the Google button is always there for everyone. Happy to show you on my phone 😊'; }] },
+      { k: 'busy', g: 'obj', t: 'We\'re busy', next: 'rMaybe', v: [
+        function () { return 'No problem at all, I know how busy it gets! 😊 I\'ll leave it with you. Whenever you\'ve got 2 minutes, I\'m happy to pop in' + (state.me.phone ? ', or you can reach me on ' + state.me.phone : '') + '.'; },
+        function () { return 'Totally understand 😊 It only takes 2 minutes, so whenever there\'s a quiet moment, just give me a shout.'; }] },
+      { k: 'stand', g: 'obj', t: 'We have a stand / NFC card', v: [
+        function () { return 'Nice one, they\'re a great idea! 😊 The one thing a stand can\'t do is ask the customers who walk straight past it. Mersey Stars works alongside it: a quick WhatsApp after their visit with your review link, plus reminders for who to nudge. It\'s free while I launch, so there\'s no harm trying both.'; }] },
+      { k: 'enough', g: 'obj', t: 'We already get reviews', v: [
+        function () { return 'That\'s brilliant, you clearly look after your customers 👏 Google favours recent reviews, so a steady flow each month helps keep you showing up when people search nearby. Mersey Stars makes that a one-tap habit. Free while I launch if you ever fancy trying it 😊'; }] },
+      { k: 'small', g: 'obj', t: 'We\'re only small', v: [
+        function () { return 'That\'s exactly who it\'s for 😊 Reviews are how small local businesses stand out, and it only takes a tap after each visit, so it fits around a busy day. Free while I launch, with no contract.'; }] },
+      { k: 'catch', g: 'obj', t: 'What\'s the catch?', v: [
+        function () { return 'Fair question! No catch: I\'m local to Liverpool and launching Mersey Stars, so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊'; }] },
+      { k: 'legit', g: 'obj', t: 'Is this legit?', v: [
+        function () { return 'Totally fair to ask! 😊 I\'m ' + meName() + ', a local Liverpool founder launching Mersey Stars. No payment, no passwords and nothing to sign, and it plays by Google\'s rules, with no fake reviews ever.' + (state.me.link ? ' You can see it here: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Or I can pop in and show you in person.'; }] },
+      { k: 'think', g: 'obj', t: 'Need to think about it', next: 'rMaybe', v: [
+        function () { return 'Of course, no pressure at all 😊' + (state.me.link ? ' Have a look whenever you get a minute: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Happy to answer any questions, and I can pop in for a 2-minute demo whenever suits.'; }] },
+      { k: 'team', g: 'later', t: 'Passing to the team', next: 'rMaybe', v: [
+        function (l) { return 'Thank you, that\'s brilliant! 😊 For whoever picks this up: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in to ' + l.name + ' and set it all up in 2 minutes. Just let me know a day and time that suits.'; }] },
+      { k: 'later', g: 'later', t: 'Maybe later', next: 'rMaybe', v: [
+        function () { return 'No problem at all 😊 I\'ll check back in a few weeks. If you\'d like to try it sooner, just message me here' + (state.me.phone ? ' or on ' + state.me.phone : '') + '.'; }] },
+      { k: 'no', g: 'later', t: 'No thanks', next: 'rNo', v: [
+        function (l) { return 'No worries at all, thanks for getting back to me! 😊 If you ever want a hand getting more Google reviews, I\'m local and always happy to help. All the best with ' + l.name + '!'; }] }
     ];
+    var NEXT = { rYes: ['replied', 'Interested'], rMaybe: ['wait', 'Replied: maybe'], rNo: ['no', 'Not interested'] };
+    var qrVar = 0;
+    function qrFind(k) { return QUICK.filter(function (x) { return x.k === k; })[0]; }
+    function qrText(l, k) { var q = qrFind(k); return q ? q.v[Math.min(qrVar, q.v.length - 1)](l) : ''; }
     function pitch(l) {
       var p = {
         groomer: 'after a groom, you send the owner a quick WhatsApp with their dog\'s "after" photo and your Google review link, so happy owners leave a review in one tap.',
@@ -665,12 +782,19 @@
       return p[l.type] || 'happy customers scan a QR card on your counter or tables, or get a quick WhatsApp from you, and leave a Google review in one tap.';
     }
     function quickCard(l) {
-      var h = handle(l.ig), k = qrKey;
-      var q = QUICK.filter(function (x) { return x[0] === k; })[0];
+      var h = handle(l.ig), q = qrFind(qrKey);
+      // Only move them forward (or to No thanks), never back from a booked demo.
+      var nx = q && q.next && NEXT[q.next] && l.status !== NEXT[q.next][0] && (q.next === 'rNo' ? l.status !== 'signed' : ['followed', 'dm', 'fu', 'wait'].indexOf(l.status) > -1) ? q.next : '';
       return '<div class="card"><h2>Quick replies</h2><p class="sub">Tap what they said and your answer is ready to send.</p>' +
-        '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0">' + QUICK.map(function (x) { return '<button class="chip" data-qr="' + x[0] + '" aria-pressed="' + (x[0] === k) + '">' + x[1] + '</button>'; }).join('') + '</div>' +
-        (q ? '<div class="msg" style="margin-top:12px">' + esc(q[2](l)) + '</div><div class="row">' +
-          (h ? '<a class="btn btn-ig btn-block" data-ig data-qrsend="' + q[0] + '" href="' + igUrl(h) + '" target="_blank" rel="noopener">Copy reply & open Instagram</a>' : '<button class="btn btn-primary" data-act="copyQr">Copy reply</button>') + '</div>' : '') +
+        QGROUPS.map(function (g) {
+          return '<p class="qg">' + g[1] + '</p><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0">' + QUICK.filter(function (x) { return x.g === g[0]; }).map(function (x) {
+            return '<button class="chip" data-qr="' + x.k + '" aria-pressed="' + (x.k === qrKey) + '">' + esc(x.t) + '</button>';
+          }).join('') + '</div>';
+        }).join('') +
+        (q ? '<div class="msg" style="margin-top:14px">' + esc(qrText(l, q.k)) + '</div>' +
+          (q.v.length > 1 ? '<button class="btn btn-ghost btn-sm" data-act="qrAlt" style="margin:0 0 8px">↻ ' + (qrVar ? 'Longer version' : 'Shorter version') + '</button>' : '') +
+          '<div class="row">' + (h ? '<a class="btn btn-ig btn-block" data-ig data-qrsend="' + q.k + '" href="' + igUrl(h) + '" target="_blank" rel="noopener">Copy reply & open Instagram</a>' : '<button class="btn btn-primary" data-act="copyQr">Copy reply</button>') + '</div>' +
+          (nx ? '<button class="btn btn-ghost btn-block btn-sm" data-act="' + nx + '" style="margin-top:8px">Then mark them as: ' + NEXT[nx][1] + '</button>' : '') : '') +
         '<details class="peek" style="margin-top:12px"' + (aiSaid ? ' open' : '') + '><summary>Something else? Get a reply from Gemini ✨</summary>' +
         '<textarea id="aiSaid" placeholder="Paste what they said" style="min-height:70px;margin-top:8px">' + esc(aiSaid) + '</textarea>' +
         '<button class="btn btn-gold btn-block" data-act="aiReply" style="margin-top:8px">Copy &amp; open Gemini</button>' +
@@ -1055,7 +1179,7 @@
       btn.parentNode.insertAdjacentElement('afterend', w);
       return true;
     }
-    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; aiSaid = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; qrVar = 0; aiSaid = ''; compAngle = 'work'; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
@@ -1118,7 +1242,7 @@
         html += '<div class="card"><h2>Your DM</h2>' +
           '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
-          '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:8px 0 0">' + ideas(l).map(function (c, i) { return '<button class="chip" data-idea="' + i + '"' + (l.compliment === c ? ' aria-pressed="true"' : '') + '>' + esc(c) + '</button>'; }).join('') + '</div>' +
+          ideasHtml(l) +
           '<p class="help" id="compNote">' + compNote(l) + '</p>' +
           '<button class="btn btn-ghost btn-block btn-sm" data-act="aiComp" style="margin-top:4px">✨ Get a compliment from Gemini</button>' +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
@@ -1164,24 +1288,31 @@
     }
     function setStatus(s, extra) { cur.status = s; Object.assign(cur, extra || {}); save(); renderSheet(); }
     $('shBody').addEventListener('click', function (e) {
+      var ang = e.target.closest('[data-angle]');
+      if (ang && cur) { compAngle = ang.dataset.angle; var ya = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = ya; return; }
       var idea = e.target.closest('[data-idea]');
       if (idea && cur) {
-        cur.compliment = ideas(cur)[+idea.dataset.idea]; cur.compSrc = 'idea'; save();
+        var pick = ideasFor(cur, compAngle)[+idea.dataset.idea];
+        if (compAngle === 'fill') {
+          var f = $('fComp'); f.value = pick; f.focus(); var k = pick.indexOf('___'); f.setSelectionRange(k, k + 3);
+          return;
+        }
+        cur.compliment = pick; cur.compSrc = 'idea'; save();
         var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
         return;
       }
       var qr = e.target.closest('[data-qr]');
       if (qr && cur) {
-        qrKey = qrKey === qr.dataset.qr ? '' : qr.dataset.qr;
+        qrKey = qrKey === qr.dataset.qr ? '' : qr.dataset.qr; qrVar = 0;
         var y2 = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y2;
         return;
       }
       var ig = e.target.closest('a[data-ig]');
       if (ig && cur) {
         e.preventDefault();
-        var qk = ig.dataset.qrsend && QUICK.filter(function (x) { return x[0] === ig.dataset.qrsend; })[0];
+        var qk = ig.dataset.qrsend && qrFind(ig.dataset.qrsend);
         if (!qk && overLimit(ig)) return;
-        var m = qk ? { text: qk[2](cur), label: 'Reply' } : igMessage(cur);
+        var m = qk ? { text: qrText(cur, qk.k), label: 'Reply' } : igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
         openInstagram(handle(cur.ig));
         return;
@@ -1208,7 +1339,8 @@
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
       else if (a === 'aiComp') { copy(compPrompt(cur), 'Copied. Paste it into Gemini, then copy its compliment into the box'); openLink(AI_APPS.gemini); }
       else if (a === 'aiReply') { var said = $('aiSaid').value.trim(); if (!said) { $('aiSaid').focus(); toast('Type what they said first'); return; } aiSaid = said; copy(replyPrompt(cur, said), 'Copied. Paste it into Gemini for a reply'); openLink(AI_APPS.gemini); }
-      else if (a === 'copyQr') { var qq = QUICK.filter(function (x) { return x[0] === qrKey; })[0]; if (qq) copy(qq[2](cur), 'Reply copied'); }
+      else if (a === 'copyQr') { if (qrFind(qrKey)) copy(qrText(cur, qrKey), 'Reply copied'); }
+      else if (a === 'qrAlt') { qrVar = qrVar ? 0 : 1; var yq = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = yq; }
       else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
