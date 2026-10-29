@@ -304,9 +304,19 @@
 
     <!-- FIND -->
     <section data-view="find" hidden>
+      <div class="card" id="aiCard">
+        <h2>Ask the Mersey Stars Assistant ✨</h2>
+        <div id="aiOff"><p class="sub">Searches Google for businesses that fit, with sources, and answers your questions. Add your free key in Settings to switch it on.</p><button class="btn btn-gold btn-block" data-go="settings">Set up the assistant</button></div>
+        <div id="aiOn" hidden>
+          <p class="sub">Say what you're after. It searches Google, skips chains and businesses already on your list, and shows where it found each Instagram.</p>
+          <textarea id="aiQ" style="min-height:84px"></textarea>
+          <div class="pair" style="margin-top:10px"><button class="btn btn-gold" id="aiFind">Find businesses</button><button class="btn btn-ghost" id="aiAsk">Ask a question</button></div>
+          <div id="aiOut" style="margin-top:12px"></div>
+        </div>
+      </div>
       <div class="card">
-        <h2>1. Your criteria</h2>
-        <p class="sub">The businesses you want to find.</p>
+        <h2>Your criteria</h2>
+        <p class="sub">The assistant only looks for businesses that fit these.</p>
         <div class="two">
           <div><label class="f" for="cMin">Min rating</label><input type="number" id="cMin" step="0.1" min="1" max="5" inputmode="decimal"></div>
           <div><label class="f" for="cMax">Max rating</label><input type="number" id="cMax" step="0.1" min="1" max="5" inputmode="decimal"></div>
@@ -317,56 +327,12 @@
         </div>
         <label class="f">Types of business</label>
         <div class="chips" id="cTypes" style="flex-wrap:wrap;overflow:visible"></div>
-        <label class="f" for="cAreas">Areas <span class="o">(comma separated)</span></label>
-        <input type="text" id="cAreas">
-      </div>
-
-      <div class="card" id="nearCard">
-        <h2>Find near a postcode <span class="n">free</span></h2>
-        <p class="sub">Searches OpenStreetMap for independent businesses near you. No key, no sign-up, works on your phone. It skips chains and businesses already on your list.</p>
         <div class="two">
-          <div><label class="f" for="nPc">Postcode</label><input type="text" id="nPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
-          <div><label class="f" for="nMi">Within</label><select id="nMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option></select></div>
-        </div>
-        <p class="help">Uses the types of business ticked above.</p>
-        <button class="btn btn-gold btn-block" id="nGo" style="margin-top:12px">Find businesses near me</button>
-        <div id="nRes" style="margin-top:12px"></div>
-      </div>
-
-      <div class="card">
-        <h2>2. Ask Google AI</h2>
-        <p class="sub">Copy this prompt into Gemini. It already excludes every business on your list.</p>
-        <textarea id="prompt" readonly style="min-height:150px;font-size:13.5px"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btn-primary" id="copyPrompt">Copy prompt</button>
-          <a class="btn btn-ghost" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
+          <div><label class="f" for="cPc">Near postcode</label><input type="text" id="cPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
+          <div><label class="f" for="cMi">Within</label><select id="cMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option><option value="10">10 miles</option></select></div>
         </div>
       </div>
 
-      <div class="card">
-        <h2>3. Import the results</h2>
-        <p class="sub">Paste the table Gemini gives you (or export it as CSV and choose the file). New businesses land in "Check these".</p>
-        <textarea id="importText" placeholder="Paste the table or CSV here"></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btn-primary" id="doImport">Import</button>
-          <label class="btn btn-ghost" for="importFile">Choose CSV file</label>
-          <input type="file" id="importFile" accept=".csv,text/csv,text/plain" hidden>
-        </div>
-      </div>
-
-      <div class="card" id="liveCard">
-        <h2>Live Google Maps search <span class="n">optional</span></h2>
-        <div id="liveOff"><p class="sub">Search Google Maps directly from the app, with real ratings and review counts. Needs a free Google Maps key, which you can add in Settings.</p></div>
-        <div id="liveOn" hidden>
-          <p class="sub">Searches Google Maps and keeps only open businesses that match your criteria.</p>
-          <div class="two">
-            <div><label class="f" for="lvType">Type</label><select id="lvType"></select></div>
-            <div><label class="f" for="lvArea">Area</label><input type="text" id="lvArea" placeholder="e.g. Crosby"></div>
-          </div>
-          <button class="btn btn-primary btn-block" id="liveGo" style="margin-top:12px">Search</button>
-          <div id="liveRes" style="margin-top:10px"></div>
-        </div>
-      </div>
     </section>
 
     <!-- SETTINGS -->
@@ -394,9 +360,11 @@
         <a class="btn btn-ig btn-block" id="myIg" target="_blank" rel="noopener" style="margin-top:12px">Open my Instagram</a>
       </div>
       <div class="card">
-        <h2>Google Maps key <span class="n">optional</span></h2>
-        <p class="sub">Turns on live search in the Find tab. Create one in Google Cloud (Maps JavaScript API and Places API (New)), restrict it to your website, and paste it here. It stays on this phone.</p>
-        <input type="text" id="sKey" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        <h2>Mersey Stars Assistant ✨</h2>
+        <p class="sub">Your own assistant that searches Google, finds businesses, writes compliments and suggests replies. It runs on Google's free Gemini AI: get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> (no card needed) and paste it here. It stays on this phone.</p>
+        <input type="text" id="sAi" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        <button class="btn btn-ghost btn-block" id="aiTest" style="margin-top:10px">Test the assistant</button>
+        <p class="help" id="aiTestOut"></p>
       </div>
       <div class="card">
         <h2>Backup</h2>
@@ -625,6 +593,7 @@
     function compNote(l) {
       if (!l.compliment) return 'Using a ready-made compliment for this type of business. Tap an idea or type your own. A real detail from their page works best.';
       if (l.compSrc === 'gemini') return 'Suggested by Gemini from their Google reviews. Glance at their page to check it fits.';
+      if (l.compSrc === 'ai') return 'Written by your assistant from their page and reviews. Glance at their page to check it fits.';
       return '';
     }
     function igButton(l, cls) {
@@ -882,30 +851,17 @@
     // ---------- Find ----------
     function renderFind() {
       var c = state.crit;
-      $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count; $('cAreas').value = c.areas;
+      $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count;
+      $('cPc').value = c.postcode || ''; $('cMi').value = String(c.miles || 2);
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
-      $('prompt').value = buildPrompt();
-      if (!$('nPc').value) $('nPc').value = c.postcode || '';
-      $('nMi').value = String(c.miles || 2);
-      var on = !!state.me.key;
-      $('liveOff').hidden = on; $('liveOn').hidden = !on;
-      if (on && !$('lvType').options.length) $('lvType').innerHTML = TYPES.map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+      $('aiOff').hidden = !!state.me.aiKey; $('aiOn').hidden = !state.me.aiKey;
+      if (!aiQEdited) $('aiQ').value = aiDefaultQ();
     }
-    function buildPrompt() {
+    var aiQEdited = false;
+    function aiDefaultQ() {
       var c = state.crit;
-      var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
-      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
-      return 'Find ' + c.count + ' independent small businesses in Liverpool and Merseyside, UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
-        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
-        'Types: ' + types + '.\nAreas: ' + c.areas + '.\n\n' +
-        (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Give me the results as a CSV with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment\n\n' +
-        'For Compliment: write one short, friendly compliment (under 15 words, one emoji) about something customers genuinely praise in this business\'s Google reviews, e.g. "Your Sunday roast gets rave reviews 😍". Base it only on real reviews. If nothing specific stands out, leave it blank.\n\n' +
-        'Instagram rules (very important):\n' +
-        '- Only give an Instagram username that is linked on the business\'s own website, Google listing or Facebook page.\n' +
-        '- Copy it exactly as written in that link, character for character (dots and underscores matter).\n' +
-        '- In Instagram Source URL, give the full web address of the page where you found that link.\n' +
-        '- Never guess or build a username from the business name. If you can\'t find a linked one, leave Instagram Username and Instagram Source URL blank rather than guess.';
+      return 'Find ' + (c.count || 10) + ' independent ' + (c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ').replace(/, ([^,]*)$/, ' and $1') || 'local businesses') +
+        (c.postcode ? ' within ' + (c.miles || 2) + ' miles of ' + c.postcode : ' in Liverpool') + ' that are active on Instagram';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -913,37 +869,20 @@
       if (i > -1) state.crit.types.splice(i, 1); else state.crit.types.push(b.dataset.t);
       save(); renderFind();
     });
-    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cAreas', 'areas', String]].forEach(function (f) {
+    [['cMin', 'min', parseFloat], ['cMax', 'max', parseFloat], ['cRev', 'reviews', parseInt], ['cCount', 'count', parseInt], ['cMi', 'miles', parseFloat], ['cPc', 'postcode', String]].forEach(function (f) {
       $(f[0]).addEventListener('change', function () {
-        var v = f[2](this.value, 10);
+        var v = f[2] === String ? this.value.trim().toUpperCase() : f[2](this.value, 10);
         if (f[2] !== String && isNaN(v)) return;
-        state.crit[f[1]] = v; save(); $('prompt').value = buildPrompt();
+        state.crit[f[1]] = v; save(); if (!aiQEdited) $('aiQ').value = aiDefaultQ();
       });
     });
-    $('copyPrompt').addEventListener('click', function () { copy($('prompt').value, 'Prompt copied. Paste it into Gemini.'); });
+    $('aiQ').addEventListener('input', function () { aiQEdited = true; });
 
-    // CSV / table import
-    function parseRows(text) {
-      text = text.replace(/\r/g, '').trim();
-      if (!text) return [];
-      var lines = text.split('\n').filter(function (x) { return x.trim() && !/^\s*\|?\s*:?-{3,}/.test(x); });
-      var isPipe = lines[0].indexOf('|') > -1;
-      var isTab = !isPipe && lines[0].indexOf('\t') > -1;
-      return lines.map(function (line) {
-        if (isPipe) return line.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
-        if (isTab) return line.split('\t').map(function (c) { return c.trim(); });
-        var out = [], cur = '', q = false;
-        for (var i = 0; i < line.length; i++) {
-          var ch = line[i];
-          if (q) { if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
-          else if (ch === '"') q = true;
-          else if (ch === ',') { out.push(cur.trim()); cur = ''; }
-          else cur += ch;
-        }
-        out.push(cur.trim());
-        return out;
-      });
+    function fetchT(url, opts, ms) {
+      var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, ms);
+      return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {})).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
     }
+
     function guessType(s) {
       s = (s || '').toLowerCase();
       if (/nail/.test(s)) return 'nails';
@@ -962,245 +901,37 @@
       return Object.assign({ id: uid(), name: '', type: 'other', area: '', address: '', ig: '', maps: '', rating: '', reviews: '', verified: false,
         status: 'check', compliment: '', notes: '', createdAt: todayIso(), followedAt: '', dmAt: '', fuAt: '', demoAt: '' }, o);
     }
-    function importRows(rows) {
-      if (rows.length < 2) return 0;
-      var h = rows[0].map(function (x) { return x.toLowerCase(); });
-      function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
-      var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cComp = col(/compliment/);
-      if (cName < 0) cName = 0;
-      var have = knownNames();
-      var added = 0;
-      rows.slice(1).forEach(function (r) {
-        var name = (r[cName] || '').replace(/\*\*/g, '').trim();
-        if (!name || have[name.toLowerCase()]) return;
-        var addr = cAddr > -1 ? r[cAddr] || '' : '';
-        var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
-        var ig = cIg > -1 ? handle(r[cIg]) : '';
-        if (/^(not found|n\/a|none|-)$/i.test(ig)) ig = '';
-        state.leads.push(newLead({
-          name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
-          rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
-          reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, igSrc: ig && cSrc > -1 && /^https?:\/\//.test((r[cSrc] || '').trim()) ? r[cSrc].trim() : '', notes: 'Imported ' + nice(todayIso()),
-          compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
-        }));
-        have[name.toLowerCase()] = 1; added++;
-      });
-      save();
-      return added;
-    }
-    $('doImport').addEventListener('click', function () {
-      var n = importRows(parseRows($('importText').value));
-      if (n) { $('importText').value = ''; toast(n + ' new business' + (n === 1 ? '' : 'es') + ' added'); setView('today'); }
-      else toast('Nothing new found. Check the table has a header row.');
-    });
-    $('importFile').addEventListener('change', function () {
-      var f = this.files[0]; if (!f) return;
-      var r = new FileReader();
-      r.onload = function () { var n = importRows(parseRows(r.result)); toast(n ? n + ' new businesses added' : 'Nothing new in that file'); if (n) setView('today'); };
-      r.readAsText(f); this.value = '';
-    });
-
-    // Optional live search with the Google Maps JavaScript API (Places, new).
-    var mapsLoading = null;
-    function loadMaps() {
-      if (window.google && google.maps && google.maps.importLibrary) return Promise.resolve();
-      if (mapsLoading) return mapsLoading;
-      mapsLoading = new Promise(function (resolve, reject) {
-        window.__msMapsReady = resolve;
-        var s = document.createElement('script');
-        s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(state.me.key) + '&v=weekly&loading=async&callback=__msMapsReady';
-        s.onerror = function () { mapsLoading = null; reject(new Error('load')); };
-        document.head.appendChild(s);
-      });
-      return mapsLoading;
-    }
-    // ---------- Find near a postcode (OpenStreetMap: free, no key) ----------
-    // Postcode -> location via postcodes.io, then independent businesses from the Overpass API.
-    var OSM = {
-      salon: ['["shop"="hairdresser"]', '["shop"="beauty"]'],
-      nails: ['["shop"="beauty"]["beauty"~"nails"]'],
-      barber: ['["shop"="hairdresser"]'],
-      groomer: ['["shop"="pet_grooming"]'],
-      cafe: ['["amenity"="cafe"]', '["amenity"="restaurant"]'],
-      takeaway: ['["amenity"="fast_food"]'],
-      gym: ['["leisure"="fitness_centre"]'],
-      tattoo: ['["shop"="tattoo"]'],
-      shop: ['["shop"~"^(gift|books|florist|boutique|clothes|bakery|deli|jewelry|art|stationery|charity)$"]'],
-      trade: ['["craft"~"^(plumber|electrician|carpenter|painter|roofer|builder|glaziery|tiler)$"]']
-    };
-    var nearResults = [];
-    function miles(a, b, c, d) {
-      var r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2);
-      return 7917.5 * Math.asin(Math.sqrt(x * x + Math.cos(a * r) * Math.cos(c * r) * y * y));
-    }
-    function osmType(t) {
-      var n = (t.name || '') + ' ' + (t.hairdresser || '') + ' ' + (t.beauty || '');
-      if (t.shop === 'hairdresser') return /barber/i.test(n) ? 'barber' : 'salon';
-      if (t.shop === 'beauty') return /nail/i.test(n) ? 'nails' : 'salon';
-      if (t.shop === 'pet_grooming') return 'groomer';
-      if (t.shop === 'tattoo') return 'tattoo';
-      if (t.amenity === 'cafe' || t.amenity === 'restaurant') return 'cafe';
-      if (t.amenity === 'fast_food') return 'takeaway';
-      if (t.leisure === 'fitness_centre') return 'gym';
-      if (t.craft) return 'trade';
-      return 'shop';
-    }
-    // Each step has backup servers: if one is down, slow or overloaded, the next is tried automatically.
-    var OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter',
-      'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
-    function fetchT(url, opts, ms) {
-      var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, ms);
-      return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {})).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
-    }
-    function nearStatus(msg) { $('nGo').textContent = msg; }
-    function locate(pc) {
-      var q = pc.replace(/\s+/g, '');
-      if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(q)) return Promise.reject(new Error('postcode'));
-      var notFound = 0;
-      function pio(path) {
-        return fetchT('https://api.postcodes.io/' + path + encodeURIComponent(q), {}, 10000).then(function (r) {
-          if (r.status === 404) { notFound++; throw new Error('nf'); }
-          if (!r.ok) throw new Error('down');
-          return r.json();
-        }).then(function (j) {
-          var x = j.result; if (!x || x.latitude == null) throw new Error('nf');
-          return { lat: x.latitude, lon: x.longitude, area: x.admin_ward || x.admin_district || '' };
-        });
+    // ---------- Assistant buttons ----------
+    $('aiFind').addEventListener('click', aiFind);
+    $('aiAsk').addEventListener('click', aiAskQ);
+    $('aiOut').addEventListener('click', function (e) {
+      if (e.target.id === 'aiAll') {
+        var n = 0; aiResults.forEach(function (b) { if (!b.added) { aiAdd(b); n++; } });
+        save(); toast(n + ' businesses added to "To check"'); aiResults = []; $('aiOut').innerHTML = '<p class="empty">Added ✓ Find them on Today under "Check these".</p>'; return;
       }
-      function nominatim() {
-        nearStatus('Searching… (backup postcode server)');
-        return fetchT('https://nominatim.openstreetmap.org/search?format=json&countrycodes=gb&limit=1&addressdetails=1&postalcode=' + encodeURIComponent(pc), {}, 12000)
-          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
-          .then(function (a) {
-            if (!a || !a.length) { notFound++; throw new Error('nf'); }
-            var ad = a[0].address || {};
-            return { lat: +a[0].lat, lon: +a[0].lon, area: ad.suburb || ad.town || ad.city || '' };
-          });
-      }
-      return pio('postcodes/').catch(function () { return pio('terminated_postcodes/'); }).catch(nominatim)
-        .catch(function () { throw new Error(notFound >= 2 ? 'postcode' : 'offline'); });
-    }
-    function overpass(query) {
-      var i = 0;
-      function attempt() {
-        if (i >= OVERPASS.length) return Promise.reject(new Error('busy'));
-        var url = OVERPASS[i++];
-        if (i > 1) nearStatus('Searching… (backup map server ' + (i - 1) + ')');
-        return fetchT(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(query) }, 28000)
-          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
-          .then(function (d) {
-            // Overpass can answer 200 with a partial result when it runs out of time: treat that as a failure too.
-            if (!d || !d.elements || (d.remark && /runtime error|timed out|out of memory/i.test(d.remark))) throw new Error('partial');
-            return d;
-          })
-          .catch(attempt);
-      }
-      return attempt();
-    }
-    function nearSearch() {
-      var pc = $('nPc').value.trim().toUpperCase(), mi = parseFloat($('nMi').value) || 2;
-      var wanted = state.crit.types.filter(function (t) { return OSM[t]; });
-      if (!pc) { $('nPc').focus(); toast('Type a postcode first'); return; }
-      if (!wanted.length) { toast('Tick at least one type of business above'); return; }
-      state.crit.postcode = pc; state.crit.miles = mi; save();
-      $('nGo').disabled = true; $('nGo').textContent = 'Searching…'; $('nRes').innerHTML = '';
-      function done() { $('nGo').disabled = false; $('nGo').textContent = 'Find businesses near me'; }
-      locate(pc)
-        .then(function (loc) {
-          var m = Math.round(mi * 1609);
-          var sel = []; wanted.forEach(function (t) { OSM[t].forEach(function (q) { sel.push('nwr' + q + '["name"](around:' + m + ',' + loc.lat + ',' + loc.lon + ');'); }); });
-          return overpass('[out:json][timeout:25];(' + sel.join('') + ');out center tags;')
-            .then(function (d) { return { d: d, lat: loc.lat, lon: loc.lon, area: loc.area }; });
-        })
-        .then(function (o) {
-          var have = knownNames(), seen = {}, chains = 0;
-          nearResults = (o.d.elements || []).map(function (e) {
-            var t = e.tags || {}, la = e.lat || (e.center && e.center.lat), lo = e.lon || (e.center && e.center.lon);
-            if (t.brand || t['brand:wikidata']) { chains++; return null; }
-            var k = (t.name || '').toLowerCase(), ty = osmType(t);
-            if (!k || seen[k] || have[k] || wanted.indexOf(ty) < 0) return null; seen[k] = 1;
-            var ig = handle(t['contact:instagram'] || t.instagram || '');
-            return {
-              name: t.name, type: ty, dist: la ? miles(o.lat, o.lon, la, lo) : 0,
-              address: [[t['addr:housenumber'], t['addr:street']].filter(Boolean).join(' '), t['addr:postcode']].filter(Boolean).join(', '),
-              area: t['addr:suburb'] || t['addr:street'] || o.area, ig: ig,
-              igSrc: ig ? 'https://www.openstreetmap.org/' + e.type + '/' + e.id : '',
-              web: t.website || t['contact:website'] || '', phone: t.phone || t['contact:phone'] || ''
-            };
-          }).filter(Boolean).sort(function (a, b) { return a.dist - b.dist; }).slice(0, 60);
-          renderNear(chains);
-        })
-        .catch(function (err) {
-          $('nRes').innerHTML = '<div class="notice">' + (err && err.message === 'postcode' ? 'That postcode wasn\'t recognised. Check it (e.g. L9 8EH) and try again.' : err && err.message === 'busy' ? 'All map servers are busy right now, which is rare. Try again in a few minutes.' : 'Couldn\'t search just now. Check you have signal or Wi-Fi and try again.') + '</div>';
-        })
-        .then(done);
-    }
-    function renderNear(chains) {
-      if (!nearResults.length) { $('nRes').innerHTML = '<p class="empty">No new independent businesses found. Try a wider distance or more types.</p>'; return; }
-      $('nRes').innerHTML = '<p class="help" style="margin:0 0 6px">' + nearResults.length + ' new business' + (nearResults.length > 1 ? 'es' : '') + (chains ? ', ' + chains + ' chain' + (chains > 1 ? 's' : '') + ' skipped' : '') + '. OpenStreetMap has no Google ratings, so you\'ll check those at the "To check" stage.</p>' +
-        '<button class="btn btn-primary btn-block" id="nAll" style="margin-bottom:6px">Add all ' + nearResults.length + ' to my list</button>' +
-        nearResults.map(function (p, i) {
-          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc((TYPE_NAME[p.type] || '').replace(/s( &|$)/, '$1')) + ' · ' + p.dist.toFixed(1) + ' mi' + (p.area ? ' · ' + esc(p.area) : '') + (p.ig ? ' · @' + esc(p.ig) : '') + '</div></div><button class="btn btn-ghost btn-sm" data-near="' + i + '">Add</button></div>';
-        }).join('');
-    }
-    function addNear(p) {
-      var notes = ['Found on OpenStreetMap ' + nice(todayIso()), p.web ? 'Website: ' + p.web : '', p.phone ? 'Phone: ' + p.phone : ''].filter(Boolean).join('\n');
-      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, ig: p.ig, igSrc: p.igSrc, notes: notes }));
-      p.added = true;
-    }
-    $('nGo').addEventListener('click', nearSearch);
-    $('nRes').addEventListener('click', function (e) {
-      if (e.target.id === 'nAll') {
-        var n = 0; nearResults.forEach(function (p) { if (!p.added) { addNear(p); n++; } });
-        save(); toast(n + ' businesses added to "To check"'); nearResults = []; $('nRes').innerHTML = '<p class="empty">Added ✓ Find them on Today under "Check these".</p>'; return;
-      }
-      var b = e.target.closest('[data-near]'); if (!b) return;
-      var p = nearResults[+b.dataset.near]; if (p.added) return;
-      addNear(p); save(); b.textContent = 'Added ✓'; b.disabled = true;
+      var b = e.target.closest('[data-ai-add]'); if (!b) return;
+      var r = aiResults[+b.dataset.aiAdd]; if (r.added) return;
+      aiAdd(r); save(); b.textContent = 'Added ✓'; b.disabled = true;
     });
-
-    var liveResults = [];
-    $('liveGo').addEventListener('click', function () {
-      var type = $('lvType').value, area = $('lvArea').value.trim() || 'Liverpool';
-      var q = TYPES.filter(function (t) { return t[0] === type; })[0][2] + ' in ' + area + ', Merseyside';
-      $('liveRes').innerHTML = '<p class="empty">Searching…</p>';
-      loadMaps().then(function () { return google.maps.importLibrary('places'); }).then(function (lib) {
-        return lib.Place.searchByText({
-          textQuery: q, region: 'gb', maxResultCount: 20,
-          fields: ['displayName', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'googleMapsURI', 'websiteURI']
-        });
-      }).then(function (res) {
-        var have = knownNames();
-        var c = state.crit;
-        liveResults = (res.places || []).filter(function (p) {
-          return p.businessStatus === 'OPERATIONAL' && p.rating >= c.min && p.rating <= c.max && (p.userRatingCount || 0) < c.reviews && !have[(p.displayName || '').toLowerCase()];
-        }).map(function (p) {
-          return { name: p.displayName, address: p.formattedAddress || '', area: area, type: type, rating: String(p.rating), reviews: String(p.userRatingCount || 0), maps: p.googleMapsURI || '', web: p.websiteURI || '' };
-        });
-        $('liveRes').innerHTML = liveResults.length ? liveResults.map(function (p, i) {
-          return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(p.name) + '</b><div class="help" style="margin:0">' + esc(p.rating) + '★ · ' + esc(p.reviews) + ' reviews · ' + esc(p.address) + '</div></div><button class="btn btn-ghost btn-sm" data-add="' + i + '">Add</button></div>';
-        }).join('') : '<p class="empty">No matches for your criteria. Try another area or type.</p>';
-      }).catch(function (err) {
-        $('liveRes').innerHTML = '<div class="notice">Live search didn\'t work. Check your key allows the Maps JavaScript API and Places API (New), and that billing is set up in Google Cloud.' + (err && err.message ? '<br><small>' + esc(err.message) + '</small>' : '') + '</div>';
-      });
-    });
-    $('liveRes').addEventListener('click', function (e) {
-      var b = e.target.closest('[data-add]'); if (!b) return;
-      var p = liveResults[+b.dataset.add];
-      state.leads.push(newLead({ name: p.name, type: p.type, area: p.area, address: p.address, rating: p.rating, reviews: p.reviews, maps: p.maps, mapsReal: !!p.maps, verified: true, notes: p.web ? 'Website: ' + p.web : '' }));
-      save(); b.textContent = 'Added ✓'; b.disabled = true;
+    $('sAi').addEventListener('change', function () { state.me.aiModels = []; save(); });
+    $('aiTest').addEventListener('click', function () {
+      var btn = this; state.me.aiKey = $('sAi').value.trim(); save();
+      aiBusy(btn, true, 'Testing…'); $('aiTestOut').textContent = '';
+      aiCall('Reply with exactly: Ready to help Mersey Stars ⭐', 'You are a helpful assistant.', false)
+        .then(function (o) { $('aiTestOut').textContent = '✓ Working (' + o.model + '): ' + o.text; })
+        .catch(function (e) { $('aiTestOut').textContent = aiMessage(e); })
+        .then(function () { aiBusy(btn, false, 'Test the assistant'); });
     });
 
     // ---------- Settings ----------
     function renderSettings() {
       var m = state.me;
-      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key; $('sPhone').value = m.phone; $('sEmail').value = m.email;
+      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sPhone').value = m.phone; $('sEmail').value = m.email;
       $('calDaily2').href = dailyCalUrl();
+      $('sAi').value = m.aiKey || '';
       $('myIg').href = igUrl(m.ig || 'merseystars');
     }
-    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
+    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sPhone', 'phone'], ['sEmail', 'email'], ['sAi', 'aiKey']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
     });
     [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
@@ -1236,6 +967,173 @@
     var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
     var qrKey = '';
+    // ---------- Mersey Stars Assistant (Google Gemini API, free tier) ----------
+    var GEM = 'https://generativelanguage.googleapis.com/v1beta/';
+    var aiReply = '', aiTheySaid = '', aiResults = [];
+    var ABOUT = 'Mersey Stars helps independent Liverpool businesses get more Google reviews: they ask every customer in one tap by WhatsApp or text, or with a QR card on the counter. ' +
+      'Unhappy customers can message the owner privately first, it reminds them who to nudge, writes review replies and shows how many reviews they need for their rating goal. ' +
+      'It is free for founding businesses while it launches, founding businesses keep a discount for life, there is no contract, set-up takes 2 minutes and can be done in person. ' +
+      'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.';
+    function aiErr(code, msg) { var e = new Error(msg); e.code = code; return e; }
+    function aiModels() {
+      if (state.me.aiModels && state.me.aiModels.length) return Promise.resolve(state.me.aiModels);
+      return fetchT(GEM + 'models?pageSize=200', { headers: { 'x-goog-api-key': state.me.aiKey } }, 15000)
+        .then(function (r) { return r.json().then(function (j) {
+          var msg = (j.error && j.error.message) || '';
+          if (!r.ok) throw /API key not valid|API_KEY_INVALID/i.test(msg) ? aiErr(400, 'key') : aiErr(r.status, msg);
+          return j;
+        }); })
+        .then(function (j) {
+          // Google retires model versions now and then, so pick current Flash models from the live list.
+          var names = (j.models || []).filter(function (m) { return (m.supportedGenerationMethods || []).indexOf('generateContent') > -1; })
+            .map(function (m) { return m.name; }).filter(function (n) { return /gemini-[\d.]+-flash(-lite)?$|gemini-flash(-lite)?-latest$/.test(n); });
+          var pref = ['models/gemini-2.5-flash', 'models/gemini-flash-latest', 'models/gemini-2.5-flash-lite', 'models/gemini-flash-lite-latest'];
+          var list = pref.filter(function (n) { return names.indexOf(n) > -1; })
+            .concat(names.filter(function (n) { return pref.indexOf(n) < 0; }).sort().reverse());
+          if (!list.length) throw aiErr(404, 'No Gemini Flash model is available to this key.');
+          state.me.aiModels = list.slice(0, 4); save();
+          return state.me.aiModels;
+        });
+    }
+    function aiCall(prompt, system, search) {
+      if (!state.me.aiKey) return Promise.reject(aiErr(401, 'Add your free Gemini key in Settings first.'));
+      return aiModels().then(function (models) {
+        var i = 0;
+        function attempt() {
+          var model = models[i++];
+          if (!model) throw aiErr(429, '');
+          var body = { contents: [{ role: 'user', parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: system }] } };
+          if (search) body.tools = [{ google_search: {} }];
+          return fetchT(GEM + model + ':generateContent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': state.me.aiKey }, body: JSON.stringify(body) }, 60000)
+            .then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); })
+            .then(function (o) {
+              if (!o.r.ok) {
+                var msg = (o.j.error && o.j.error.message) || '';
+                if (/API key not valid|API_KEY_INVALID/i.test(msg)) throw aiErr(400, 'key');
+                // Quota used up, model retired or search not offered on this model: try the next model.
+                if ((o.r.status === 429 || o.r.status === 404 || o.r.status === 400 || o.r.status >= 500) && i < models.length) return attempt();
+                if (o.r.status === 404) { state.me.aiModels = []; save(); }
+                throw aiErr(o.r.status, msg);
+              }
+              var c = (o.j.candidates || [])[0] || {};
+              var text = ((c.content && c.content.parts) || []).map(function (p) { return p.text || ''; }).join('').trim();
+              var src = (((c.groundingMetadata || {}).groundingChunks) || []).map(function (g) { return g.web; }).filter(Boolean);
+              if (!text) throw aiErr(500, 'The assistant didn\'t answer. Try again.');
+              return { text: text, sources: src, model: model.replace('models/', '') };
+            });
+        }
+        return attempt();
+      });
+    }
+    function aiMessage(e) {
+      if (!navigator.onLine || e.name === 'TypeError' || e.name === 'AbortError') return 'Couldn\'t reach the assistant. Check you have signal or Wi-Fi and try again.';
+      if (e.message === 'key') return 'That key isn\'t valid. Copy it again from aistudio.google.com and paste it in Settings.';
+      if (e.code === 429) return 'You\'ve used today\'s free assistant allowance. It resets tomorrow.';
+      if (e.code === 403) return 'Google says this key can\'t use Gemini. Create a new key at aistudio.google.com.';
+      return e.message || 'Something went wrong. Try again in a moment.';
+    }
+    function aiBusy(btn, on, label) { btn.disabled = on; if (label) btn.textContent = label; }
+    function parseJsonList(text) {
+      var m = text.match(/```(?:json)?\s*([\s\S]*?)```/), raw = m ? m[1] : text.slice(text.indexOf('['), text.lastIndexOf(']') + 1);
+      try { var v = JSON.parse(raw); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+    }
+    function srcList(src) {
+      if (!src.length) return '';
+      return '<p class="help" style="margin-top:8px">Sources: ' + src.slice(0, 6).map(function (w, i) { return '<a href="' + esc(w.uri) + '" target="_blank" rel="noopener">' + esc(w.title || 'link ' + (i + 1)) + '</a>'; }).join(' · ') + '</p>';
+    }
+    function aiFind() {
+      var q = $('aiQ').value.trim(); if (!q) return;
+      var known = Object.keys(knownNames()).slice(0, 200);
+      var sys = 'You find real, currently open, independent small businesses (not chains or franchises) in Liverpool and Merseyside, UK, for a local review-software founder. Always use Google Search. ' +
+        'Reply with ONLY a JSON array inside a ```json code block. Each item: {"name","type","area","address","rating","reviews","instagram","instagram_source","website","compliment"}. ' +
+        'type is one of: salon, nails, barber, groomer, cafe, takeaway, gym, tattoo, shop, trade, other. rating and reviews are the Google rating and number of Google reviews if you found them, else null. ' +
+        'instagram: ONLY a username that is linked from the business\'s own website, Google listing or Facebook page, copied exactly; put the full URL of that page in instagram_source. Never guess or build a username from the business name: if you cannot find a linked one, use null for both. ' +
+        'compliment: one short friendly compliment under 15 words with one emoji, based on what real customers praise, or null. Never invent businesses or details.';
+      var c = state.crit;
+      var prompt = q + '\n\nMy criteria: Google rating between ' + c.min + ' and ' + c.max + ', fewer than ' + c.reviews + ' Google reviews' +
+        (c.postcode ? ', within ' + (c.miles || 2) + ' miles of ' + c.postcode : '') + '. Leave out businesses you can see fall outside this.' +
+        (known.length ? '\n\nDo not include any of these, they are already on my list: ' + known.join(', ') : '');
+      $('aiOut').innerHTML = '<p class="help">Searching Google… this can take up to a minute.</p>';
+      aiBusy($('aiFind'), true, 'Searching…'); aiBusy($('aiAsk'), true);
+      aiCall(prompt, sys, true).then(function (o) {
+        var have = knownNames(), seen = {};
+        aiResults = parseJsonList(o.text).filter(function (b) {
+          var k = String((b && b.name) || '').trim().toLowerCase(); if (!k || have[k] || seen[k]) return false; seen[k] = 1; return true;
+        }).map(function (b) {
+          var ig = handle(b.instagram || ''); if (/^(null|none|n\/a)$/i.test(ig)) ig = '';
+          var t = TYPE_NAME[b.type] ? b.type : guessType((b.type || '') + ' ' + b.name);
+          return { name: String(b.name).trim(), type: t, area: b.area || '', address: b.address || '', rating: b.rating != null ? (String(b.rating).match(/\d(\.\d)?/) || [''])[0] : '',
+            reviews: b.reviews != null ? (String(b.reviews).match(/\d+/) || [''])[0] : '', ig: ig, igSrc: ig && /^https?:\/\//.test(b.instagram_source || '') ? b.instagram_source : '',
+            web: /^https?:\/\//.test(b.website || '') ? b.website : '', compliment: b.compliment && !/^null$/i.test(b.compliment) ? String(b.compliment) : '' };
+        });
+        if (!aiResults.length) { $('aiOut').innerHTML = '<p class="empty">No new businesses found that aren\'t already on your list. Try another area or type.</p>' + srcList(o.sources); return; }
+        $('aiOut').innerHTML = '<p class="help" style="margin:0 0 6px">' + aiResults.length + ' found. Ratings and Instagram are checked again at the "To check" stage.</p>' +
+          '<button class="btn btn-primary btn-block" id="aiAll" style="margin-bottom:6px">Add all ' + aiResults.length + ' to my list</button>' +
+          aiResults.map(function (b, i) {
+            return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(b.name) + '</b><div class="help" style="margin:0">' +
+              esc([(TYPE_NAME[b.type] || 'Other').replace(/s( &|$)/, '$1'), b.area, b.rating ? b.rating + '★' + (b.reviews ? ' · ' + b.reviews + ' reviews' : '') : '', b.ig ? '@' + b.ig : 'Instagram not found'].filter(Boolean).join(' · ')) +
+              (b.igSrc ? ' · <a href="' + esc(b.igSrc) + '" target="_blank" rel="noopener">source</a>' : '') + '</div></div><button class="btn btn-ghost btn-sm" data-ai-add="' + i + '">Add</button></div>';
+          }).join('') + srcList(o.sources);
+      }).catch(function (e) { $('aiOut').innerHTML = '<div class="notice">' + esc(aiMessage(e)) + '</div>'; })
+        .then(function () { aiBusy($('aiFind'), false, 'Find businesses'); aiBusy($('aiAsk'), false); });
+    }
+    function aiAdd(b) {
+      var notes = ['Found by the assistant ' + nice(todayIso()), b.web ? 'Website: ' + b.web : ''].filter(Boolean).join('\n');
+      state.leads.push(newLead({ name: b.name, type: b.type, area: b.area, address: b.address, rating: b.rating, reviews: b.reviews, ig: b.ig, igSrc: b.igSrc, compliment: b.compliment, compSrc: b.compliment ? 'ai' : '', notes: notes }));
+      b.added = true;
+    }
+    function aiAskQ() {
+      var q = $('aiQ').value.trim(); if (!q) return;
+      var sys = 'You are the Mersey Stars Assistant, helping Jonathan, a Liverpool founder, win local businesses. ' + ABOUT +
+        ' Answer in UK English, briefly and practically, in plain words with no markdown headings. Use Google Search when the question needs facts. Never suggest fake reviews, rewards for reviews or automated Instagram messaging.';
+      $('aiOut').innerHTML = '<p class="help">Thinking…</p>';
+      aiBusy($('aiAsk'), true, 'Thinking…'); aiBusy($('aiFind'), true);
+      aiCall(q, sys, true).then(function (o) {
+        $('aiOut').innerHTML = '<div class="msg" style="background:var(--soft);color:var(--text);border-radius:16px">' + esc(o.text.replace(/\*\*/g, '')) + '</div>' + srcList(o.sources);
+      }).catch(function (e) { $('aiOut').innerHTML = '<div class="notice">' + esc(aiMessage(e)) + '</div>'; })
+        .then(function () { aiBusy($('aiAsk'), false, 'Ask a question'); aiBusy($('aiFind'), false); });
+    }
+    function aiCard(l) {
+      if (!state.me.aiKey) return '';
+      var early = ['check', 'follow', 'followed'].indexOf(l.status) > -1, talk = ['dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1;
+      if (!early && !talk) return '';
+      var h = handle(l.ig);
+      if (early) return '<div class="card"><h2>Assistant ✨</h2><p class="sub">Searches their website, Instagram and Google reviews and writes a personal compliment for your DM.</p>' +
+        '<button class="btn btn-gold btn-block" data-act="aiComp">Write a compliment for me</button><p class="help" id="aiCompOut"></p></div>';
+      return '<div class="card"><h2>Assistant ✨</h2><p class="sub">Paste or type what they said and get a reply written for you.</p>' +
+        '<textarea id="aiSaid" placeholder="e.g. Sounds good but how much is it after the free bit?" style="min-height:70px">' + esc(aiTheySaid) + '</textarea>' +
+        '<button class="btn btn-gold btn-block" data-act="aiReply" style="margin-top:10px">Suggest a reply</button><p class="help" id="aiReplyErr"></p>' +
+        (aiReply ? '<div class="msg">' + esc(aiReply) + '</div><div class="row">' + (h ? '<a class="btn btn-ig btn-block" data-ig data-ai="1" href="' + igUrl(h) + '" target="_blank" rel="noopener">Copy reply & open Instagram</a>' : '<button class="btn btn-primary" data-act="aiCopy">Copy reply</button>') + '</div>' : '') + '</div>';
+    }
+    function aiComp(btn) {
+      var l = cur;
+      var sys = 'You write one short, friendly, specific compliment for an Instagram DM to a small business. Use Google Search to look at their website, Instagram and Google reviews. ' +
+        'Reply with ONLY the compliment: under 15 words, one emoji at the end, UK English, about something real (their work, a product, or what customers praise). No quotes, no hashtags, no greeting.';
+      var prompt = 'Business: ' + l.name + (l.area ? ', ' + l.area : '') + ', Liverpool. Type: ' + (TYPE_NAME[l.type] || 'small business') + (handle(l.ig) ? '. Instagram: @' + handle(l.ig) : '') + '.';
+      aiBusy(btn, true, 'Writing…'); $('aiCompOut').textContent = '';
+      aiCall(prompt, sys, true).then(function (o) {
+        var c = o.text.split('\n').filter(Boolean)[0].replace(/^["“']|["”']$/g, '').trim();
+        if (cur !== l) return;
+        cur.compliment = c; cur.compSrc = 'ai'; save();
+        var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y; toast('Compliment added to your DM');
+      }).catch(function (e) { if ($('aiCompOut')) $('aiCompOut').textContent = aiMessage(e); aiBusy(btn, false, 'Write a compliment for me'); });
+    }
+    function aiReplyGo(btn) {
+      var l = cur, said = $('aiSaid').value.trim();
+      if (!said) { $('aiSaid').focus(); return; }
+      aiTheySaid = said;
+      var m = state.me;
+      var sys = 'You are the Mersey Stars Assistant writing an Instagram DM reply for ' + (m.name || 'Jonathan') + ', a friendly local Liverpool founder. ' + ABOUT +
+        ' Founder\'s details, only include if useful: phone ' + (m.phone || '') + ', email ' + (m.email || '') + ', website ' + (m.link || '') + '. ' +
+        'Write ONLY the reply message: warm, honest, under 70 words, UK English, at most two emojis, no hashtags. Answer what they asked, never pressure them, and if they are interested suggest popping in for a 2-minute demo. Never promise results or invent prices beyond what is stated.';
+      var prompt = 'Business: ' + l.name + ' (' + (TYPE_NAME[l.type] || 'small business') + (l.area ? ', ' + l.area : '') + '). Current stage: ' + STATUS_NAME[l.status] + '.\nThey said: "' + said + '"';
+      aiBusy(btn, true, 'Writing…'); $('aiReplyErr').textContent = '';
+      aiCall(prompt, sys, false).then(function (o) {
+        if (cur !== l) return;
+        aiReply = o.text.replace(/^["“]|["”]$/g, '').trim();
+        var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
+      }).catch(function (e) { if ($('aiReplyErr')) $('aiReplyErr').textContent = aiMessage(e); aiBusy(btn, false, 'Suggest a reply'); });
+    }
     // Past today's DM limit, a first DM needs a second tap. The copy still happens inside the tap,
     // so it works on phones that block copying after a pop-up.
     function overLimit(btn) {
@@ -1251,7 +1149,7 @@
       btn.parentNode.insertAdjacentElement('afterend', w);
       return true;
     }
-    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; aiReply = ''; aiTheySaid = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
@@ -1282,6 +1180,7 @@
       html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
         (cal ? '<a class="btn btn-ghost btn-block" style="margin-top:10px" href="' + esc(cal[1]) + '" target="_blank" rel="noopener">📅 ' + cal[0] + '</a>' : '') + '</div>';
       if (['followed', 'dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1) html += quickCard(l);
+      html += aiCard(l);
       if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
         html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
           '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>';
@@ -1375,6 +1274,7 @@
       if (ig && cur) {
         e.preventDefault();
         var qk = ig.dataset.qrsend && QUICK.filter(function (x) { return x[0] === ig.dataset.qrsend; })[0];
+        if (ig.dataset.ai) qk = ['ai', '', function () { return aiReply; }];
         if (!qk && overLimit(ig)) return;
         var m = qk ? { text: qk[2](cur), label: 'Reply' } : igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
@@ -1401,6 +1301,9 @@
       else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
       else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
+      else if (a === 'aiComp') aiComp(b);
+      else if (a === 'aiReply') aiReplyGo(b);
+      else if (a === 'aiCopy') copy(aiReply, 'Reply copied');
       else if (a === 'copyQr') { var qq = QUICK.filter(function (x) { return x[0] === qrKey; })[0]; if (qq) copy(qq[2](cur), 'Reply copied'); }
       else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
