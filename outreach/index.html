@@ -250,6 +250,11 @@
         <p class="sub" id="backupText">Your leads are only saved on this phone.</p>
         <button class="btn btn-gold btn-block" id="backupNow">Save a backup now</button>
       </div>
+      <div class="card" id="cardCal" hidden>
+        <h2>Get a daily reminder 📅</h2>
+        <p class="sub">Add a weekday 9am reminder to your phone's calendar, so you never miss a day of outreach.</p>
+        <div class="pair"><a class="btn btn-gold" id="calDaily" target="_blank" rel="noopener">Add reminder</a><button class="btn btn-ghost" id="calSkip">Not now</button></div>
+      </div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
       <div class="card"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
       <div class="card">
@@ -354,6 +359,11 @@
 
     <!-- SETTINGS -->
     <section data-view="settings" hidden>
+      <div class="card">
+        <h2>Reminders 📅</h2>
+        <p class="sub">Your calendar reminds you even when this app is closed. Follow-ups and demos have their own "Add to calendar" button on each business.</p>
+        <a class="btn btn-ghost btn-block" id="calDaily2" target="_blank" rel="noopener">Add a weekday 9am outreach reminder</a>
+      </div>
       <div class="card">
         <h2>You</h2>
         <label class="f" for="sName">Your first name</label><input type="text" id="sName">
@@ -715,6 +725,28 @@
       if (view === 'settings') renderSettings();
     }
 
+    // ---------- Calendar reminders (Google Calendar, opens the app on Android) ----------
+    function appUrl() { return new URL('./', location.href).href; }
+    function calUrl(title, dateIso, hhmm, mins, details, recur) {
+      var d = dateIso.replace(/-/g, ''), h = +hhmm.slice(0, 2), m = +hhmm.slice(2) + mins;
+      var end = d + 'T' + pad(h + Math.floor(m / 60)) + pad(m % 60) + '00';
+      var u = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(title) +
+        '&dates=' + d + 'T' + hhmm + '00/' + end + '&ctz=Europe/London&details=' + encodeURIComponent(details);
+      return u + (recur ? '&recur=' + encodeURIComponent(recur) : '');
+    }
+    function dailyCalUrl() {
+      return calUrl('Mersey Stars: today\'s outreach ⭐', todayIso(), '0900', 15,
+        'Open your outreach app and work through today\'s plan: replies first, then follow-ups, then DMs.\n\n' + appUrl(), 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR');
+    }
+    function leadCal(l) {
+      var ig = handle(l.ig) ? '\nInstagram: ' + igUrl(handle(l.ig)) : '', app = '\n\nOutreach app: ' + appUrl();
+      if (l.status === 'dm' && l.dmAt) return ['Remind me to follow up', calUrl('Follow up: ' + l.name, addDays(l.dmAt, state.me.fuDays), '1000', 15, 'No reply yet? Open the app and send one friendly follow-up.' + ig + app)];
+      if (l.status === 'fu' && l.fuAt) return ['Remind me to close this lead', calUrl('Final check: ' + l.name, addDays(l.fuAt, 4), '1000', 15, 'Still nothing? Visit or call if they\'re nearby, or send the polite final message.' + ig + app)];
+      if (l.status === 'wait') return ['Remind me to nudge', calUrl('Nudge: ' + l.name, addDays(l.waitAt || l.repliedAt || todayIso(), 3), '1000', 15, 'They said maybe. Send a friendly nudge.' + ig + app)];
+      if (l.status === 'demo' && l.demoAt) return ['Add demo to my calendar', calUrl('Demo: ' + l.name, l.demoAt, '1000', 30, 'Change the time to match what you agreed.\n\nBring: their Google review link set up, the flyer. Note their review count before you start.' + (l.area ? '\nArea: ' + l.area : '') + ig + app)];
+      if (l.status === 'signed') return ['Remind me to check their results', calUrl('Results check: ' + l.name, addDays(l.signedAt || todayIso(), 28), '1000', 15, 'Check their Google rating and review count and note it in the app. That\'s your proof it works.' + app)];
+      return null;
+    }
     function backupDue() {
       if (state.leads.length < 3) return false;
       return !state.me.lastBackup || addDays(state.me.lastBackup, 7) <= todayIso();
@@ -725,6 +757,8 @@
       toast('Backup saved to your Downloads');
     }
     function renderToday() {
+      $('cardCal').hidden = !!state.me.calSet || state.leads.length < 3;
+      $('calDaily').href = dailyCalUrl();
       $('cardBackup').hidden = !backupDue();
       $('backupText').textContent = state.me.lastBackup
         ? 'Last backup ' + nice(state.me.lastBackup) + '. Your leads are only saved on this phone, so save one each week.'
@@ -1004,6 +1038,7 @@
     function renderSettings() {
       var m = state.me;
       $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key; $('sPhone').value = m.phone; $('sEmail').value = m.email;
+      $('calDaily2').href = dailyCalUrl();
       $('myIg').href = igUrl(m.ig || 'merseystars');
     }
     [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
@@ -1014,6 +1049,8 @@
     });
     $('exportBtn').addEventListener('click', saveBackup);
     $('backupNow').addEventListener('click', function () { saveBackup(); renderToday(); });
+    $('calDaily').addEventListener('click', function () { state.me.calSet = todayIso(); save(); setTimeout(renderToday, 300); });
+    $('calSkip').addEventListener('click', function () { state.me.calSet = 'skipped'; save(); renderToday(); });
     $('exportCsv').addEventListener('click', function () {
       var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'repliedAt', 'notes'];
       var csv = [cols.join(',')].concat(state.leads.map(function (l) {
@@ -1082,7 +1119,9 @@
       else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
-      html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div></div>';
+      var cal = leadCal(l);
+      html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
+        (cal ? '<a class="btn btn-ghost btn-block" style="margin-top:10px" href="' + esc(cal[1]) + '" target="_blank" rel="noopener">📅 ' + cal[0] + '</a>' : '') + '</div>';
       if (['followed', 'dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1) html += quickCard(l);
       if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
         html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
@@ -1208,7 +1247,7 @@
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
-      else if (a === 'signed') { setStatus('signed'); toast('Founding business signed up ⭐'); }
+      else if (a === 'signed') { setStatus('signed', { signedAt: cur.signedAt || t }); toast('Founding business signed up ⭐'); }
       else if (a === 'no') setStatus('no');
       else if (a === 'delete') { if (confirm('Delete ' + cur.name + '?')) { state.leads = state.leads.filter(function (l) { return l !== cur; }); save(); closeSheet(); } }
     });
@@ -1221,6 +1260,7 @@
         cur.status = e.target.value;
         if (['replied', 'wait', 'demo', 'signed'].indexOf(cur.status) > -1 && !cur.repliedAt) cur.repliedAt = todayIso();
         if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
+        if (cur.status === 'signed' && !cur.signedAt) cur.signedAt = todayIso();
       }
       else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = false; cur.igSrc = ''; } }
       else return;
