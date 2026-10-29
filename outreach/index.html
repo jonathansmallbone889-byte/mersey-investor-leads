@@ -297,6 +297,12 @@
       </div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
       <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
+      <div class="card" id="cardLast" hidden>
+        <h2>Last message or close <span class="n" id="nLast"></span></h2>
+        <p class="sub">You've followed these up and heard nothing. Open each to send one polite last message (it leaves the door open), or close them.</p>
+        <div id="lLast"></div>
+        <button class="btn btn-ghost btn-block btn-sm" id="closeAll" style="margin-top:10px">Close all without a message</button>
+      </div>
       <div class="card" id="cardDm">
         <h2>Ready to DM <span class="n" id="nDm"></span></h2>
         <p class="sub" id="dmLimitText"></p>
@@ -348,11 +354,15 @@
         <h2>Find businesses with free AI ✨</h2>
         <p class="sub">Your search is written for you, with your criteria, the strict Instagram rules and every business to skip.</p>
         <div class="steps2">
-          <div class="st"><b>1</b><div><strong>Copy the search and open an AI</strong><span>Gemini searches Google, so it's the best for ratings.</span></div></div>
+          <div class="st"><b>1</b><div><strong>Tap Find businesses</strong><span>Your search is copied and Gemini opens. Paste it in and send.</span></div></div>
         </div>
-        <button class="btn btn-gold btn-block" data-ai-open="gemini">Copy search &amp; open Gemini</button>
-        <div class="pair" style="margin-top:8px"><button class="btn btn-ghost" data-ai-open="perplexity">Perplexity</button><button class="btn btn-ghost" data-ai-open="copilot">Copilot</button></div>
-        <details class="peek"><summary>See the search</summary><textarea id="prompt" readonly style="min-height:150px;font-size:13px;margin-top:8px"></textarea></details>
+        <button class="btn btn-gold btn-block" data-ai-open="gemini">Find businesses</button>
+        <details class="peek"><summary>More options</summary>
+          <p class="help" style="margin:8px 0 6px">Gemini not working? Use another free AI instead:</p>
+          <div class="pair"><button class="btn btn-ghost btn-sm" data-ai-open="perplexity">Perplexity</button><button class="btn btn-ghost btn-sm" data-ai-open="copilot">Copilot</button></div>
+          <p class="help" style="margin:10px 0 0">The search that gets copied:</p>
+          <textarea id="prompt" readonly style="min-height:150px;font-size:13px;margin-top:6px"></textarea>
+        </details>
         <div class="steps2" style="margin-top:16px">
           <div class="st"><b>2</b><div><strong>Paste the answer here</strong><span>Copy the whole reply (the table is enough) and paste it below.</span></div></div>
         </div>
@@ -510,6 +520,8 @@
     // Businesses marked "Not a fit" are removed but remembered, so they never come back in searches or imports.
     function tidy() {
       state.skipped = state.skipped || [];
+      // Drop blank leads left by an empty table row in an AI answer.
+      state.leads = state.leads.filter(function (l) { return /[\p{L}\p{N}]/u.test(l.name || '') || l.status !== 'check'; });
       state.leads = state.leads.filter(function (l) { if (l.status !== 'nofit') return true; if (state.skipped.indexOf(l.name) < 0) state.skipped.push(l.name); return false; });
     }
     tidy(); save();
@@ -940,6 +952,7 @@
       download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json');
       toast('Backup saved to your Downloads');
     }
+    var lastDue = [];
     function renderToday() {
       $('cardCal').hidden = !!state.me.calSet || state.leads.length < 3;
       $('calDaily').href = dailyCalUrl();
@@ -971,15 +984,20 @@
       $('cardHot').hidden = !hot.length; $('nHot').textContent = hot.length;
       list('lHot', hot, function (l) { return l.status === 'demo' ? 'Demo ' + nice(l.demoAt) : 'Replied, book a demo'; }, '');
 
+      // Follow-ups (first chase) and last messages (already chased once) are separate jobs.
       var fu = L.filter(function (l) {
-        return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t) ||
-          (l.status === 'wait' && addDays(l.waitAt || l.repliedAt || t, 3) <= t);
+        return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'wait' && addDays(l.waitAt || l.repliedAt || t, 3) <= t);
       });
       $('nFu').textContent = fu.length;
       list('lFu', fu, function (l) {
         if (l.status === 'wait') return 'Said maybe ' + nice(l.repliedAt) + '. Send a nudge';
-        return l.status === 'fu' ? 'Followed up ' + nice(l.fuAt) + '. Visit or call?' : 'DM sent ' + nice(l.dmAt);
+        return 'DM sent ' + nice(l.dmAt) + '. No reply yet';
       }, 'Nothing due today 👍');
+      var last = L.filter(function (l) { return l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t; });
+      lastDue = last;
+      $('cardLast').hidden = !last.length; $('nLast').textContent = last.length;
+      $('closeAll').textContent = 'Close all ' + last.length + ' without a message';
+      list('lLast', last, function (l) { var d = l.fuAt.split('-'); return 'Chased ' + (+d[2]) + ' ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d[1] - 1]; }, '');
 
       var left = Math.max(0, state.me.limit - dmToday);
       var ready = L.filter(function (l) { return l.status === 'followed'; });
@@ -1004,6 +1022,7 @@
       var plan = [];
       if (hot.length) plan.push(hot.length + ' to reply to');
       if (fu.length) plan.push(fu.length + ' follow-up' + (fu.length > 1 ? 's' : ''));
+      if (last.length) plan.push(last.length + ' to close');
       if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
       if (fol.length) plan.push(fol.length + ' to follow');
       $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : fresh ? 'Let\'s find your first businesses ✨' : 'You\'re all caught up. Time to find new businesses ✨';
@@ -1172,7 +1191,7 @@
       rows.slice(1).forEach(function (r) {
         if (h.length >= 5 && r.length < 3) return; // a sentence after the table, not a business
         var name = (r[cName] || '').replace(/\*\*/g, '').trim();
-        if (!name || have[name.toLowerCase()]) return;
+        if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()]) return;
         var addr = cAddr > -1 ? r[cAddr] || '' : '';
         var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
         var ig = cIg > -1 ? handle(r[cIg]) : '';
@@ -1214,6 +1233,14 @@
     $('exportBtn').addEventListener('click', saveBackup);
     $('backupNow').addEventListener('click', function () { saveBackup(); renderToday(); });
     $('calDaily').addEventListener('click', function () { state.me.calSet = todayIso(); save(); setTimeout(renderToday, 300); });
+    $('closeAll').addEventListener('click', function () {
+      var gone = lastDue.slice(), t = todayIso();
+      if (!gone.length) return;
+      var before = gone.map(function (l) { return { l: l, status: l.status, notes: l.notes }; });
+      gone.forEach(function (l) { l.status = 'no'; l.notes = ((l.notes || '') + (l.notes ? '\n' : '') + 'Closed, no reply ' + nice(t)).trim(); });
+      save(); renderToday();
+      toast(gone.length + ' closed as "Not interested"', function () { before.forEach(function (b) { b.l.status = b.status; b.l.notes = b.notes; }); save(); render(); });
+    });
     $('calSkip').addEventListener('click', function () { state.me.calSet = 'skipped'; save(); renderToday(); });
     $('exportCsv').addEventListener('click', function () {
       var cols = ['name', 'type', 'area', 'address', 'ig', 'rating', 'reviews', 'verified', 'status', 'followedAt', 'dmAt', 'fuAt', 'repliedAt', 'notes'];
