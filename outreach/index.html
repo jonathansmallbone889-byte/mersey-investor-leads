@@ -219,6 +219,22 @@
     .aic span { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
     .aic[aria-pressed="true"] { border-color: var(--star); background: var(--star-soft, #fff6dc); }
     @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aic[aria-pressed="true"] { background: #33290f; } }
+    details.qfold { margin: 0; }
+    details.qfold > summary { font-size: 16px; font-weight: 800; color: var(--text); letter-spacing: -.01em; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+    details.qfold > summary::-webkit-details-marker { display: none; }
+    details.qfold > summary::after { content: '+'; font-size: 22px; font-weight: 600; color: var(--muted); transition: transform .2s; }
+    details.qfold[open] > summary::after { transform: rotate(45deg); }
+    .todo { display: grid; gap: 8px; margin-top: 6px; }
+    .td { display: flex; gap: 12px; align-items: center; text-align: left; width: 100%; background: var(--soft); border: 0; border-radius: 14px; padding: 12px; font: inherit; color: var(--text); cursor: pointer; }
+    div.td { cursor: default; }
+    .td b { width: 30px; height: 30px; border-radius: 10px; background: var(--brand); color: #f5b301; display: grid; place-items: center; flex: none; font-size: 14px; }
+    .td b.done { background: #15803d; color: #fff; }
+    .td strong { display: block; font-size: 15px; }
+    .td small { display: block; font-size: 12.5px; color: var(--muted); margin-top: 1px; line-height: 1.35; }
+    .empty-big { text-align: center; padding: 18px 6px 10px; }
+    .empty-big .eb-ico { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 18px; display: grid; place-items: center; font-size: 26px; background: var(--brand); box-shadow: 0 10px 24px -10px rgba(11, 47, 74, .7); }
+    .empty-big b { display: block; font-size: 17px; }
+    .empty-big p { margin: 6px 0 16px; color: var(--muted); font-size: 14px; line-height: 1.5; }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -265,23 +281,32 @@
         <p class="sub" id="backupText">Your leads are only saved on this phone.</p>
         <button class="btn btn-gold btn-block" id="backupNow">Save a backup now</button>
       </div>
+      <div class="card" id="cardWelcome" hidden>
+        <h2>Welcome 👋</h2>
+        <p class="sub">Three steps to your first DM.</p>
+        <div class="todo">
+          <button class="td" data-go="settings"><b id="tdMe">1</b><span><strong>Add your details</strong><small>Name, business and Instagram, used in every message</small></span></button>
+          <button class="td" data-go="find"><b>2</b><span><strong>Find businesses near you</strong><small>Free AI search with your criteria and postcode</small></span></button>
+          <div class="td"><b>3</b><span><strong>Add this app to your home screen</strong><small>Android: ⋮ menu → Add to home screen. iPhone: Share → Add to Home Screen</small></span></div>
+        </div>
+      </div>
       <div class="card" id="cardCal" hidden>
         <h2>Get a daily reminder 📅</h2>
         <p class="sub">Add a weekday 9am reminder to your phone's calendar, so you never miss a day of outreach.</p>
         <div class="pair"><a class="btn btn-gold" id="calDaily" target="_blank" rel="noopener">Add reminder</a><button class="btn btn-ghost" id="calSkip">Not now</button></div>
       </div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
-      <div class="card"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
-      <div class="card">
+      <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
+      <div class="card" id="cardDm">
         <h2>Ready to DM <span class="n" id="nDm"></span></h2>
         <p class="sub" id="dmLimitText"></p>
         <div class="meter"><i id="dmMeter"></i></div>
         <div id="lDm" style="margin-top:8px"></div>
       </div>
-      <div class="card"><h2>Follow and like <span class="n" id="nFollow"></span></h2><p class="sub">Follow, then like 2 or 3 posts. DM them tomorrow.</p><div id="lFollow"></div></div>
-      <div class="card"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following.</p><div id="lCheck"></div></div>
-      <div class="card"><h2>Your pipeline</h2><p class="sub">Every business you're working on, by stage.</p><div class="pipe" id="pipe"></div></div>
-      <button class="btn btn-gold btn-block" data-go="find">Find new businesses</button>
+      <div class="card" id="cardFollow"><h2>Follow and like <span class="n" id="nFollow"></span></h2><p class="sub">Follow, then like 2 or 3 posts. DM them tomorrow.</p><div id="lFollow"></div></div>
+      <div class="card" id="cardCheck"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following.</p><div id="lCheck"></div></div>
+      <div class="card" id="cardPipe"><h2>Your pipeline</h2><p class="sub">Every business you're working on, by stage.</p><div class="pipe" id="pipe"></div></div>
+      <button class="btn btn-gold btn-block" data-go="find" id="findBtn">Find new businesses</button>
     </section>
 
     <!-- LEADS -->
@@ -350,7 +375,7 @@
         <label class="f">Types of business</label>
         <div class="chips" id="cTypes" style="flex-wrap:wrap;overflow:visible"></div>
         <div class="two">
-          <div><label class="f" for="cPc">Near postcode</label><input type="text" id="cPc" autocomplete="postal-code" placeholder="e.g. L9 8EH" style="text-transform:uppercase"></div>
+          <div><label class="f" for="cPc">Near postcode</label><input type="text" id="cPc" autocomplete="postal-code" autocapitalize="characters" placeholder="e.g. L9 8EH"></div>
           <div><label class="f" for="cMi">Within</label><select id="cMi"><option value="0.5">½ mile</option><option value="1">1 mile</option><option value="2">2 miles</option><option value="3">3 miles</option><option value="5">5 miles</option><option value="10">10 miles</option></select></div>
         </div>
       </div>
@@ -360,26 +385,36 @@
     <!-- SETTINGS -->
     <section data-view="settings" hidden>
       <div class="card">
-        <h2>Reminders 📅</h2>
-        <p class="sub">Your calendar reminds you even when this app is closed. Follow-ups and demos have their own "Add to calendar" button on each business.</p>
-        <a class="btn btn-ghost btn-block" id="calDaily2" target="_blank" rel="noopener">Add a weekday 9am outreach reminder</a>
+        <h2>Your details</h2>
+        <p class="sub">Used in your DMs, replies and AI searches.</p>
+        <div class="two">
+          <div><label class="f" for="sName">Your first name</label><input type="text" id="sName" autocomplete="given-name"></div>
+          <div><label class="f" for="sBrand">Business name</label><input type="text" id="sBrand" placeholder="Mersey Stars"></div>
+        </div>
+        <div class="two">
+          <div><label class="f" for="sCity">Your town or city</label><input type="text" id="sCity" placeholder="Liverpool"></div>
+          <div><label class="f" for="sIg">Your Instagram</label><input type="text" id="sIg" placeholder="username" autocomplete="off" spellcheck="false"></div>
+        </div>
+        <label class="f" for="sLink">Your website or sign-up link</label><input type="text" id="sLink" inputmode="url" placeholder="https://…">
+        <div class="two">
+          <div><label class="f" for="sPhone">Phone</label><input type="text" id="sPhone" inputmode="tel" autocomplete="tel"></div>
+          <div><label class="f" for="sEmail">Email</label><input type="text" id="sEmail" inputmode="email" autocomplete="email"></div>
+        </div>
+        <p class="help">Your phone, email and link go in the "Leave your details" reply.</p>
       </div>
       <div class="card">
-        <h2>You</h2>
-        <label class="f" for="sName">Your first name</label><input type="text" id="sName">
-        <label class="f" for="sIg">Your Instagram username</label><input type="text" id="sIg" placeholder="merseystars">
-        <label class="f" for="sLink">Your Mersey Stars link</label><input type="text" id="sLink">
-        <div class="two">
-          <div><label class="f" for="sPhone">Your phone</label><input type="text" id="sPhone" inputmode="tel"></div>
-          <div><label class="f" for="sEmail">Your email</label><input type="text" id="sEmail" inputmode="email"></div>
-        </div>
-        <p class="help">Used in the "leave your details" quick reply.</p>
+        <h2>Outreach pace</h2>
         <div class="two">
           <div><label class="f" for="sLimit">DMs per day</label><input type="number" id="sLimit" min="1" max="20" inputmode="numeric"></div>
           <div><label class="f" for="sFu">Follow up after (days)</label><input type="number" id="sFu" min="1" max="14" inputmode="numeric"></div>
         </div>
-        <p class="help">Keep DMs to about 5 a day while your account is new, so Instagram doesn't flag you.</p>
+        <p class="help">About 5 DMs a day keeps a new Instagram account safe from being flagged.</p>
         <a class="btn btn-ig btn-block" id="myIg" target="_blank" rel="noopener" style="margin-top:12px">Open my Instagram</a>
+      </div>
+      <div class="card">
+        <h2>Reminders</h2>
+        <p class="sub">Your calendar reminds you even when this app is closed. Each business also has its own "Add to calendar" button.</p>
+        <a class="btn btn-ghost btn-block" id="calDaily2" target="_blank" rel="noopener">Add a weekday 9am outreach reminder</a>
       </div>
       <div class="card">
         <h2>Backup</h2>
@@ -456,12 +491,12 @@
     function handle(h) { return String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '').trim(); }
     function igUrl(h) { return 'https://www.instagram.com/' + encodeURIComponent(handle(h)) + '/'; }
     // Only trust Maps links from live search: links typed by Gemini are often made up and lead nowhere.
-    function mapsUrl(l) { return (l.mapsReal && l.maps) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool'].filter(Boolean).join(' '))); }
-    function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, 'Liverpool reviews'].filter(Boolean).join(' ')); }
+    function mapsUrl(l) { return (l.mapsReal && l.maps) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, CITY()].filter(Boolean).join(' '))); }
+    function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, CITY() + ' reviews'].filter(Boolean).join(' ')); }
     function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
 
     var defaults = {
-      me: { name: 'Jonathan', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
+      me: { name: 'Jonathan', brand: 'Mersey Stars', city: 'Liverpool', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
       crit: { min: 4.0, max: 4.8, reviews: 100, count: 5, types: ['salon', 'nails', 'barber', 'groomer', 'cafe', 'gym'], areas: 'Crosby, Waterloo, Formby, Maghull, Southport, Wavertree, Aigburth, Childwall, West Derby, Allerton, Woolton, Liverpool city centre' },
       leads: [],
       skipped: []
@@ -690,14 +725,14 @@
         (compAngle === 'fill' ? '<p class="help">Tap one, then swap ___ for something real you saw on their page.</p>' : '');
     }
     function dmText(l) {
-      var me = state.me.name || 'Jonathan';
+      var me = state.me.name;
       var opener = (l.compliment || '').trim();
       if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}\uFE0F?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
-      if (!opener) opener = autoCompliment(l);
+      if (!opener) opener = aiList(l).length ? aiList(l)[0].t : autoCompliment(l);
       var rev = '';
       var n = parseInt(l.reviews, 10);
       if (l.verified && !isNaN(n) && n < 60) rev = ' You\'ve got a great rating but only ' + n + ' reviews on Google, which doesn\'t reflect how many happy customers you must have.';
-      return 'Hi! ' + opener + ' I\'m ' + me + ', I\'m local to Liverpool.' + rev + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' I\'m looking for a few founding businesses to try it free. Could I show you in 2 minutes? 😊';
+      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', I\'m local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + rev + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' I\'m looking for a few founding businesses to try it free. Could I show you in 2 minutes? 😊';
     }
     // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
     function igMessage(l) {
@@ -713,6 +748,7 @@
         '<input type="text" id="fHook" value="' + esc(l.fuHook || '') + '" placeholder="e.g. Saw the Halloween photos, brilliant 🎃">';
     }
     function compNote(l) {
+      if (!l.compliment && aiList(l).length) return 'Using Gemini\'s first compliment. Tap another, or type your own.';
       if (!l.compliment) return 'Using a ready-made compliment for this type of business. Tap an idea or type your own. A real detail from their page works best.';
       if (l.compSrc === 'gemini') return 'From Gemini\'s search of their reviews and page. Glance at their page to check it fits.';
       return '';
@@ -726,7 +762,7 @@
     var FU = [
       ['Hi again!', 'Just checking you saw my message. No worries if you\'re busy. I\'m happy to pop in to {name} for 2 minutes whenever suits 😊'],
       ['Hi!', 'Just following up on my message about getting more Google reviews from your {people}. It\'s completely free while I launch, and I\'d set it all up for you. Worth a quick look? 😊'],
-      ['Hey!', 'I know it gets busy, so just bumping this up. I\'m only looking for a handful of founding businesses in Liverpool, and I\'d love {name} to be one of them. Fancy a quick chat? 😊'],
+      ['Hey!', 'I know it gets busy, so just bumping this up. I\'m only looking for a handful of founding businesses in ' + CITY() + ', and I\'d love {name} to be one of them. Fancy a quick chat? 😊'],
       ['Hi again!', 'Quick one: would it help if your happy {people} could leave {name} a Google review in one tap, from a QR card on the counter or a quick WhatsApp? Happy to show you, it takes 2 minutes 😊']
     ];
     function seed(l) { var n = 0; for (var i = 0; i < l.id.length; i++) n = (n * 31 + l.id.charCodeAt(i)) % 9973; return n; }
@@ -746,10 +782,10 @@
     }
     // Ready-made answers to what owners usually reply with.
     // Replies to what owners say. Each has a short alternative and the stage to move them to afterwards.
-    function meName() { return state.me.name || 'Jonathan'; }
+    function meName() { return state.me.name || 'the founder'; }
     function myDetails() {
       var m = state.me;
-      return meName() + ', Mersey Stars\n' + (m.phone ? '📱 ' + m.phone + ' (call or WhatsApp)\n' : '') + (m.email ? '✉️ ' + m.email + '\n' : '') + (m.link ? '🌐 ' + m.link.replace(/^https?:\/\//, '') + '\n' : '');
+      return (state.me.name ? state.me.name + ', ' : '') + BRAND() + '\n' + (m.phone ? '📱 ' + m.phone + ' (call or WhatsApp)\n' : '') + (m.email ? '✉️ ' + m.email + '\n' : '') + (m.link ? '🌐 ' + m.link.replace(/^https?:\/\//, '') + '\n' : '');
     }
     var QGROUPS = [['yes', 'Interested 🎉'], ['q', 'Questions'], ['obj', 'Not sure yet'], ['later', 'Not now']];
     var QUICK = [
@@ -782,15 +818,15 @@
         function () { return 'No problem at all, I know how busy it gets! 😊 I\'ll leave it with you. Whenever you\'ve got 2 minutes, I\'m happy to pop in' + (state.me.phone ? ', or you can reach me on ' + state.me.phone : '') + '.'; },
         function () { return 'Totally understand 😊 It only takes 2 minutes, so whenever there\'s a quiet moment, just give me a shout.'; }] },
       { k: 'stand', g: 'obj', t: 'We have a stand / NFC card', v: [
-        function () { return 'Nice one, they\'re a great idea! 😊 The one thing a stand can\'t do is ask the customers who walk straight past it. Mersey Stars works alongside it: a quick WhatsApp after their visit with your review link, plus reminders for who to nudge. It\'s free while I launch, so there\'s no harm trying both.'; }] },
+        function () { return 'Nice one, they\'re a great idea! 😊 The one thing a stand can\'t do is ask the customers who walk straight past it. ' + BRAND() + ' works alongside it: a quick WhatsApp after their visit with your review link, plus reminders for who to nudge. It\'s free while I launch, so there\'s no harm trying both.'; }] },
       { k: 'enough', g: 'obj', t: 'We already get reviews', v: [
-        function () { return 'That\'s brilliant, you clearly look after your customers 👏 Google favours recent reviews, so a steady flow each month helps keep you showing up when people search nearby. Mersey Stars makes that a one-tap habit. Free while I launch if you ever fancy trying it 😊'; }] },
+        function () { return 'That\'s brilliant, you clearly look after your customers 👏 Google favours recent reviews, so a steady flow each month helps keep you showing up when people search nearby. ' + BRAND() + ' makes that a one-tap habit. Free while I launch if you ever fancy trying it 😊'; }] },
       { k: 'small', g: 'obj', t: 'We\'re only small', v: [
         function () { return 'That\'s exactly who it\'s for 😊 Reviews are how small local businesses stand out, and it only takes a tap after each visit, so it fits around a busy day. Free while I launch, with no contract.'; }] },
       { k: 'catch', g: 'obj', t: 'What\'s the catch?', v: [
-        function () { return 'Fair question! No catch: I\'m local to Liverpool and launching Mersey Stars, so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊'; }] },
+        function () { return 'Fair question! No catch: I\'m local to ' + CITY() + ' and launching ' + BRAND() + ', so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊'; }] },
       { k: 'legit', g: 'obj', t: 'Is this legit?', v: [
-        function () { return 'Totally fair to ask! 😊 I\'m ' + meName() + ', a local Liverpool founder launching Mersey Stars. No payment, no passwords and nothing to sign, and it plays by Google\'s rules, with no fake reviews ever.' + (state.me.link ? ' You can see it here: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Or I can pop in and show you in person.'; }] },
+        function () { return 'Totally fair to ask! 😊 I\'m ' + (state.me.name ? state.me.name + ', a' : 'a') + ' local ' + CITY() + ' founder launching ' + BRAND() + '. No payment, no passwords and nothing to sign, and it plays by Google\'s rules, with no fake reviews ever.' + (state.me.link ? ' You can see it here: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Or I can pop in and show you in person.'; }] },
       { k: 'think', g: 'obj', t: 'Need to think about it', next: 'rMaybe', v: [
         function () { return 'Of course, no pressure at all 😊' + (state.me.link ? ' Have a look whenever you get a minute: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Happy to answer any questions, and I can pop in for a 2-minute demo whenever suits.'; }] },
       { k: 'team', g: 'later', t: 'Passing to the team', next: 'rMaybe', v: [
@@ -815,11 +851,11 @@
       };
       return p[l.type] || 'happy customers scan a QR card on your counter or tables, or get a quick WhatsApp from you, and leave a Google review in one tap.';
     }
-    function quickCard(l) {
+    function quickCard(l, folded) {
       var h = handle(l.ig), q = qrFind(qrKey);
       // Only move them forward (or to No thanks), never back from a booked demo.
       var nx = q && q.next && NEXT[q.next] && l.status !== NEXT[q.next][0] && (q.next === 'rNo' ? l.status !== 'signed' : ['followed', 'dm', 'fu', 'wait'].indexOf(l.status) > -1) ? q.next : '';
-      return '<div class="card"><h2>Quick replies</h2><p class="sub">Tap what they said and your answer is ready to send.</p>' +
+      return '<div class="card">' + (folded ? '<details class="peek qfold"' + (qrKey || aiSaid ? ' open' : '') + '><summary>They asked something? Quick replies</summary>' : '<h2>Quick replies</h2>') + '<p class="sub" style="margin-top:8px">Tap what they said and your answer is ready to send.</p>' +
         QGROUPS.map(function (g) {
           return '<p class="qg">' + g[1] + '</p><div class="chips" style="flex-wrap:wrap;overflow:visible;margin:0">' + QUICK.filter(function (x) { return x.g === g[0]; }).map(function (x) {
             return '<button class="chip" data-qr="' + x.k + '" aria-pressed="' + (x.k === qrKey) + '">' + esc(x.t) + '</button>';
@@ -833,7 +869,7 @@
         '<textarea id="aiSaid" placeholder="Paste what they said" style="min-height:70px;margin-top:8px">' + esc(aiSaid) + '</textarea>' +
         '<button class="btn btn-gold btn-block" data-act="aiReply" style="margin-top:8px">Copy &amp; open Gemini</button>' +
         '<p class="help">Gemini writes the reply. Copy it from there and paste it in their chat.</p></details>' +
-        '</div>';
+        (folded ? '</details>' : '') + '</div>';
     }
     function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
 
@@ -848,7 +884,7 @@
       window.scrollTo(0, 0);
     }
     document.querySelectorAll('nav.tabs button').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.tab); }); });
-    document.querySelectorAll('[data-go]').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.go); }); });
+    document.addEventListener('click', function (e) { var b = e.target.closest('[data-go]'); if (b) setView(b.dataset.go); });
 
     var AV = ['#0b5cad', '#7c3aed', '#db2777', '#059669', '#d97706', '#0891b2', '#4f46e5', '#be123c'];
     function avatar(l) {
@@ -883,7 +919,7 @@
       return u + (recur ? '&recur=' + encodeURIComponent(recur) : '');
     }
     function dailyCalUrl() {
-      return calUrl('Mersey Stars: today\'s outreach ⭐', todayIso(), '0900', 15,
+      return calUrl(BRAND() + ': today\'s outreach ⭐', todayIso(), '0900', 15,
         'Open your outreach app and work through today\'s plan: replies first, then follow-ups, then DMs.\n\n' + appUrl(), 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR');
     }
     function leadCal(l) {
@@ -922,7 +958,7 @@
       $('sDemo').textContent = L.filter(function (l) { return l.status === 'demo'; }).length;
       var hr = new Date().getHours();
       $('helloTime').textContent = hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
-      $('helloName').textContent = state.me.name || 'Welcome back';
+      $('helloName').textContent = state.me.name || (L.length ? 'Welcome back' : 'Welcome');
       var lim = state.me.limit || 5;
       $('ringNum').textContent = dmToday + '/' + lim;
       $('ringFg').style.strokeDashoffset = 219.9 * (1 - Math.min(1, dmToday / lim));
@@ -958,12 +994,19 @@
 
       var chk = L.filter(function (l) { return l.status === 'check'; });
       $('nCheck').textContent = chk.length;
+      // New users see a welcome instead of empty lists; quiet sections hide once there are leads.
+      var fresh = !L.length;
+      $('cardWelcome').hidden = !fresh; $('findBtn').hidden = fresh;
+      $('tdMe').textContent = state.me.name && state.me.ig ? '✓' : '1';
+      $('tdMe').classList.toggle('done', !!(state.me.name && state.me.ig));
+      $('cardFu').hidden = fresh; $('cardDm').hidden = fresh; $('cardPipe').hidden = fresh;
+      $('cardFollow').hidden = !fol.length; $('cardCheck').hidden = !chk.length;
       var plan = [];
       if (hot.length) plan.push(hot.length + ' to reply to');
       if (fu.length) plan.push(fu.length + ' follow-up' + (fu.length > 1 ? 's' : ''));
       if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
       if (fol.length) plan.push(fol.length + ' to follow');
-      $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : 'You\'re all caught up. Time to find new businesses ✨';
+      $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : fresh ? 'Let\'s find your first businesses ✨' : 'You\'re all caught up. Time to find new businesses ✨';
       list('lCheck', chk, function (l) { return typeArea(l) + ' · ' + (ratingText(l) || 'not checked'); }, 'No new leads. Tap "Find new businesses".');
     }
 
@@ -978,8 +1021,16 @@
       var arr = state.leads.filter(function (l) {
         return (filter === 'all' || l.status === filter) && (!q || (l.name + ' ' + (l.area || '') + ' ' + (l.ig || '')).toLowerCase().indexOf(q) > -1);
       }).sort(function (a, b) { return order[a.status] - order[b.status] || a.name.localeCompare(b.name); });
-      list('lAll', arr, function (l) { return typeArea(l) + (ratingText(l) ? ' · ' + ratingText(l) : ''); }, q ? 'No matches.' : 'No leads here yet.');
+      var none = !state.leads.length;
+      $('q').hidden = none; $('filters').hidden = none; $('addManual').hidden = none || !$('addForm').hidden;
+      if (none) {
+        $('lAll').innerHTML = '<div class="empty-big"><div class="eb-ico">⭐</div><b>No businesses yet</b><p>Find independent businesses near you with free AI, or add one you\'ve spotted on Instagram.</p>' +
+          '<button class="btn btn-gold btn-block" data-go="find">Find businesses</button><button class="btn btn-ghost btn-block" id="addFirst" style="margin-top:8px">Add one myself</button></div>';
+        return;
+      }
+      list('lAll', arr, function (l) { return typeArea(l) + (ratingText(l) ? ' · ' + ratingText(l) : ''); }, q ? 'No matches for "' + esc($('q').value.trim()) + '".' : 'No businesses at this stage.');
     }
+    $('lAll').addEventListener('click', function (e) { if (e.target.id === 'addFirst') $('addManual').click(); });
     $('filters').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; renderLeads(); });
     $('q').addEventListener('input', renderLeads);
     document.addEventListener('click', function (e) {
@@ -994,7 +1045,7 @@
       $('addForm').scrollIntoView({ block: 'start', behavior: 'smooth' });
       $('aName').focus();
     });
-    $('aCancel').addEventListener('click', function () { $('addForm').hidden = true; $('addManual').hidden = false; });
+    $('aCancel').addEventListener('click', function () { $('addForm').hidden = true; $('addManual').hidden = false; renderLeads(); });
     $('aName').addEventListener('change', function () {
       var t = guessType(this.value); if (t !== 'other') $('aType').value = t;
     });
@@ -1027,9 +1078,9 @@
       var c = state.crit;
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
       var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
-      return 'Find ' + c.count + ' independent small businesses in Liverpool and Merseyside, UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
+      return 'Find ' + c.count + ' independent small businesses in and around ' + CITY() + ', UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
-        'Types: ' + types + '.\n' + (c.postcode ? 'Location: within ' + (c.miles || 2) + ' miles of ' + c.postcode + ' (Liverpool/Merseyside). Search Google Maps for this area.\n\n' : 'Areas: ' + c.areas + '.\n\n') +
+        'Types: ' + types + '.\n' + (c.postcode ? 'Location: within ' + (c.miles || 2) + ' miles of ' + c.postcode + ' (' + CITY() + '). Search Google Maps for this area.\n\n' : 'Areas: ' + c.areas + '.\n\n') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
         'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
         'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website or Instagram. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; Instagram shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
@@ -1150,11 +1201,11 @@
     // ---------- Settings ----------
     function renderSettings() {
       var m = state.me;
-      $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sPhone').value = m.phone; $('sEmail').value = m.email;
+      $('sName').value = m.name; $('sBrand').value = m.brand || ''; $('sCity').value = m.city || ''; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sPhone').value = m.phone; $('sEmail').value = m.email;
       $('calDaily2').href = dailyCalUrl();
-      $('myIg').href = igUrl(m.ig || 'merseystars');
+      $('myIg').hidden = !m.ig; if (m.ig) $('myIg').href = igUrl(m.ig);
     }
-    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
+    [['sName', 'name'], ['sBrand', 'brand'], ['sCity', 'city'], ['sIg', 'ig'], ['sLink', 'link'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
     });
     [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
@@ -1190,19 +1241,21 @@
     var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
     var qrKey = '', aiSaid = '';
-    var ABOUT = 'Mersey Stars helps independent Liverpool businesses get more Google reviews: they ask every customer in one tap by WhatsApp or text, or with a QR card on the counter. ' +
+    function BRAND() { return state.me.brand || 'Mersey Stars'; }
+    function CITY() { return state.me.city || 'Liverpool'; }
+    function about() { return BRAND() + ' helps independent ' + CITY() + ' businesses get more Google reviews: they ask every customer in one tap by WhatsApp or text, or with a QR card on the counter. ' +
       'Unhappy customers can message the owner privately first, it reminds them who to nudge, writes review replies and shows how many reviews they need for their rating goal. ' +
       'It is free for founding businesses while it launches, founding businesses keep a discount for life, there is no contract, set-up takes 2 minutes and can be done in person. ' +
-      'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.';
+      'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.'; }
     function compPrompt(l) {
-      return 'Look up ' + l.name + (l.area ? ' in ' + l.area : '') + ', Liverpool' + (handle(l.ig) ? ' (Instagram: @' + handle(l.ig) + ')' : '') +
+      return 'Look up ' + l.name + (l.area ? ' in ' + l.area : '') + ', ' + CITY() + (handle(l.ig) ? ' (Instagram: @' + handle(l.ig) + ')' : '') +
         '. Check their Google reviews, website and Instagram. Then write 3 different short, friendly compliments I can open an Instagram DM with: under 15 words each, UK English, one emoji at the end. ' +
         'Each must be about something specific and real that you found: what customers praise in reviews, or work, products or the place shown on their page. Never invent details. ' +
         'Reply with exactly 3 lines and nothing else, each in this format:\ncompliment | what it is based on';
     }
     function replyPrompt(l, said) {
       var m = state.me;
-      return 'Write an Instagram DM reply for me, ' + (m.name || 'Jonathan') + ', a friendly local founder in Liverpool.\n\nAbout my business: ' + ABOUT +
+      return 'Write an Instagram DM reply for me, ' + meName() + ', a friendly local founder in ' + CITY() + '.\n\nAbout my business: ' + about() +
         '\nMy details (only include if useful): phone ' + (m.phone || '') + ', email ' + (m.email || '') + ', website ' + (m.link || '') +
         '.\n\nThey are ' + l.name + ' (' + (TYPE_NAME[l.type] || 'a small business') + (l.area ? ', ' + l.area : '') + '). They said: "' + said + '"' +
         '\n\nRules: reply with only the message, warm and honest, under 70 words, UK English, at most two emojis, no hashtags. Answer what they asked, never pressure them, and if they are interested suggest I pop in for a 2-minute demo. Never promise results or invent prices beyond what is stated.';
@@ -1229,10 +1282,10 @@
     function renderSheet() {
       var l = cur, h = handle(l.ig), m = meets(l);
       $('shName').textContent = l.name; $('shAv').innerHTML = avatar(l);
-      $('shMeta').textContent = [TYPE_NAME[l.type], l.area].filter(Boolean).join(' · ');
+      $('shMeta').textContent = typeArea(l);
       var step = STEP[l.status], steps = '';
       for (var i = 0; i < 6; i++) steps += '<i class="' + (i <= step ? 'on' : '') + '"></i>';
-      var html = '';
+      var html = '', cards = {};
 
       // Next action, based on where the lead is
       var next = '';
@@ -1250,22 +1303,23 @@
       else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
       var cal = leadCal(l);
-      html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
+      cards.next = '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
         (cal ? '<a class="btn btn-ghost btn-block" style="margin-top:10px" href="' + esc(cal[1]) + '" target="_blank" rel="noopener">📅 ' + cal[0] + '</a>' : '') + '</div>';
-      if (['followed', 'dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1) html += quickCard(l);
-      if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
-        html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
-          '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>';
+      // Before a reply, quick replies fold away under "Did they reply?"; after one, they lead.
+      if (['wait', 'replied', 'demo'].indexOf(l.status) > -1) cards.quick = quickCard(l);
+      if (['dm', 'fu'].indexOf(l.status) > -1) {
+        cards.reply = '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
+          '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>' +
+          quickCard(l, true);
       }
 
       // Instagram + Maps
-      html += '<div class="card"><h2>Instagram & Google</h2>' +
+      cards.ig = '<div class="card"><h2>Instagram & Google</h2>' +
         '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
         (h ? (igMessage(l) ? '' : igButton(l)) : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
         '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
-        '<p class="help">Maps app won\'t connect? Use Google search: the business panel shows the star rating and number of reviews.</p>' +
         '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
         '<div><label class="f" for="fReviews">Number of reviews</label><input type="number" id="fReviews" min="0" inputmode="numeric" value="' + esc(l.reviews) + '"></div></div>' +
         '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google</label>' +
@@ -1282,7 +1336,7 @@
 
       // DM
       if (['followed', 'follow', 'check'].indexOf(l.status) > -1) {
-        html += '<div class="card"><h2>Your DM</h2>' +
+        cards.dm = '<div class="card"><h2>Your DM</h2>' +
           '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
           ideasHtml(l) +
@@ -1293,14 +1347,14 @@
           '</div>';
       }
       if (l.status === 'dm') {
-        html += '<div class="card"><h2>Follow-up message</h2>' + hookField(l) +
+        cards.msg = '<div class="card"><h2>Follow-up message</h2>' + hookField(l) +
           '<div class="msg" id="fuPrev">' + esc(fuText(l)) + '</div>' +
           '<div class="row"><button class="btn btn-ghost" data-act="fuNext">Another version</button>' + (h ? '' : '<button class="btn btn-primary" data-act="sendFu">Copy follow-up</button>') + '</div>' +
           (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
           '<button class="btn btn-ghost btn-block" data-act="fuSent" style="margin-top:8px">I\'ve sent the follow-up</button></div>';
       }
       if (l.status === 'fu') {
-        html += '<div class="card"><h2>Final message <span class="n">optional</span></h2><p class="sub">Polite and short. It leaves the door open, and they may come back later.</p>' + hookField(l) +
+        cards.msg = '<div class="card"><h2>Final message <span class="n">optional</span></h2><p class="sub">Polite and short. It leaves the door open, and they may come back later.</p>' + hookField(l) +
           '<div class="msg" id="fuPrev">' + esc(finalText(l)) + '</div>' +
           (h ? '' : '<div class="row"><button class="btn btn-primary" data-act="sendFinal">Copy final message</button></div>') +
           (h ? '<div class="row" style="margin-top:8px">' + igButton(l, ' btn-block') + '</div>' : '') +
@@ -1308,7 +1362,7 @@
       }
 
       // Details
-      html += '<div class="card"><h2>Details</h2>' +
+      cards.details = '<div class="card"><h2>Details</h2>' +
         '<label class="f" for="fName">Business name</label><input type="text" id="fName" value="' + esc(l.name) + '">' +
         '<label class="f" for="fArea">Area</label><input type="text" id="fArea" value="' + esc(l.area) + '">' +
         '<label class="f" for="fStatus">Status</label><select id="fStatus">' + STATUS.map(function (s) { return '<option value="' + s[0] + '"' + (l.status === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>' +
@@ -1316,6 +1370,9 @@
         '<p class="help">' + [l.followedAt ? 'Followed ' + nice(l.followedAt) : '', l.dmAt ? 'DM ' + nice(l.dmAt) : '', l.fuAt ? 'Follow-up ' + nice(l.fuAt) : '', l.repliedAt ? 'Replied ' + nice(l.repliedAt) : ''].filter(Boolean).join(' · ') + '</p>' +
         '<button class="btn btn-danger btn-block" data-act="delete" style="margin-top:10px">Delete this business</button></div>';
 
+      // The card for the next action always comes straight after the progress card.
+      var order = { check: ['next', 'ig', 'dm'], follow: ['next', 'ig', 'dm'], followed: ['next', 'dm', 'ig'], dm: ['next', 'msg', 'reply', 'ig'], fu: ['next', 'msg', 'reply', 'ig'] }[l.status] || ['next', 'quick', 'ig'];
+      html = order.concat(['details']).map(function (k) { return cards[k] || ''; }).join('');
       $('shBody').innerHTML = html;
     }
 
