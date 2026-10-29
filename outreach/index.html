@@ -1047,6 +1047,58 @@
       if (t.craft) return 'trade';
       return 'shop';
     }
+    // Each step has backup servers: if one is down, slow or overloaded, the next is tried automatically.
+    var OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter',
+      'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+    function fetchT(url, opts, ms) {
+      var ctl = window.AbortController ? new AbortController() : null, t = ctl && setTimeout(function () { ctl.abort(); }, ms);
+      return fetch(url, Object.assign({}, opts, ctl ? { signal: ctl.signal } : {})).then(function (r) { clearTimeout(t); return r; }, function (e) { clearTimeout(t); throw e; });
+    }
+    function nearStatus(msg) { $('nGo').textContent = msg; }
+    function locate(pc) {
+      var q = pc.replace(/\s+/g, '');
+      if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?[0-9][A-Z]{2}$/.test(q)) return Promise.reject(new Error('postcode'));
+      var notFound = 0;
+      function pio(path) {
+        return fetchT('https://api.postcodes.io/' + path + encodeURIComponent(q), {}, 10000).then(function (r) {
+          if (r.status === 404) { notFound++; throw new Error('nf'); }
+          if (!r.ok) throw new Error('down');
+          return r.json();
+        }).then(function (j) {
+          var x = j.result; if (!x || x.latitude == null) throw new Error('nf');
+          return { lat: x.latitude, lon: x.longitude, area: x.admin_ward || x.admin_district || '' };
+        });
+      }
+      function nominatim() {
+        nearStatus('Searching… (backup postcode server)');
+        return fetchT('https://nominatim.openstreetmap.org/search?format=json&countrycodes=gb&limit=1&addressdetails=1&postalcode=' + encodeURIComponent(pc), {}, 12000)
+          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
+          .then(function (a) {
+            if (!a || !a.length) { notFound++; throw new Error('nf'); }
+            var ad = a[0].address || {};
+            return { lat: +a[0].lat, lon: +a[0].lon, area: ad.suburb || ad.town || ad.city || '' };
+          });
+      }
+      return pio('postcodes/').catch(function () { return pio('terminated_postcodes/'); }).catch(nominatim)
+        .catch(function () { throw new Error(notFound >= 2 ? 'postcode' : 'offline'); });
+    }
+    function overpass(query) {
+      var i = 0;
+      function attempt() {
+        if (i >= OVERPASS.length) return Promise.reject(new Error('busy'));
+        var url = OVERPASS[i++];
+        if (i > 1) nearStatus('Searching… (backup map server ' + (i - 1) + ')');
+        return fetchT(url, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(query) }, 28000)
+          .then(function (r) { if (!r.ok) throw new Error('down'); return r.json(); })
+          .then(function (d) {
+            // Overpass can answer 200 with a partial result when it runs out of time: treat that as a failure too.
+            if (!d || !d.elements || (d.remark && /runtime error|timed out|out of memory/i.test(d.remark))) throw new Error('partial');
+            return d;
+          })
+          .catch(attempt);
+      }
+      return attempt();
+    }
     function nearSearch() {
       var pc = $('nPc').value.trim().toUpperCase(), mi = parseFloat($('nMi').value) || 2;
       var wanted = state.crit.types.filter(function (t) { return OSM[t]; });
@@ -1055,16 +1107,12 @@
       state.crit.postcode = pc; state.crit.miles = mi; save();
       $('nGo').disabled = true; $('nGo').textContent = 'Searching…'; $('nRes').innerHTML = '';
       function done() { $('nGo').disabled = false; $('nGo').textContent = 'Find businesses near me'; }
-      fetch('https://api.postcodes.io/postcodes/' + encodeURIComponent(pc.replace(/\s+/g, '')))
-        .then(function (r) { return r.json(); })
-        .then(function (j) {
-          if (!j || j.status !== 200 || !j.result) throw new Error('postcode');
-          var lat = j.result.latitude, lon = j.result.longitude, m = Math.round(mi * 1609);
-          var sel = []; wanted.forEach(function (t) { OSM[t].forEach(function (q) { sel.push('nwr' + q + '["name"](around:' + m + ',' + lat + ',' + lon + ');'); }); });
-          var body = 'data=' + encodeURIComponent('[out:json][timeout:25];(' + sel.join('') + ');out center tags;');
-          return fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
-            .then(function (r) { if (!r.ok) throw new Error('busy'); return r.json(); })
-            .then(function (d) { return { d: d, lat: lat, lon: lon, area: j.result.admin_ward || j.result.admin_district || '' }; });
+      locate(pc)
+        .then(function (loc) {
+          var m = Math.round(mi * 1609);
+          var sel = []; wanted.forEach(function (t) { OSM[t].forEach(function (q) { sel.push('nwr' + q + '["name"](around:' + m + ',' + loc.lat + ',' + loc.lon + ');'); }); });
+          return overpass('[out:json][timeout:25];(' + sel.join('') + ');out center tags;')
+            .then(function (d) { return { d: d, lat: loc.lat, lon: loc.lon, area: loc.area }; });
         })
         .then(function (o) {
           var have = knownNames(), seen = {}, chains = 0;
@@ -1085,7 +1133,7 @@
           renderNear(chains);
         })
         .catch(function (err) {
-          $('nRes').innerHTML = '<div class="notice">' + (err && err.message === 'postcode' ? 'That postcode wasn\'t found. Check it and try again.' : err && err.message === 'busy' ? 'The map server is busy right now. Try again in a minute.' : 'Couldn\'t search just now. Check you\'re online and try again.') + '</div>';
+          $('nRes').innerHTML = '<div class="notice">' + (err && err.message === 'postcode' ? 'That postcode wasn\'t recognised. Check it (e.g. L9 8EH) and try again.' : err && err.message === 'busy' ? 'All map servers are busy right now, which is rare. Try again in a few minutes.' : 'Couldn\'t search just now. Check you have signal or Wi-Fi and try again.') + '</div>';
         })
         .then(done);
     }
