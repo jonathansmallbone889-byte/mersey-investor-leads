@@ -304,6 +304,16 @@
 
     <!-- FIND -->
     <section data-view="find" hidden>
+      <div class="card" id="aiCard">
+        <h2>Ask the Mersey Stars Assistant ✨</h2>
+        <div id="aiOff"><p class="sub">Searches Google for businesses that fit, with sources, and answers your questions. Add your free key in Settings to switch it on.</p><button class="btn btn-gold btn-block" data-go="settings">Set up the assistant</button></div>
+        <div id="aiOn" hidden>
+          <p class="sub">Say what you're after. It searches Google, skips chains and businesses already on your list, and shows where it found each Instagram.</p>
+          <textarea id="aiQ" style="min-height:84px"></textarea>
+          <div class="pair" style="margin-top:10px"><button class="btn btn-gold" id="aiFind">Find businesses</button><button class="btn btn-ghost" id="aiAsk">Ask a question</button></div>
+          <div id="aiOut" style="margin-top:12px"></div>
+        </div>
+      </div>
       <div class="card">
         <h2>1. Your criteria</h2>
         <p class="sub">The businesses you want to find.</p>
@@ -392,6 +402,13 @@
         </div>
         <p class="help">Keep DMs to about 5 a day while your account is new, so Instagram doesn't flag you.</p>
         <a class="btn btn-ig btn-block" id="myIg" target="_blank" rel="noopener" style="margin-top:12px">Open my Instagram</a>
+      </div>
+      <div class="card">
+        <h2>Mersey Stars Assistant ✨</h2>
+        <p class="sub">Your own assistant that searches Google, finds businesses, writes compliments and suggests replies. It runs on Google's free Gemini AI: get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a> (no card needed) and paste it here. It stays on this phone.</p>
+        <input type="text" id="sAi" placeholder="AIza…" autocomplete="off" spellcheck="false">
+        <button class="btn btn-ghost btn-block" id="aiTest" style="margin-top:10px">Test the assistant</button>
+        <p class="help" id="aiTestOut"></p>
       </div>
       <div class="card">
         <h2>Google Maps key <span class="n">optional</span></h2>
@@ -625,6 +642,7 @@
     function compNote(l) {
       if (!l.compliment) return 'Using a ready-made compliment for this type of business. Tap an idea or type your own. A real detail from their page works best.';
       if (l.compSrc === 'gemini') return 'Suggested by Gemini from their Google reviews. Glance at their page to check it fits.';
+      if (l.compSrc === 'ai') return 'Written by your assistant from their page and reviews. Glance at their page to check it fits.';
       return '';
     }
     function igButton(l, cls) {
@@ -885,6 +903,8 @@
       $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count; $('cAreas').value = c.areas;
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
       $('prompt').value = buildPrompt();
+      $('aiOff').hidden = !!state.me.aiKey; $('aiOn').hidden = !state.me.aiKey;
+      if (!$('aiQ').value) $('aiQ').value = 'Find 10 independent ' + c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ').replace(/, ([^,]*)$/, ' and $1') + ' within ' + (c.miles || 2) + ' miles of ' + (c.postcode || 'L9 8EH') + ' that are active on Instagram';
       if (!$('nPc').value) $('nPc').value = c.postcode || '';
       $('nMi').value = String(c.miles || 2);
       var on = !!state.me.key;
@@ -1151,6 +1171,26 @@
       p.added = true;
     }
     $('nGo').addEventListener('click', nearSearch);
+    $('aiFind').addEventListener('click', aiFind);
+    $('aiAsk').addEventListener('click', aiAskQ);
+    $('aiOut').addEventListener('click', function (e) {
+      if (e.target.id === 'aiAll') {
+        var n = 0; aiResults.forEach(function (b) { if (!b.added) { aiAdd(b); n++; } });
+        save(); toast(n + ' businesses added to "To check"'); aiResults = []; $('aiOut').innerHTML = '<p class="empty">Added ✓ Find them on Today under "Check these".</p>'; return;
+      }
+      var b = e.target.closest('[data-ai-add]'); if (!b) return;
+      var r = aiResults[+b.dataset.aiAdd]; if (r.added) return;
+      aiAdd(r); save(); b.textContent = 'Added ✓'; b.disabled = true;
+    });
+    $('sAi').addEventListener('change', function () { state.me.aiModels = []; save(); });
+    $('aiTest').addEventListener('click', function () {
+      var btn = this; state.me.aiKey = $('sAi').value.trim(); save();
+      aiBusy(btn, true, 'Testing…'); $('aiTestOut').textContent = '';
+      aiCall('Reply with exactly: Ready to help Mersey Stars ⭐', 'You are a helpful assistant.', false)
+        .then(function (o) { $('aiTestOut').textContent = '✓ Working (' + o.model + '): ' + o.text; })
+        .catch(function (e) { $('aiTestOut').textContent = aiMessage(e); })
+        .then(function () { aiBusy(btn, false, 'Test the assistant'); });
+    });
     $('nRes').addEventListener('click', function (e) {
       if (e.target.id === 'nAll') {
         var n = 0; nearResults.forEach(function (p) { if (!p.added) { addNear(p); n++; } });
@@ -1198,9 +1238,10 @@
       var m = state.me;
       $('sName').value = m.name; $('sIg').value = m.ig; $('sLink').value = m.link; $('sLimit').value = m.limit; $('sFu').value = m.fuDays; $('sKey').value = m.key; $('sPhone').value = m.phone; $('sEmail').value = m.email;
       $('calDaily2').href = dailyCalUrl();
+      $('sAi').value = m.aiKey || '';
       $('myIg').href = igUrl(m.ig || 'merseystars');
     }
-    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email']].forEach(function (f) {
+    [['sName', 'name'], ['sIg', 'ig'], ['sLink', 'link'], ['sKey', 'key'], ['sPhone', 'phone'], ['sEmail', 'email'], ['sAi', 'aiKey']].forEach(function (f) {
       $(f[0]).addEventListener('change', function () { state.me[f[1]] = f[1] === 'ig' ? handle(this.value) : this.value.trim(); save(); renderSettings(); });
     });
     [['sLimit', 'limit'], ['sFu', 'fuDays']].forEach(function (f) {
@@ -1236,6 +1277,170 @@
     var STEP = { check: 0, follow: 1, followed: 2, dm: 3, fu: 3, replied: 4, wait: 4, demo: 4, signed: 5, no: 0, nofit: 0 };
     function find(id) { return state.leads.filter(function (l) { return l.id === id; })[0]; }
     var qrKey = '';
+    // ---------- Mersey Stars Assistant (Google Gemini API, free tier) ----------
+    var GEM = 'https://generativelanguage.googleapis.com/v1beta/';
+    var aiReply = '', aiTheySaid = '', aiResults = [];
+    var ABOUT = 'Mersey Stars helps independent Liverpool businesses get more Google reviews: they ask every customer in one tap by WhatsApp or text, or with a QR card on the counter. ' +
+      'Unhappy customers can message the owner privately first, it reminds them who to nudge, writes review replies and shows how many reviews they need for their rating goal. ' +
+      'It is free for founding businesses while it launches, founding businesses keep a discount for life, there is no contract, set-up takes 2 minutes and can be done in person. ' +
+      'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.';
+    function aiErr(code, msg) { var e = new Error(msg); e.code = code; return e; }
+    function aiModels() {
+      if (state.me.aiModels && state.me.aiModels.length) return Promise.resolve(state.me.aiModels);
+      return fetchT(GEM + 'models?pageSize=200', { headers: { 'x-goog-api-key': state.me.aiKey } }, 15000)
+        .then(function (r) { return r.json().then(function (j) {
+          var msg = (j.error && j.error.message) || '';
+          if (!r.ok) throw /API key not valid|API_KEY_INVALID/i.test(msg) ? aiErr(400, 'key') : aiErr(r.status, msg);
+          return j;
+        }); })
+        .then(function (j) {
+          // Google retires model versions now and then, so pick current Flash models from the live list.
+          var names = (j.models || []).filter(function (m) { return (m.supportedGenerationMethods || []).indexOf('generateContent') > -1; })
+            .map(function (m) { return m.name; }).filter(function (n) { return /gemini-[\d.]+-flash(-lite)?$|gemini-flash(-lite)?-latest$/.test(n); });
+          var pref = ['models/gemini-2.5-flash', 'models/gemini-flash-latest', 'models/gemini-2.5-flash-lite', 'models/gemini-flash-lite-latest'];
+          var list = pref.filter(function (n) { return names.indexOf(n) > -1; })
+            .concat(names.filter(function (n) { return pref.indexOf(n) < 0; }).sort().reverse());
+          if (!list.length) throw aiErr(404, 'No Gemini Flash model is available to this key.');
+          state.me.aiModels = list.slice(0, 4); save();
+          return state.me.aiModels;
+        });
+    }
+    function aiCall(prompt, system, search) {
+      if (!state.me.aiKey) return Promise.reject(aiErr(401, 'Add your free Gemini key in Settings first.'));
+      return aiModels().then(function (models) {
+        var i = 0;
+        function attempt() {
+          var model = models[i++];
+          if (!model) throw aiErr(429, '');
+          var body = { contents: [{ role: 'user', parts: [{ text: prompt }] }], systemInstruction: { parts: [{ text: system }] } };
+          if (search) body.tools = [{ google_search: {} }];
+          return fetchT(GEM + model + ':generateContent', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': state.me.aiKey }, body: JSON.stringify(body) }, 60000)
+            .then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); })
+            .then(function (o) {
+              if (!o.r.ok) {
+                var msg = (o.j.error && o.j.error.message) || '';
+                if (/API key not valid|API_KEY_INVALID/i.test(msg)) throw aiErr(400, 'key');
+                // Quota used up, model retired or search not offered on this model: try the next model.
+                if ((o.r.status === 429 || o.r.status === 404 || o.r.status === 400 || o.r.status >= 500) && i < models.length) return attempt();
+                if (o.r.status === 404) { state.me.aiModels = []; save(); }
+                throw aiErr(o.r.status, msg);
+              }
+              var c = (o.j.candidates || [])[0] || {};
+              var text = ((c.content && c.content.parts) || []).map(function (p) { return p.text || ''; }).join('').trim();
+              var src = (((c.groundingMetadata || {}).groundingChunks) || []).map(function (g) { return g.web; }).filter(Boolean);
+              if (!text) throw aiErr(500, 'The assistant didn\'t answer. Try again.');
+              return { text: text, sources: src, model: model.replace('models/', '') };
+            });
+        }
+        return attempt();
+      });
+    }
+    function aiMessage(e) {
+      if (!navigator.onLine || e.name === 'TypeError' || e.name === 'AbortError') return 'Couldn\'t reach the assistant. Check you have signal or Wi-Fi and try again.';
+      if (e.message === 'key') return 'That key isn\'t valid. Copy it again from aistudio.google.com and paste it in Settings.';
+      if (e.code === 429) return 'You\'ve used today\'s free assistant allowance. It resets tomorrow.';
+      if (e.code === 403) return 'Google says this key can\'t use Gemini. Create a new key at aistudio.google.com.';
+      return e.message || 'Something went wrong. Try again in a moment.';
+    }
+    function aiBusy(btn, on, label) { btn.disabled = on; if (label) btn.textContent = label; }
+    function parseJsonList(text) {
+      var m = text.match(/```(?:json)?\s*([\s\S]*?)```/), raw = m ? m[1] : text.slice(text.indexOf('['), text.lastIndexOf(']') + 1);
+      try { var v = JSON.parse(raw); return Array.isArray(v) ? v : []; } catch (e) { return []; }
+    }
+    function srcList(src) {
+      if (!src.length) return '';
+      return '<p class="help" style="margin-top:8px">Sources: ' + src.slice(0, 6).map(function (w, i) { return '<a href="' + esc(w.uri) + '" target="_blank" rel="noopener">' + esc(w.title || 'link ' + (i + 1)) + '</a>'; }).join(' · ') + '</p>';
+    }
+    function aiFind() {
+      var q = $('aiQ').value.trim(); if (!q) return;
+      var known = Object.keys(knownNames()).slice(0, 200);
+      var sys = 'You find real, currently open, independent small businesses (not chains or franchises) in Liverpool and Merseyside, UK, for a local review-software founder. Always use Google Search. ' +
+        'Reply with ONLY a JSON array inside a ```json code block. Each item: {"name","type","area","address","rating","reviews","instagram","instagram_source","website","compliment"}. ' +
+        'type is one of: salon, nails, barber, groomer, cafe, takeaway, gym, tattoo, shop, trade, other. rating and reviews are the Google rating and number of Google reviews if you found them, else null. ' +
+        'instagram: ONLY a username that is linked from the business\'s own website, Google listing or Facebook page, copied exactly; put the full URL of that page in instagram_source. Never guess or build a username from the business name: if you cannot find a linked one, use null for both. ' +
+        'compliment: one short friendly compliment under 15 words with one emoji, based on what real customers praise, or null. Never invent businesses or details.';
+      var prompt = q + (known.length ? '\n\nDo not include any of these, they are already on my list: ' + known.join(', ') : '');
+      $('aiOut').innerHTML = '<p class="help">Searching Google… this can take up to a minute.</p>';
+      aiBusy($('aiFind'), true, 'Searching…'); aiBusy($('aiAsk'), true);
+      aiCall(prompt, sys, true).then(function (o) {
+        var have = knownNames(), seen = {};
+        aiResults = parseJsonList(o.text).filter(function (b) {
+          var k = String((b && b.name) || '').trim().toLowerCase(); if (!k || have[k] || seen[k]) return false; seen[k] = 1; return true;
+        }).map(function (b) {
+          var ig = handle(b.instagram || ''); if (/^(null|none|n\/a)$/i.test(ig)) ig = '';
+          var t = TYPE_NAME[b.type] ? b.type : guessType((b.type || '') + ' ' + b.name);
+          return { name: String(b.name).trim(), type: t, area: b.area || '', address: b.address || '', rating: b.rating != null ? (String(b.rating).match(/\d(\.\d)?/) || [''])[0] : '',
+            reviews: b.reviews != null ? (String(b.reviews).match(/\d+/) || [''])[0] : '', ig: ig, igSrc: ig && /^https?:\/\//.test(b.instagram_source || '') ? b.instagram_source : '',
+            web: /^https?:\/\//.test(b.website || '') ? b.website : '', compliment: b.compliment && !/^null$/i.test(b.compliment) ? String(b.compliment) : '' };
+        });
+        if (!aiResults.length) { $('aiOut').innerHTML = '<p class="empty">No new businesses found that aren\'t already on your list. Try another area or type.</p>' + srcList(o.sources); return; }
+        $('aiOut').innerHTML = '<p class="help" style="margin:0 0 6px">' + aiResults.length + ' found. Ratings and Instagram are checked again at the "To check" stage.</p>' +
+          '<button class="btn btn-primary btn-block" id="aiAll" style="margin-bottom:6px">Add all ' + aiResults.length + ' to my list</button>' +
+          aiResults.map(function (b, i) {
+            return '<div class="res"><div style="flex:1;min-width:0"><b>' + esc(b.name) + '</b><div class="help" style="margin:0">' +
+              esc([(TYPE_NAME[b.type] || 'Other').replace(/s( &|$)/, '$1'), b.area, b.rating ? b.rating + '★' + (b.reviews ? ' · ' + b.reviews + ' reviews' : '') : '', b.ig ? '@' + b.ig : 'Instagram not found'].filter(Boolean).join(' · ')) +
+              (b.igSrc ? ' · <a href="' + esc(b.igSrc) + '" target="_blank" rel="noopener">source</a>' : '') + '</div></div><button class="btn btn-ghost btn-sm" data-ai-add="' + i + '">Add</button></div>';
+          }).join('') + srcList(o.sources);
+      }).catch(function (e) { $('aiOut').innerHTML = '<div class="notice">' + esc(aiMessage(e)) + '</div>'; })
+        .then(function () { aiBusy($('aiFind'), false, 'Find businesses'); aiBusy($('aiAsk'), false); });
+    }
+    function aiAdd(b) {
+      var notes = ['Found by the assistant ' + nice(todayIso()), b.web ? 'Website: ' + b.web : ''].filter(Boolean).join('\n');
+      state.leads.push(newLead({ name: b.name, type: b.type, area: b.area, address: b.address, rating: b.rating, reviews: b.reviews, ig: b.ig, igSrc: b.igSrc, compliment: b.compliment, compSrc: b.compliment ? 'ai' : '', notes: notes }));
+      b.added = true;
+    }
+    function aiAskQ() {
+      var q = $('aiQ').value.trim(); if (!q) return;
+      var sys = 'You are the Mersey Stars Assistant, helping Jonathan, a Liverpool founder, win local businesses. ' + ABOUT +
+        ' Answer in UK English, briefly and practically, in plain words with no markdown headings. Use Google Search when the question needs facts. Never suggest fake reviews, rewards for reviews or automated Instagram messaging.';
+      $('aiOut').innerHTML = '<p class="help">Thinking…</p>';
+      aiBusy($('aiAsk'), true, 'Thinking…'); aiBusy($('aiFind'), true);
+      aiCall(q, sys, true).then(function (o) {
+        $('aiOut').innerHTML = '<div class="msg" style="background:var(--soft);color:var(--text);border-radius:16px">' + esc(o.text.replace(/\*\*/g, '')) + '</div>' + srcList(o.sources);
+      }).catch(function (e) { $('aiOut').innerHTML = '<div class="notice">' + esc(aiMessage(e)) + '</div>'; })
+        .then(function () { aiBusy($('aiAsk'), false, 'Ask a question'); aiBusy($('aiFind'), false); });
+    }
+    function aiCard(l) {
+      if (!state.me.aiKey) return '';
+      var early = ['check', 'follow', 'followed'].indexOf(l.status) > -1, talk = ['dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1;
+      if (!early && !talk) return '';
+      var h = handle(l.ig);
+      if (early) return '<div class="card"><h2>Assistant ✨</h2><p class="sub">Searches their website, Instagram and Google reviews and writes a personal compliment for your DM.</p>' +
+        '<button class="btn btn-gold btn-block" data-act="aiComp">Write a compliment for me</button><p class="help" id="aiCompOut"></p></div>';
+      return '<div class="card"><h2>Assistant ✨</h2><p class="sub">Paste or type what they said and get a reply written for you.</p>' +
+        '<textarea id="aiSaid" placeholder="e.g. Sounds good but how much is it after the free bit?" style="min-height:70px">' + esc(aiTheySaid) + '</textarea>' +
+        '<button class="btn btn-gold btn-block" data-act="aiReply" style="margin-top:10px">Suggest a reply</button><p class="help" id="aiReplyErr"></p>' +
+        (aiReply ? '<div class="msg">' + esc(aiReply) + '</div><div class="row">' + (h ? '<a class="btn btn-ig btn-block" data-ig data-ai="1" href="' + igUrl(h) + '" target="_blank" rel="noopener">Copy reply & open Instagram</a>' : '<button class="btn btn-primary" data-act="aiCopy">Copy reply</button>') + '</div>' : '') + '</div>';
+    }
+    function aiComp(btn) {
+      var l = cur;
+      var sys = 'You write one short, friendly, specific compliment for an Instagram DM to a small business. Use Google Search to look at their website, Instagram and Google reviews. ' +
+        'Reply with ONLY the compliment: under 15 words, one emoji at the end, UK English, about something real (their work, a product, or what customers praise). No quotes, no hashtags, no greeting.';
+      var prompt = 'Business: ' + l.name + (l.area ? ', ' + l.area : '') + ', Liverpool. Type: ' + (TYPE_NAME[l.type] || 'small business') + (handle(l.ig) ? '. Instagram: @' + handle(l.ig) : '') + '.';
+      aiBusy(btn, true, 'Writing…'); $('aiCompOut').textContent = '';
+      aiCall(prompt, sys, true).then(function (o) {
+        var c = o.text.split('\n').filter(Boolean)[0].replace(/^["“']|["”']$/g, '').trim();
+        if (cur !== l) return;
+        cur.compliment = c; cur.compSrc = 'ai'; save();
+        var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y; toast('Compliment added to your DM');
+      }).catch(function (e) { if ($('aiCompOut')) $('aiCompOut').textContent = aiMessage(e); aiBusy(btn, false, 'Write a compliment for me'); });
+    }
+    function aiReplyGo(btn) {
+      var l = cur, said = $('aiSaid').value.trim();
+      if (!said) { $('aiSaid').focus(); return; }
+      aiTheySaid = said;
+      var m = state.me;
+      var sys = 'You are the Mersey Stars Assistant writing an Instagram DM reply for ' + (m.name || 'Jonathan') + ', a friendly local Liverpool founder. ' + ABOUT +
+        ' Founder\'s details, only include if useful: phone ' + (m.phone || '') + ', email ' + (m.email || '') + ', website ' + (m.link || '') + '. ' +
+        'Write ONLY the reply message: warm, honest, under 70 words, UK English, at most two emojis, no hashtags. Answer what they asked, never pressure them, and if they are interested suggest popping in for a 2-minute demo. Never promise results or invent prices beyond what is stated.';
+      var prompt = 'Business: ' + l.name + ' (' + (TYPE_NAME[l.type] || 'small business') + (l.area ? ', ' + l.area : '') + '). Current stage: ' + STATUS_NAME[l.status] + '.\nThey said: "' + said + '"';
+      aiBusy(btn, true, 'Writing…'); $('aiReplyErr').textContent = '';
+      aiCall(prompt, sys, false).then(function (o) {
+        if (cur !== l) return;
+        aiReply = o.text.replace(/^["“]|["”]$/g, '').trim();
+        var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
+      }).catch(function (e) { if ($('aiReplyErr')) $('aiReplyErr').textContent = aiMessage(e); aiBusy(btn, false, 'Suggest a reply'); });
+    }
     // Past today's DM limit, a first DM needs a second tap. The copy still happens inside the tap,
     // so it works on phones that block copying after a pop-up.
     function overLimit(btn) {
@@ -1251,7 +1456,7 @@
       btn.parentNode.insertAdjacentElement('afterend', w);
       return true;
     }
-    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; aiReply = ''; aiTheySaid = ''; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
@@ -1282,6 +1487,7 @@
       html += '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
         (cal ? '<a class="btn btn-ghost btn-block" style="margin-top:10px" href="' + esc(cal[1]) + '" target="_blank" rel="noopener">📅 ' + cal[0] + '</a>' : '') + '</div>';
       if (['followed', 'dm', 'fu', 'wait', 'replied', 'demo'].indexOf(l.status) > -1) html += quickCard(l);
+      html += aiCard(l);
       if (['followed', 'dm', 'fu'].indexOf(l.status) > -1) {
         html += '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
           '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>';
@@ -1375,6 +1581,7 @@
       if (ig && cur) {
         e.preventDefault();
         var qk = ig.dataset.qrsend && QUICK.filter(function (x) { return x[0] === ig.dataset.qrsend; })[0];
+        if (ig.dataset.ai) qk = ['ai', '', function () { return aiReply; }];
         if (!qk && overLimit(ig)) return;
         var m = qk ? { text: qk[2](cur), label: 'Reply' } : igMessage(cur);
         if (m) copy(m.text, m.label + ' copied. Paste it in their chat');
@@ -1401,6 +1608,9 @@
       else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
       else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
+      else if (a === 'aiComp') aiComp(b);
+      else if (a === 'aiReply') aiReplyGo(b);
+      else if (a === 'aiCopy') copy(aiReply, 'Reply copied');
       else if (a === 'copyQr') { var qq = QUICK.filter(function (x) { return x[0] === qrKey; })[0]; if (qq) copy(qq[2](cur), 'Reply copied'); }
       else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
