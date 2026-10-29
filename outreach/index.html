@@ -211,9 +211,14 @@
     .steps2 strong { display: block; font-size: 15px; }
     .steps2 span { display: block; font-size: 13px; color: var(--muted); margin-top: 1px; }
     details.peek { margin-top: 10px; }
-    .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; margin-top: 10px; padding: 3px; border-radius: 13px; background: var(--soft); }
-    .seg button { background: none; border: 0; border-radius: 10px; font: inherit; font-size: 12px; font-weight: 700; color: var(--muted); padding: 8px 2px; cursor: pointer; line-height: 1.2; }
+    .seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin-top: 10px; padding: 3px; border-radius: 13px; background: var(--soft); }
+    .seg button { background: none; border: 0; border-radius: 10px; font: inherit; font-size: 11.5px; font-weight: 700; color: var(--muted); padding: 8px 2px; cursor: pointer; line-height: 1.2; }
     .seg button[aria-pressed="true"] { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(17, 24, 39, .14); }
+    .aic { text-align: left; background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 10px 12px; font: inherit; color: var(--text); cursor: pointer; }
+    .aic b { display: block; font-size: 14.5px; font-weight: 700; }
+    .aic span { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .aic[aria-pressed="true"] { border-color: var(--star); background: var(--star-soft, #fff6dc); }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .aic[aria-pressed="true"] { background: #33290f; } }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -563,7 +568,7 @@
     // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
     // as the default when no compliment has been written (each lead gets its own by default).
     // Compliment ideas by angle. Kept general on purpose: never claim something specific about a business that may not be true.
-    var ANGLES = [['work', 'Their work'], ['place', 'The place'], ['people', 'Customers'], ['fill', 'Fill in']];
+    var ANGLES = [['ai', 'Gemini'], ['work', 'Work'], ['place', 'Place'], ['people', 'Customers'], ['fill', 'Fill in']];
     var COMPLIMENTS = {
       salon: {
         work: ['Love the transformations on your page 😍', 'Those before-and-afters are seriously impressive 👏', 'Your colour work is gorgeous ✨', 'The blow-dries on your page look flawless 😍', 'Such beautiful work on your page 😍'],
@@ -635,6 +640,7 @@
     TYPES.forEach(function (t) { if (!COMPLIMENTS[t[0]]) COMPLIMENTS[t[0]] = COMPLIMENTS.other; });
     // Ideas for one angle, with ones built from what we know about this business.
     function ideasFor(l, angle) {
+      if (angle === 'ai') return aiList(l).map(function (c) { return c.t; });
       var set = COMPLIMENTS[l.type] || COMPLIMENTS.other, list = set[angle].slice(), r = parseFloat(l.rating);
       if (angle === 'people' && l.verified && r >= 4.6) list.unshift('A ' + r.toFixed(1) + '★ rating on Google says it all 👏');
       if (angle === 'place' && l.area && !/liverpool/i.test(l.area)) list.unshift('Love seeing such a great local business in ' + l.area + ' 👏');
@@ -642,13 +648,41 @@
     }
     function ideas(l) { return ideasFor(l, 'work').concat(ideasFor(l, 'place'), ideasFor(l, 'people')); }
     function autoCompliment(l) { var c = ideas(l); return c[seed(l) % c.length]; }
-    var compAngle = 'work';
+    var compAngle = 'ai';
     function usedCount(text, l) { return state.leads.filter(function (x) { return x !== l && x.compliment === text && x.dmAt; }).length; }
-    function ideasHtml(l) {
-      var list = ideasFor(l, compAngle);
+    function segHtml() {
       return '<div class="seg">' + ANGLES.map(function (a) {
         return '<button type="button" data-angle="' + a[0] + '" aria-pressed="' + (a[0] === compAngle) + '">' + a[1] + '</button>';
-      }).join('') + '</div>' +
+      }).join('') + '</div>';
+    }
+    // Gemini compliments for a business (older imports kept just one, as the compliment itself).
+    function aiList(l) { return l.aiComps && l.aiComps.length ? l.aiComps : (l.compSrc === 'gemini' && l.compliment ? [{ t: l.compliment, why: '' }] : []); }
+    function aiCompHtml(l) {
+      var c = aiList(l);
+      var get = '<button class="btn btn-gold btn-block btn-sm" data-act="aiComp" style="margin-top:8px">Copy request &amp; open Gemini</button>' +
+        '<textarea id="aiCompIn" placeholder="Then paste Gemini\'s answer here" style="min-height:64px;margin-top:8px"></textarea>' +
+        '<button class="btn btn-primary btn-block btn-sm" data-act="aiCompUse" style="margin-top:8px">Use these compliments</button><p class="err" id="aiCompErr" style="color:var(--bad);font-size:13px;margin:6px 0 0"></p>';
+      if (!c.length) return '<p class="help" style="margin-top:10px">No Gemini compliments yet. Get 3 based on their real reviews and page:</p>' + get;
+      return '<div style="display:grid;gap:8px;margin-top:10px">' + c.map(function (x, i) {
+          return '<button class="aic" data-idea="' + i + '"' + (l.compliment === x.t ? ' aria-pressed="true"' : '') + '><b>' + esc(x.t) + '</b>' + (x.why ? '<span>Based on: ' + esc(x.why) + '</span>' : '') + '</button>';
+        }).join('') + '</div>' +
+        '<details class="peek"><summary>Get new ones from Gemini' + (l.aiFrom ? ' (these are from ' + nice(l.aiFrom) + ')' : '') + '</summary>' + get + '</details>';
+    }
+    // Turns Gemini's reply ("compliment | based on", numbered or bulleted) into options.
+    function parseComps(text) {
+      return String(text || '').replace(/\r/g, '').split('\n').map(function (line) {
+        line = line.replace(/\*\*/g, '').replace(/^\s*(\d+[.)]|[-*•])\s*/, '').trim();
+        if (!line || /^(here are|sure|compliment\s*\|)/i.test(line)) return null;
+        var parts = line.split(/\s*\|\s*/);
+        if (parts.length < 2) parts = line.split(/\s+[—–-]\s+(?=based on|from|because)/i);
+        var t = cleanComp(parts[0]), why = (parts.slice(1).join(' ') || '').replace(/^(based on|from|because)[:\s]*/i, '').trim();
+        return t && t.length <= 140 && /\s/.test(t) ? { t: t, why: why } : null;
+      }).filter(Boolean).slice(0, 5);
+    }
+    function ideasHtml(l) {
+      var list = ideasFor(l, compAngle);
+      if (compAngle === 'ai') return segHtml() + aiCompHtml(l);
+      return segHtml() +
         '<div class="chips" style="flex-wrap:wrap;overflow:visible;margin:8px 0 0">' + list.map(function (c, i) {
           var n = compAngle === 'fill' ? 0 : usedCount(c, l);
           return '<button class="chip" data-idea="' + i + '"' + (l.compliment === c ? ' aria-pressed="true"' : '') + '>' + esc(c) + (n ? ' <span style="opacity:.6;font-weight:500">· used ' + n + '×</span>' : '') + '</button>';
@@ -680,7 +714,7 @@
     }
     function compNote(l) {
       if (!l.compliment) return 'Using a ready-made compliment for this type of business. Tap an idea or type your own. A real detail from their page works best.';
-      if (l.compSrc === 'gemini') return 'Suggested by AI from their Google reviews. Glance at their page to check it fits.';
+      if (l.compSrc === 'gemini') return 'From Gemini\'s search of their reviews and page. Glance at their page to check it fits.';
       return '';
     }
     function igButton(l, cls) {
@@ -997,8 +1031,8 @@
         'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
         'Types: ' + types + '.\n' + (c.postcode ? 'Location: within ' + (c.miles || 2) + ' miles of ' + c.postcode + ' (Liverpool/Merseyside). Search Google Maps for this area.\n\n' : 'Areas: ' + c.areas + '.\n\n') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment\n\n' +
-        'For Compliment: write one short, friendly compliment (under 15 words, one emoji) about something customers genuinely praise in this business\'s Google reviews, e.g. "Your Sunday roast gets rave reviews 😍". Base it only on real reviews. If nothing specific stands out, leave it blank.\n\n' +
+        'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website or Instagram. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; Instagram shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
         'Instagram rules (very important):\n' +
         '- Only give an Instagram username that is linked on the business\'s own website, Google listing or Facebook page.\n' +
         '- Copy it exactly as written in that link, character for character (dots and underscores matter).\n' +
@@ -1070,12 +1104,17 @@
         return out;
       });
     }
+    function cleanComp(t) {
+      t = String(t || '').replace(/\*\*/g, '').replace(/^["“'\s]+|["”'\s]+$/g, '').trim();
+      return /^(null|none|n\/a|-|blank)?$/i.test(t) ? '' : t;
+    }
     function importRows(rows) {
       if (rows.length < 2) return 0;
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cComp = col(/compliment/);
+        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cWhy = col(/based on|evidence/);
+      var cComps = h.map(function (x, i) { return /compliment/.test(x) && i !== cWhy ? i : -1; }).filter(function (i) { return i > -1; });
       if (cName < 0) cName = 0;
       var have = knownNames();
       var added = 0;
@@ -1087,13 +1126,15 @@
         var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
         var ig = cIg > -1 ? handle(r[cIg]) : '';
         if (/^(not found|n\/a|none|-)$/i.test(ig)) ig = '';
-        state.leads.push(newLead({
+        var nl = newLead({
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
           reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
           ig: ig, igSrc: ig && cSrc > -1 && /^https?:\/\//.test((r[cSrc] || '').trim()) ? r[cSrc].trim() : '', notes: 'Imported ' + nice(todayIso()),
-          compliment: cComp > -1 ? (r[cComp] || '').replace(/^"|"$/g, '').trim() : '', compSrc: cComp > -1 && r[cComp] ? 'gemini' : ''
-        }));
+          aiComps: cComps.map(function (i) { return cleanComp(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? cleanComp(r[cWhy]) : '' }; })
+        });
+        if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
+        state.leads.push(nl);
         have[name.toLowerCase()] = 1; added++;
       });
       save();
@@ -1155,7 +1196,9 @@
       'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.';
     function compPrompt(l) {
       return 'Look up ' + l.name + (l.area ? ' in ' + l.area : '') + ', Liverpool' + (handle(l.ig) ? ' (Instagram: @' + handle(l.ig) + ')' : '') +
-        '. Check their Instagram, website and Google reviews, then write ONE short, friendly compliment I can put in an Instagram DM to them: under 15 words, UK English, one emoji at the end, about something real (their work, a product, or what customers praise). Reply with only the compliment.';
+        '. Check their Google reviews, website and Instagram. Then write 3 different short, friendly compliments I can open an Instagram DM with: under 15 words each, UK English, one emoji at the end. ' +
+        'Each must be about something specific and real that you found: what customers praise in reviews, or work, products or the place shown on their page. Never invent details. ' +
+        'Reply with exactly 3 lines and nothing else, each in this format:\ncompliment | what it is based on';
     }
     function replyPrompt(l, said) {
       var m = state.me;
@@ -1179,7 +1222,7 @@
       btn.parentNode.insertAdjacentElement('afterend', w);
       return true;
     }
-    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; qrVar = 0; aiSaid = ''; compAngle = 'work'; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
+    function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; qrVar = 0; aiSaid = ''; compAngle = 'ai'; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
     function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
@@ -1244,7 +1287,6 @@
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
           ideasHtml(l) +
           '<p class="help" id="compNote">' + compNote(l) + '</p>' +
-          '<button class="btn btn-ghost btn-block btn-sm" data-act="aiComp" style="margin-top:4px">✨ Get a compliment from Gemini</button>' +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
           (l.status === 'followed' ? '<div class="row">' + (h ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyDm">Copy DM</button>') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
             (h ? '' : '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>')) +
@@ -1297,7 +1339,7 @@
           var f = $('fComp'); f.value = pick; f.focus(); var k = pick.indexOf('___'); f.setSelectionRange(k, k + 3);
           return;
         }
-        cur.compliment = pick; cur.compSrc = 'idea'; save();
+        cur.compliment = pick; cur.compSrc = compAngle === 'ai' ? 'gemini' : 'idea'; save();
         var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
         return;
       }
@@ -1337,7 +1379,12 @@
       else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
       else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
-      else if (a === 'aiComp') { copy(compPrompt(cur), 'Copied. Paste it into Gemini, then copy its compliment into the box'); openLink(AI_APPS.gemini); }
+      else if (a === 'aiComp') { copy(compPrompt(cur), 'Copied. Paste it into Gemini, then paste its answer back here'); openLink(AI_APPS.gemini); }
+      else if (a === 'aiCompUse') {
+        var got = parseComps($('aiCompIn').value);
+        if (!got.length) { $('aiCompErr').textContent = 'Couldn\'t find compliments in that. Paste Gemini\'s whole answer.'; return; }
+        setStatus(cur.status, { aiComps: got, aiFrom: todayIso(), compliment: got[0].t, compSrc: 'gemini' }); toast(got.length + ' compliments from Gemini added');
+      }
       else if (a === 'aiReply') { var said = $('aiSaid').value.trim(); if (!said) { $('aiSaid').focus(); toast('Type what they said first'); return; } aiSaid = said; copy(replyPrompt(cur, said), 'Copied. Paste it into Gemini for a reply'); openLink(AI_APPS.gemini); }
       else if (a === 'copyQr') { if (qrFind(qrKey)) copy(qrText(cur, qrKey), 'Reply copied'); }
       else if (a === 'qrAlt') { qrVar = qrVar ? 0 : 1; var yq = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = yq; }
