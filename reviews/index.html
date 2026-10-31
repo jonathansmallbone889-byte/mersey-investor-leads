@@ -707,7 +707,7 @@
               <h2 style="margin-bottom:8px">Last step: send us your details</h2>
               <p class="muted">Tap one. Your message is already written, so just press Send.</p>
               <div class="btn-row" style="justify-content:center;margin-top:16px">
-                <a class="btn btn-wa" id="ffWa" target="_blank" rel="noopener">Send on WhatsApp</a>
+                <a class="btn btn-wa" id="ffWa">Send on WhatsApp</a>
                 <a class="btn btn-primary" id="ffMail">Send by email</a>
                 <button class="btn btn-ghost" id="ffCopy" type="button">Copy my details</button>
               </div>
@@ -1134,11 +1134,24 @@
         .replace(/\{owner\}/g, ownerName())
         .replace(/\{link\}/g, reviewLink());
     }
+    // Open WhatsApp reliably: in-app browsers (Instagram, Facebook) and home-screen apps often block
+    // new tabs, so go to WhatsApp in this tab. On Android, hand over to the WhatsApp app directly
+    // (WhatsApp or WhatsApp Business), falling back to wa.me if it isn't installed.
+    function openWa(num, text) {
+      num = String(num || '').replace(/\D/g, '');
+      var web = 'https://wa.me/' + num + '?text=' + encodeURIComponent(text);
+      if (/Android/i.test(navigator.userAgent)) {
+        location.href = 'intent://send/?' + (num ? 'phone=' + num + '&' : '') + 'text=' + encodeURIComponent(text) +
+          '#Intent;scheme=whatsapp;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+        return;
+      }
+      location.href = web;
+    }
     function openChannel(via, contact, text) {
       var c = (contact || '').trim();
       if (via === 'wa') {
         var n = isPhone(c) ? waNumber(c) : '';
-        window.open('https://wa.me/' + n + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+        openWa(n, text);
       } else if (via === 'sms') {
         var num = isPhone(c) ? c.replace(/[^\d+]/g, '') : '';
         location.href = 'sms:' + num + '?&body=' + encodeURIComponent(text);
@@ -1675,7 +1688,7 @@
       $('founding').scrollIntoView();
     });
     function founded() { state.founded = true; save(); }
-    $('ffWa').addEventListener('click', founded);
+    $('ffWa').addEventListener('click', function (e) { e.preventDefault(); founded(); openWa(FOUND_WA, foundText); });
     $('ffMail').addEventListener('click', founded);
     $('ffCopy').addEventListener('click', function () { founded(); copy('To: ' + FOUND_TO + '\n\n' + foundText, 'Copied. Paste it into an email to ' + FOUND_TO); });
     $('ffBack').addEventListener('click', function () { $('foundForm').hidden = false; $('foundDone').hidden = true; });

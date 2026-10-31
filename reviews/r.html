@@ -287,11 +287,24 @@
       $('sentText').textContent = (biz.owner || 'The team') + ' will see your message. Thank you for giving them the chance to make it right.';
       setTimeout(function () { show('stepSent'); }, 400);
     }
+    // Open WhatsApp reliably: in-app browsers (Instagram, Facebook) and home-screen apps often block
+    // new tabs, so go to WhatsApp in this tab. On Android, hand over to the WhatsApp app directly
+    // (WhatsApp or WhatsApp Business), falling back to wa.me if it isn't installed.
+    function openWa(num, text) {
+      num = String(num || '').replace(/\D/g, '');
+      var web = 'https://wa.me/' + num + '?text=' + encodeURIComponent(text);
+      if (/Android/i.test(navigator.userAgent)) {
+        location.href = 'intent://send/?' + (num ? 'phone=' + num + '&' : '') + 'text=' + encodeURIComponent(text) +
+          '#Intent;scheme=whatsapp;S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
+        return;
+      }
+      location.href = web;
+    }
     $('sendWa').addEventListener('click', function () {
       var m = message(); if (!m) return;
       if (biz.demo) { sent(); return; }
-      window.open('https://wa.me/' + biz.wa + '?text=' + encodeURIComponent(m), '_blank', 'noopener');
       sent();
+      setTimeout(function () { openWa(biz.wa, m); }, 50);
     });
     $('sendEmail').addEventListener('click', function () {
       var m = message(); if (!m) return;
