@@ -86,7 +86,7 @@
     .row > .btn { flex: 1 1 auto; }
     label.f { display: block; font-size: 13px; font-weight: 700; margin: 14px 0 6px; }
     label.f .o { font-weight: 400; color: var(--muted); }
-    input[type=text], input[type=number], input[type=date], input[type=search], select, textarea {
+    input[type=text], input[type=number], input[type=date], input[type=time], input[type=search], select, textarea {
       width: 100%; font: inherit; font-size: 16px; color: var(--text); background: var(--card);
       border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
     }
@@ -182,7 +182,7 @@
     .btn-primary { box-shadow: 0 6px 16px -8px rgba(11, 47, 74, .7); }
     .btn-ig { box-shadow: 0 8px 20px -8px rgba(220, 39, 67, .6); }
     .chip { transition: background .15s, color .15s, border-color .15s; }
-    input[type=text], input[type=number], input[type=date], input[type=search], select, textarea { border-radius: 12px; }
+    input[type=text], input[type=number], input[type=date], input[type=time], input[type=search], select, textarea { border-radius: 12px; }
     input[type=search] { padding-left: 38px; background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239aa5b1' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 12px center / 18px; box-shadow: var(--shadow); border-color: transparent; }
 
     nav.tabs {
@@ -235,6 +235,16 @@
     .empty-big .eb-ico { width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 18px; display: grid; place-items: center; font-size: 26px; background: var(--brand); box-shadow: 0 10px 24px -10px rgba(11, 47, 74, .7); }
     .empty-big b { display: block; font-size: 17px; }
     .empty-big p { margin: 6px 0 16px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .prep { display: grid; gap: 6px; }
+    .prep label { display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px; padding: 8px 10px; border-radius: 12px; background: var(--soft); cursor: pointer; }
+    .prep input { width: 18px; height: 18px; margin-top: 1px; flex: none; accent-color: #15803d; }
+    .prep input:checked + span { color: var(--muted); text-decoration: line-through; }
+    .gain { margin-top: 10px; padding: 14px 16px; border-radius: 16px; background: var(--ok-soft); }
+    .gain b { display: block; font-size: 22px; color: var(--ok); letter-spacing: -.02em; }
+    .gain span { font-size: 13px; color: var(--muted); }
+    .checks { display: grid; gap: 6px; margin-top: 10px; }
+    .checks div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 9px 12px; border-radius: 12px; background: var(--soft); }
+    .checks span { color: var(--muted); }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -295,6 +305,7 @@
         <p class="sub">Add a weekday 9am reminder to your phone's calendar, so you never miss a day of outreach.</p>
         <div class="pair"><a class="btn btn-gold" id="calDaily" target="_blank" rel="noopener">Add reminder</a><button class="btn btn-ghost" id="calSkip">Not now</button></div>
       </div>
+      <div class="card" id="cardRes" hidden><h2>Results checks due 📈 <span class="n" id="nRes"></span></h2><p class="sub">Look up their Google reviews and save the number. This is your proof it works.</p><div id="lRes"></div></div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
       <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
       <div class="card" id="cardLast" hidden>
@@ -933,13 +944,64 @@
       return calUrl(BRAND() + ': today\'s outreach ⭐', todayIso(), '0900', 15,
         'Open your outreach app and work through today\'s plan: replies first, then follow-ups, then DMs.\n\n' + appUrl(), 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR');
     }
+    // ---------- Demos and results ----------
+    var PREP = [['confirm', 'Confirmed the day and time with them'], ['link', 'Their Google review link set up in Mersey Stars'], ['before', 'Written down their review count today'], ['price', 'Decided my founding price'], ['flyer', 'Printed their QR card and a flyer']];
+    var CHECK_WEEKS = [2, 4, 8];
+    function fmtTime(t) { if (!t) return ''; var h = +t.slice(0, 2), m = t.slice(3, 5); return (h % 12 || 12) + (m !== '00' ? ':' + m : '') + (h < 12 ? 'am' : 'pm'); }
+    function demoWhen(l) { return (l.demoAt ? nice(l.demoAt) : 'date to confirm') + (l.demoTime ? ', ' + fmtTime(l.demoTime) : ''); }
+    function lastCheck(l) { return (l.checks || []).slice(-1)[0] || null; }
+    // The next 2 / 4 / 8 week results check that hasn't been done yet.
+    function nextCheck(l) {
+      if (l.status !== 'signed' || !l.signedAt) return null;
+      var done = (l.checks || []).length;
+      if (done >= CHECK_WEEKS.length) return null;
+      return { week: CHECK_WEEKS[done], date: addDays(l.signedAt, CHECK_WEEKS[done] * 7) };
+    }
+    function gainText(l) {
+      var c = lastCheck(l), b = parseInt(l.beforeReviews, 10);
+      if (!c || isNaN(b)) return '';
+      var g = c.reviews - b;
+      return b + ' → ' + c.reviews + ' reviews (' + (g >= 0 ? '+' : '') + g + ')';
+    }
+    function demoCard(l) {
+      var prep = l.prep || {}, done = PREP.filter(function (x) { return prep[x[0]]; }).length;
+      return '<h2>Demo ' + esc(demoWhen(l)) + '</h2>' +
+        '<div class="two"><div><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"></div>' +
+        '<div><label class="f" for="demoTime">Time</label><input type="time" id="demoTime" value="' + esc(l.demoTime || '') + '"></div></div>' +
+        '<label class="f" for="fOwnerName">Who you\'re meeting</label><input type="text" id="fOwnerName" value="' + esc(l.ownerName || '') + '" placeholder="e.g. Julie and her husband">' +
+        '<p class="qg" style="margin-top:16px">Before you go · ' + done + ' of ' + PREP.length + '</p>' +
+        '<div class="prep">' + PREP.map(function (x) {
+          return '<label><input type="checkbox" data-prep="' + x[0] + '"' + (prep[x[0]] ? ' checked' : '') + '><span>' + x[1] + '</span></label>';
+        }).join('') + '</div>' +
+        '<div class="two" style="margin-top:6px"><div><label class="f" for="fBeforeRev">Reviews before</label><input type="number" id="fBeforeRev" min="0" inputmode="numeric" value="' + esc(l.beforeReviews || '') + '" placeholder="' + esc(l.reviews || '') + '"></div>' +
+        '<div><label class="f" for="fBeforeRate">Rating before</label><input type="number" id="fBeforeRate" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.beforeRating || '') + '" placeholder="' + esc(l.rating || '') + '"></div></div>' +
+        '<p class="help">Check Google on the day. This is your "before" number for their results.</p>' +
+        '<div class="row" style="margin-top:12px"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
+    }
+    function resultsCard(l) {
+      var checks = l.checks || [], nx = nextCheck(l), due = nx && nx.date <= todayIso(), g = gainText(l);
+      var before = l.beforeReviews !== undefined && l.beforeReviews !== '';
+      return '<h2>Founding business ⭐</h2>' +
+        (g ? '<div class="gain"><b>' + esc(g) + '</b><span>since signing up ' + nice(l.signedAt) + '</span></div>' : '') +
+        (!before ? '<label class="f" for="fBeforeRev">Reviews when they signed up</label><input type="number" id="fBeforeRev" min="0" inputmode="numeric" value="" placeholder="' + esc(l.reviews || 'e.g. 17') + '"><p class="help">Add this so the app can show their growth.</p>' : '') +
+        (checks.length ? '<div class="checks">' + checks.map(function (c, i) {
+          return '<div><span>Week ' + CHECK_WEEKS[i] + ' · ' + nice(c.at) + '</span><b>' + c.reviews + ' reviews' + (c.rating ? ' · ' + c.rating + '★' : '') + '</b></div>';
+        }).join('') + '</div>' : '') +
+        (nx ? '<div class="notice" style="margin-top:12px' + (due ? '' : ';background:var(--soft)') + '"><b>' + (due ? 'Week ' + nx.week + ' check is due' : 'Next check: week ' + nx.week + ', ' + nice(nx.date)) + '</b><br>Look them up on Google and enter what you see.' +
+          '<div class="two" style="margin-top:8px"><div><label class="f" for="ckRev">Reviews now</label><input type="number" id="ckRev" min="0" inputmode="numeric"></div>' +
+          '<div><label class="f" for="ckRate">Rating now</label><input type="number" id="ckRate" step="0.1" min="1" max="5" inputmode="decimal"></div></div>' +
+          '<button class="btn btn-primary btn-block" data-act="addCheck" style="margin-top:10px">Save week ' + nx.week + ' check</button></div>'
+          : '<p class="sub" style="margin-top:12px">All three checks done. Ask if you can share their before and after in a post.</p>') +
+        (g ? '<button class="btn btn-ghost btn-block btn-sm" data-act="copyResult" style="margin-top:10px">Copy their result for a post</button>' : '');
+    }
     function leadCal(l) {
       var ig = handle(l.ig) ? '\nInstagram: ' + igUrl(handle(l.ig)) : '', app = '\n\nOutreach app: ' + appUrl();
       if (l.status === 'dm' && l.dmAt) return ['Remind me to follow up', calUrl('Follow up: ' + l.name, addDays(l.dmAt, state.me.fuDays), '1000', 15, 'No reply yet? Open the app and send one friendly follow-up.' + ig + app)];
       if (l.status === 'fu' && l.fuAt) return ['Remind me to close this lead', calUrl('Final check: ' + l.name, addDays(l.fuAt, 4), '1000', 15, 'Still nothing? Visit or call if they\'re nearby, or send the polite final message.' + ig + app)];
       if (l.status === 'wait') return ['Remind me to nudge', calUrl('Nudge: ' + l.name, addDays(l.waitAt || l.repliedAt || todayIso(), 3), '1000', 15, 'They said maybe. Send a friendly nudge.' + ig + app)];
-      if (l.status === 'demo' && l.demoAt) return ['Add demo to my calendar', calUrl('Demo: ' + l.name, l.demoAt, '1000', 30, 'Change the time to match what you agreed.\n\nBring: their Google review link set up, the flyer. Note their review count before you start.' + (l.area ? '\nArea: ' + l.area : '') + ig + app)];
-      if (l.status === 'signed') return ['Remind me to check their results', calUrl('Results check: ' + l.name, addDays(l.signedAt || todayIso(), 28), '1000', 15, 'Check their Google rating and review count and note it in the app. That\'s your proof it works.' + app)];
+      if (l.status === 'demo' && l.demoAt) return ['Add demo to my calendar', calUrl('Demo: ' + l.name, l.demoAt, (l.demoTime || '10:00').replace(':', ''), 30, (l.demoTime ? '' : 'Change the time to match what you agreed.\n\n') + (l.ownerName ? 'Meeting: ' + l.ownerName + '\n' : '') + 'Bring: their Google review link set up, the flyer. Note their review count before you start.' + (l.area ? '\nArea: ' + l.area : '') + ig + app)];
+      var nc = nextCheck(l);
+      if (l.status === 'signed' && nc) return ['Remind me: week ' + nc.week + ' results check', calUrl('Results check (week ' + nc.week + '): ' + l.name, nc.date, '1000', 15, 'Check their Google rating and review count and note it in the app. That\'s your proof it works.' + app)];
       return null;
     }
     function backupDue() {
@@ -981,7 +1043,10 @@
 
       var hot = L.filter(function (l) { return l.status === 'replied' || l.status === 'demo'; });
       $('cardHot').hidden = !hot.length; $('nHot').textContent = hot.length;
-      list('lHot', hot, function (l) { return l.status === 'demo' ? 'Demo ' + nice(l.demoAt) : 'Replied, book a demo'; }, '');
+      list('lHot', hot, function (l) { return l.status === 'demo' ? 'Demo ' + demoWhen(l) : 'Replied, book a demo'; }, '');
+      var res = L.filter(function (l) { var n = nextCheck(l); return n && n.date <= t; });
+      $('cardRes').hidden = !res.length; $('nRes').textContent = res.length;
+      list('lRes', res, function (l) { return 'Week ' + nextCheck(l).week + ' check' + (gainText(l) ? ' · ' + gainText(l) : ''); }, '');
 
       // Follow-ups (first chase) and last messages (already chased once) are separate jobs.
       var fu = L.filter(function (l) {
@@ -1020,6 +1085,7 @@
       $('cardFollow').hidden = !fol.length; $('cardCheck').hidden = !chk.length;
       var plan = [];
       if (hot.length) plan.push(hot.length + ' to reply to');
+      if (res.length) plan.push(res.length + ' results check' + (res.length > 1 ? 's' : ''));
       if (fu.length) plan.push(fu.length + ' follow-up' + (fu.length > 1 ? 's' : ''));
       if (last.length) plan.push(last.length + ' to close');
       if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
@@ -1327,8 +1393,8 @@
         '<div class="msg">' + esc(nudgeText(l)) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyNudge">Copy nudge</button>') + '</div>' +
         '<button class="btn btn-ghost btn-block" data-act="nudgeSent" style="margin-top:8px">I\'ve sent the nudge</button>' +
         '<div class="row" style="margin-top:8px"><button class="btn btn-gold" data-act="rYes">Now interested 🎉</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div>';
-      else if (l.status === 'demo') next = '<h2>Demo ' + (l.demoAt ? nice(l.demoAt) : 'booked') + '</h2><label class="f" for="demoAt">Date</label><input type="date" id="demoAt" value="' + esc(l.demoAt) + '"><p class="sub" style="margin-top:10px">At the demo: check their Google rating together, set them up, and help them send the founding-business sign-up.</p><div class="row"><button class="btn btn-gold" data-act="signed">Signed up ⭐</button><button class="btn btn-ghost" data-act="no">Not interested</button></div>';
-      else if (l.status === 'signed') next = '<h2>Founding business ⭐</h2><p class="sub">Check their Google rating and review count after 4 and 8 weeks, and note it below. That\'s your proof it works.</p>';
+      else if (l.status === 'demo') next = demoCard(l);
+      else if (l.status === 'signed') next = resultsCard(l);
       else next = '<h2>' + STATUS_NAME[l.status] + '</h2><p class="sub">This lead is closed. Change the status below if that changes.</p>';
       var cal = leadCal(l);
       cards.next = '<div class="card"><div class="steps">' + steps + '</div><div style="margin-top:12px">' + next + '</div>' +
@@ -1337,7 +1403,9 @@
       if (['wait', 'replied', 'demo'].indexOf(l.status) > -1) cards.quick = quickCard(l);
       if (['dm', 'fu'].indexOf(l.status) > -1) {
         cards.reply = '<div class="card"><h2>Did they reply?</h2><p class="sub">Tap what they said, even a no, so your reply rate stays accurate.</p>' +
-          '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div></div>' +
+          '<div class="row"><button class="btn btn-gold" data-act="rYes">Interested 🎉</button><button class="btn btn-ghost" data-act="rMaybe">Maybe / passing on</button><button class="btn btn-ghost" data-act="rNo">No thanks</button></div>' +
+          '<button class="btn btn-ghost btn-block btn-sm" data-act="rAuto" style="margin-top:8px">🤖 It was an automatic reply</button>' +
+          (l.autoAt ? '<p class="help">Automatic reply noted ' + nice(l.autoAt) + '. Still waiting for a real one.</p>' : '') + '</div>' +
           quickCard(l, true);
       }
 
@@ -1463,6 +1531,22 @@
       else if (a === 'fuSent') setStatus('fu', { fuAt: t, fuHook: '' });
       else if (a === 'replied' || a === 'rYes') { setStatus('replied', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Brilliant! Reply quickly and book a demo 🎉'); }
       else if (a === 'rMaybe') { setStatus('wait', { repliedAt: cur.repliedAt || t, waitAt: t, dmAt: cur.dmAt || t }); toast('Saved. Nudge them ' + nice(addDays(t, 3))); }
+      else if (a === 'addCheck') {
+        var rv = parseInt($('ckRev').value, 10), rt = $('ckRate').value.trim();
+        if (isNaN(rv)) { $('ckRev').focus(); toast('Enter their review count'); return; }
+        var cks = (cur.checks || []).concat([{ at: t, reviews: rv, rating: rt }]);
+        setStatus('signed', { checks: cks, reviews: String(rv), rating: rt || cur.rating });
+        toast(gainText(cur) ? 'Saved: ' + gainText(cur) : 'Check saved');
+      }
+      else if (a === 'copyResult') {
+        var c0 = lastCheck(cur), gain = c0.reviews - parseInt(cur.beforeReviews, 10), wk = CHECK_WEEKS[(cur.checks || []).length - 1];
+        copy(cur.name + ' went from ' + cur.beforeReviews + ' to ' + c0.reviews + ' Google reviews in ' + wk + ' weeks with ' + BRAND() + ' (+' + gain + ').', 'Result copied. Ask them before you post it');
+      }
+      else if (a === 'rAuto') {
+        var note = 'Automatic reply ' + nice(t) + ', not a real reply.';
+        setStatus(cur.status, { autoAt: t, notes: ((cur.notes || '') + (cur.notes ? '\n' : '') + note).trim() });
+        toast('Noted. Still on ' + STATUS_NAME[cur.status] + ', and it won\'t count as a reply');
+      }
       else if (a === 'rNo') { setStatus('no', { repliedAt: cur.repliedAt || t, dmAt: cur.dmAt || t }); toast('Saved. Not every business is ready, keep going 💪'); }
       else if (a === 'aiComp') { copy(compPrompt(cur), 'Copied. Paste it into Gemini, then paste its answer back here'); openLink(AI_APPS.gemini); }
       else if (a === 'aiCompUse') {
@@ -1477,13 +1561,15 @@
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
-      else if (a === 'signed') { setStatus('signed', { signedAt: cur.signedAt || t }); toast('Founding business signed up ⭐'); }
+      else if (a === 'signed') { setStatus('signed', { signedAt: cur.signedAt || t, beforeReviews: cur.beforeReviews !== undefined && cur.beforeReviews !== '' ? cur.beforeReviews : cur.reviews || '', beforeRating: cur.beforeRating || cur.rating || '' }); toast('Founding business signed up ⭐'); }
       else if (a === 'no') setStatus('no');
       else if (a === 'delete') { if (confirm('Delete ' + cur.name + '?')) { state.leads = state.leads.filter(function (l) { return l !== cur; }); save(); closeSheet(); } }
     });
     $('shBody').addEventListener('change', function (e) {
       var id = e.target.id; if (!cur) return;
-      var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt' };
+      var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt', demoTime: 'demoTime', fOwnerName: 'ownerName', fBeforeRev: 'beforeReviews', fBeforeRate: 'beforeRating' };
+      if (e.target.dataset && e.target.dataset.prep) { cur.prep = Object.assign({}, cur.prep); cur.prep[e.target.dataset.prep] = e.target.checked; save(); var yp = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = yp; return; }
+      if (id === 'ckRev' || id === 'ckRate') return;
       if (id === 'fVerified') cur.verified = e.target.checked;
       else if (id === 'fStatus') {
         if (e.target.value === 'nofit') { notAFit(); return; }
@@ -1495,7 +1581,7 @@
       else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = false; cur.igSrc = ''; } }
       else return;
       save();
-      if (id === 'fNotes' || id === 'fHook') return;
+      if (id === 'fNotes' || id === 'fHook' || id === 'fOwnerName') return;
       var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
     });
     $('shBody').addEventListener('input', function (e) {
