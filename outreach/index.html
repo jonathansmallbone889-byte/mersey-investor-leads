@@ -249,6 +249,8 @@
     .findig > b { font-size: 15px; }
     .findig ol { margin: 6px 0 10px; padding-left: 20px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
     .findig ol b { color: var(--text); }
+    .skipx { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 15px; font-weight: 700; cursor: pointer; }
+    .skipx:active { background: var(--bad-soft); color: var(--bad); }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -325,7 +327,7 @@
         <div id="lDm" style="margin-top:8px"></div>
       </div>
       <div class="card" id="cardFollow"><h2>Follow and like <span class="n" id="nFollow"></span></h2><p class="sub">Follow, then like 2 or 3 posts. DM them tomorrow.</p><div id="lFollow"></div></div>
-      <div class="card" id="cardCheck"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following.</p><div id="lCheck"></div></div>
+      <div class="card" id="cardCheck"><h2>Check these <span class="n" id="nCheck"></span></h2><p class="sub">New leads. Confirm the Google rating and Instagram before following. Already contacted one? Tap ✕.</p><div id="lCheck"></div></div>
       <div class="card" id="cardPipe"><h2>Your pipeline</h2><p class="sub">Every business you're working on, by stage.</p><div class="pipe" id="pipe"></div></div>
       <button class="btn btn-gold btn-block" data-go="find" id="findBtn">Find new businesses</button>
     </section>
@@ -547,6 +549,30 @@
     }
     tidy(); save();
     function knownNames() { var have = {}; state.leads.forEach(function (l) { have[l.name.toLowerCase()] = 1; }); state.skipped.forEach(function (n) { have[n.toLowerCase()] = 1; }); return have; }
+    // Same business, even if an AI words the name a little differently ("Botanico" / "Botanico Woolton").
+    var GENERIC = { the: 1, and: 1, ltd: 1, limited: 1, liverpool: 1, merseyside: 1, cafe: 1, coffee: 1, shop: 1, barbers: 1, barber: 1, salon: 1, hair: 1, beauty: 1, nails: 1, nail: 1,
+      bar: 1, studio: 1, grooming: 1, groomers: 1, groomer: 1, dog: 1, gym: 1, fitness: 1, restaurant: 1, kitchen: 1, house: 1, tattoo: 1, spa: 1, clinic: 1, boutique: 1 };
+    function nameWords(n) { return String(n || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, ' and ').replace(/[^a-z0-9 ]+/g, ' ').split(/\s+/).filter(Boolean); }
+    function sameBusiness(a, b) {
+      var A = nameWords(a), B = nameWords(b);
+      if (A.join(' ') === B.join(' ')) return true;
+      // The main name: before a dash, bar or bracket, without the town ("Hair of the Dog - Holistic…", "Crew Barbers Liverpool").
+      var base = function (n) { return nameWords(String(n || '').split(/\s[-–—|]\s|\(/)[0]).filter(function (w) { return w !== 'liverpool' && w !== 'merseyside' && w !== 'uk'; }); };
+      var bA = base(a), bB = base(b), bs = bA.length <= bB.length ? bA : bB, bl = bs === bA ? bB : bA;
+      if (bs.length >= 2 && bs.join(' ') === bl.slice(0, bs.length).join(' ')) return true;
+      var dA = A.filter(function (w) { return !GENERIC[w] && w.length >= 3; }), dB = B.filter(function (w) { return !GENERIC[w] && w.length >= 3; });
+      if (!dA.length || !dB.length) return false;
+      var sh = dA.length <= dB.length ? dA : dB, lg = sh === dA ? dB : dA;
+      return sh.every(function (w) { return lg.indexOf(w) > -1; });
+    }
+    function isKnown(name) {
+      return state.leads.some(function (l) { return sameBusiness(l.name, name); }) || state.skipped.some(function (n) { return sameBusiness(n, name); });
+    }
+    function skipLead(l) {
+      var i = state.leads.indexOf(l); if (i < 0) return;
+      state.leads.splice(i, 1); if (state.skipped.indexOf(l.name) < 0) state.skipped.push(l.name);
+      return function undo() { unskip(l.name); state.leads.splice(Math.min(i, state.leads.length), 0, l); save(); render(); };
+    }
     function unskip(name) { name = name.toLowerCase(); state.skipped = state.skipped.filter(function (n) { return n.toLowerCase() !== name; }); }
     function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast('Could not save on this phone'); } }
 
@@ -1102,7 +1128,9 @@
       if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
       if (fol.length) plan.push(fol.length + ' to follow');
       $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : fresh ? 'Let\'s find your first businesses ✨' : 'You\'re all caught up. Time to find new businesses ✨';
-      list('lCheck', chk, function (l) { return typeArea(l) + ' · ' + (ratingText(l) || 'not checked'); }, 'No new leads. Tap "Find new businesses".');
+      $('lCheck').innerHTML = chk.map(function (l) {
+        return itemHtml(l, typeArea(l) + ' · ' + (ratingText(l) || 'not checked'), '<button class="skipx" data-skip="' + l.id + '" aria-label="Not a fit: remove ' + esc(l.name) + '">✕</button>');
+      }).join('') + (chk.length > 1 ? '<button class="btn btn-ghost btn-block btn-sm" id="skipAll" style="margin-top:10px">Remove all ' + chk.length + ' (already contacted or not a fit)</button>' : '');
     }
 
     function renderLeads() {
@@ -1129,6 +1157,20 @@
     $('filters').addEventListener('click', function (e) { var b = e.target.closest('[data-f]'); if (!b) return; filter = b.dataset.f; renderLeads(); });
     $('q').addEventListener('input', renderLeads);
     document.addEventListener('click', function (e) {
+      var sk = e.target.closest('[data-skip]');
+      if (sk) {
+        e.stopPropagation();
+        var l0 = find(sk.dataset.skip); if (!l0) return;
+        var undo = skipLead(l0); save(); render(); toast(l0.name + ' removed', undo);
+        return;
+      }
+      if (e.target.id === 'skipAll') {
+        var chk0 = state.leads.filter(function (l) { return l.status === 'check'; });
+        if (!confirm('Remove all ' + chk0.length + ' businesses in "Check these"? They won\'t come up in searches again.')) return;
+        var undos = chk0.map(skipLead).reverse(); save(); render();
+        toast(chk0.length + ' removed', function () { undos.forEach(function (u) { u(); }); });
+        return;
+      }
       var it = e.target.closest('.item[data-id]');
       if (it && !$('sheet').contains(it)) openLead(it.dataset.id);
     });
@@ -1265,7 +1307,7 @@
       rows.slice(1).forEach(function (r) {
         if (h.length >= 5 && r.length < 3) return; // a sentence after the table, not a business
         var name = (r[cName] || '').replace(/\*\*/g, '').trim();
-        if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()]) return;
+        if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()] || isKnown(name)) return;
         var addr = cAddr > -1 ? r[cAddr] || '' : '';
         var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
         // Instagram handles from AI answers are often made up, so they're never imported.
@@ -1572,7 +1614,7 @@
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
       else if (a === 'signed') { setStatus('signed', { signedAt: cur.signedAt || t, beforeReviews: cur.beforeReviews !== undefined && cur.beforeReviews !== '' ? cur.beforeReviews : cur.reviews || '', beforeRating: cur.beforeRating || cur.rating || '' }); toast('Founding business signed up ⭐'); }
       else if (a === 'no') setStatus('no');
-      else if (a === 'delete') { if (confirm('Delete ' + cur.name + '?')) { state.leads = state.leads.filter(function (l) { return l !== cur; }); save(); closeSheet(); } }
+      else if (a === 'delete') { if (confirm('Delete ' + cur.name + '? It won\'t come up in searches again.')) { skipLead(cur); save(); closeSheet(); toast('Deleted'); } }
     });
     $('shBody').addEventListener('change', function (e) {
       var id = e.target.id; if (!cur) return;
