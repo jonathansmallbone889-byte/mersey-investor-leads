@@ -245,6 +245,10 @@
     .checks { display: grid; gap: 6px; margin-top: 10px; }
     .checks div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 9px 12px; border-radius: 12px; background: var(--soft); }
     .checks span { color: var(--muted); }
+    .findig { background: var(--soft); border-radius: 14px; padding: 12px 14px; margin: 6px 0 4px; }
+    .findig > b { font-size: 15px; }
+    .findig ol { margin: 6px 0 10px; padding-left: 20px; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+    .findig ol b { color: var(--text); }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -363,7 +367,7 @@
     <section data-view="find" hidden>
       <div class="card" id="findCard">
         <h2>Find businesses with free AI ✨</h2>
-        <p class="sub">Your search is written for you, with your criteria, the strict Instagram rules and every business to skip.</p>
+        <p class="sub">Your search is written for you, with your criteria and every business to skip. You'll find each Instagram yourself in one tap, so no made-up usernames.</p>
         <div class="steps2">
           <div class="st"><b>1</b><div><strong>Tap Find businesses</strong><span>Your search is copied and Gemini opens. Paste it in and send.</span></div></div>
         </div>
@@ -508,12 +512,19 @@
       return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
     }
     function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
-    function handle(h) { return String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '').trim(); }
+    // Accepts a username, @username, or anything with an instagram.com profile link in it (e.g. "Copy profile URL").
+    function handle(h) {
+      h = String(h || '').trim();
+      var m = h.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+      if (m) h = m[1];
+      return h.replace(/[/?#\s].*$/, '').replace(/^@/, '').trim();
+    }
     function igUrl(h) { return 'https://www.instagram.com/' + encodeURIComponent(handle(h)) + '/'; }
     // Only trust Maps links from live search: links typed by Gemini are often made up and lead nowhere.
     function mapsUrl(l) { return (l.mapsReal && l.maps) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, CITY()].filter(Boolean).join(' '))); }
     function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, CITY() + ' reviews'].filter(Boolean).join(' ')); }
-    function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent(l.name + ' ' + (l.area || '') + ' instagram'); }
+    // Only real Instagram profiles come back from a site: search, so nothing here can be made up.
+    function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent('site:instagram.com ' + l.name + ' ' + (l.area || CITY())); }
 
     var defaults = {
       me: { name: 'Jonathan', brand: 'Mersey Stars', city: 'Liverpool', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
@@ -1163,17 +1174,13 @@
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
       var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
       return 'Find ' + c.count + ' independent small businesses in and around ' + CITY() + ', UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
-        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Has an active Instagram account (posted within the last 2 months)\n\n' +
+        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Likely to be active on Instagram (a type of business that posts its work)\n\n' +
         'Types: ' + types + '.\n' +
         (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. If you can\'t find enough, give fewer rather than going outside these areas.\n\n' : '') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Instagram Username,Instagram Source URL,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
-        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website or Instagram. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; Instagram shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
-        'Instagram rules (very important):\n' +
-        '- Only give an Instagram username that is linked on the business\'s own website, Google listing or Facebook page.\n' +
-        '- Copy it exactly as written in that link, character for character (dots and underscores matter).\n' +
-        '- In Instagram Source URL, give the full web address of the page where you found that link.\n' +
-        '- Never guess or build a username from the business name. If you can\'t find a linked one, leave Instagram Username and Instagram Source URL blank rather than guess.';
+        'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; website shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
+        'Do NOT give Instagram usernames or links: I find those myself. Only give a Website if you found the business\'s real website; otherwise leave it blank.';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -1250,7 +1257,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cIg = col(/instagram(?! source)|username|handle/), cSrc = col(/source/), cWhy = col(/based on|evidence/);
+        cRev = col(/review/), cWeb = col(/^website/), cWhy = col(/based on|evidence/);
       var cComps = h.map(function (x, i) { return /compliment/.test(x) && i !== cWhy ? i : -1; }).filter(function (i) { return i > -1; });
       if (cName < 0) cName = 0;
       var have = knownNames();
@@ -1261,13 +1268,13 @@
         if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()]) return;
         var addr = cAddr > -1 ? r[cAddr] || '' : '';
         var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
-        var ig = cIg > -1 ? handle(r[cIg]) : '';
-        if (/^(not found|n\/a|none|-)$/i.test(ig)) ig = '';
+        // Instagram handles from AI answers are often made up, so they're never imported.
+        var web = cWeb > -1 && /^https?:\/\//.test((r[cWeb] || '').trim()) ? r[cWeb].trim() : '';
         var nl = newLead({
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
           reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
-          ig: ig, igSrc: ig && cSrc > -1 && /^https?:\/\//.test((r[cSrc] || '').trim()) ? r[cSrc].trim() : '', notes: 'Imported ' + nice(todayIso()),
+          notes: 'Imported ' + nice(todayIso()) + (web ? '\nWebsite: ' + web : ''),
           aiComps: cComps.map(function (i) { return cleanComp(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? cleanComp(r[cWhy]) : '' }; })
         });
         if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
@@ -1383,7 +1390,7 @@
 
       // Next action, based on where the lead is
       var next = '';
-      if (l.status === 'check') next = '<h2>Next: check they fit</h2><p class="sub">Open Google Maps, type in the real rating and review count, and confirm the Instagram account.</p>';
+      if (l.status === 'check') next = '<h2>Next: check they fit</h2><p class="sub">' + (h ? 'Check the rating and review count on Google, and confirm the Instagram account.' : 'Find their Instagram (below), then check the rating and review count on Google.') + '</p>';
       else if (l.status === 'follow') next = '<h2>Next: follow and like</h2><p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts. Then tap "Done".</p><div class="row"><button class="btn btn-gold" data-act="followed">Done: followed and liked</button></div>';
       else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
       else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p>';
@@ -1411,9 +1418,11 @@
 
       // Instagram + Maps
       cards.ig = '<div class="card"><h2>Instagram & Google</h2>' +
-        '<label class="f" for="fIg">Instagram username</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
+        (h ? '' : '<div class="findig"><b>Find their Instagram</b><ol><li>Tap the button: it only shows real Instagram profiles</li><li>Open the right one and check the name and photos match</li><li>Tap <b>⋯</b> then <b>Copy profile URL</b>, and paste it below</li></ol>' +
+          '<a class="btn btn-ig btn-block" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a></div>') +
+        '<label class="f" for="fIg">Instagram username or profile link</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
-        (h ? (igMessage(l) ? '' : igButton(l)) : '<a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a>') +
+        (h ? (igMessage(l) ? '' : igButton(l)) : '') +
         '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
         '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
@@ -1578,7 +1587,7 @@
         if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
         if (cur.status === 'signed' && !cur.signedAt) cur.signedAt = todayIso();
       }
-      else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = false; cur.igSrc = ''; } }
+      else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = /instagram\.com\//i.test(e.target.value); cur.igSrc = ''; if (cur.igOk && cur.ig) toast('@' + cur.ig + ' saved and checked ✓'); } }
       else return;
       save();
       if (id === 'fNotes' || id === 'fHook' || id === 'fOwnerName') return;
