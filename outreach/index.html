@@ -377,6 +377,7 @@
           <div class="st"><b>1</b><div><strong>Tap Find businesses</strong><span>Your search is copied and Gemini opens. Paste it in and send.</span></div></div>
         </div>
         <button class="btn btn-gold btn-block" data-ai-open="gemini">Find businesses</button>
+        <p class="help" id="nextAreas" style="text-align:center;margin-top:6px"></p>
         <details class="peek"><summary>More options</summary>
           <p class="help" style="margin:8px 0 6px">Gemini not working? Use another free AI instead:</p>
           <div class="pair"><button class="btn btn-ghost btn-sm" data-ai-open="perplexity">Perplexity</button><button class="btn btn-ghost btn-sm" data-ai-open="copilot">Copilot</button></div>
@@ -1224,21 +1225,38 @@
       $('cAreas').value = c.areas || '';
       $('cTypes').innerHTML = TYPES.map(function (t) { return '<button class="chip" data-t="' + t[0] + '" aria-pressed="' + (c.types.indexOf(t[0]) > -1) + '">' + t[1] + '</button>'; }).join('');
       $('prompt').value = buildPrompt();
+      var na = searchAreas(0);
+      $('nextAreas').textContent = na.length ? 'This search: ' + na.join(' & ') + (areaList().length > 2 ? '. Each tap moves on to the next 2 areas.' : '') : '';
     }
-    function buildPrompt() {
+    // Each search covers just 2 areas, rotating through the list, so the AI finishes instead of giving up.
+    function areaList() { return (state.crit.areas || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+    function searchAreas(step) {
+      var a = areaList(); if (!a.length) return [];
+      var at = ((state.crit.areaAt || 0) + (step || 0) * 2) % a.length;
+      return a.length <= 2 ? a : [a[at], a[(at + 1) % a.length]];
+    }
+    function skipNames(areas) {
+      // Only the businesses already on the list in these areas (the app removes any other repeats itself).
+      var low = areas.map(function (x) { return x.toLowerCase(); });
+      return state.leads.filter(function (l) {
+        var where = ((l.area || '') + ' ' + (l.address || '')).toLowerCase();
+        return !low.length || low.some(function (x) { return where.indexOf(x) > -1; });
+      }).map(function (l) { return l.name; }).slice(-40);
+    }
+    function buildPrompt(step) {
       var c = state.crit;
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
-      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
-      return 'Find ' + c.count + ' independent small businesses in and around ' + CITY() + ', UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
-        'Criteria (all must be true):\n- Google rating from ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' stars. Do NOT include anything rated above ' + c.max.toFixed(1) + ' (so no ' + (Math.min(5, c.max + 0.1)).toFixed(1) + ' or 5.0) or below ' + c.min.toFixed(1) + '.\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Likely to be active on Instagram (a type of business that posts its work)\n\n' +
-        'Check each business\'s rating on its Google Maps listing before adding it. Many small businesses are rated 4.9 or 5.0, so you will need to skip a lot of them: keep searching until you have ' + c.count + ' that fit. Work through each area and each type of business in turn.\n\n' +
+      var areas = searchAreas(step);
+      var where = areas.length ? areas.join(' and ') + ', near ' + CITY() : 'in and around ' + CITY();
+      var names = skipNames(areas);
+      return 'Use Google Maps to find up to ' + (c.count + 3) + ' independent small businesses in ' + where + ', UK. No chains or franchises.\n\n' +
         'Types: ' + types + '.\n' +
-        (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. Only if you\'ve searched every area and type and still can\'t find enough, give fewer and tell me how many.\n\n' : '') +
-        (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Use Google Search and Google Maps. Give me the results as a CSV in a code block. Put EVERY value in double quotes (addresses contain commas). Use these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
-        'Google Rating and Number of Google Reviews: copy them exactly as shown on the business\'s Google Maps listing today. If you can\'t see them, leave them blank: never estimate.\n\n' +
-        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews. In Compliment Based On, quote a few words from one of those real reviews (e.g. \'a review says "best carbonara in Southport"\'). Only use reviews you actually read: never invent. If you didn\'t read any reviews, leave all four blank.\n\n' +
-        'Do NOT give Instagram usernames or links: I find those myself. Only give a Website if you found the business\'s real website; otherwise leave it blank.';
+        'Looking for: Google rating ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' (not 4.9 or 5.0) and fewer than ' + c.reviews + ' Google reviews. Lots of places are rated 4.9 or 5.0, so skip those. Don\'t spend long checking: I double-check every business on Google myself.\n\n' +
+        (names.length ? 'Already on my list, so skip: ' + names.join(', ') + '.\n\n' : '') +
+        'Always reply with the table, even if you only find a few. Give it as a CSV in a code block, every value in double quotes, with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'Rating and reviews: copy them as shown on Google Maps. If you can\'t see them, leave them blank (never guess).\n' +
+        'Compliments: if you read the business\'s Google reviews, write 3 short friendly compliments (under 15 words, one emoji each) about what real customers praise, and in Compliment Based On quote a few words from one real review. If you didn\'t read any, leave all four blank.\n' +
+        'Don\'t give Instagram usernames. Only give a Website if you found the real one.';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -1251,20 +1269,22 @@
         var v = f[2] === String ? this.value.split(',').map(function (x) { return x.trim(); }).filter(Boolean).join(', ') : f[2](this.value, 10);
         if (f[2] !== String && isNaN(v)) return;
         if (f[2] === String) this.value = v;
-        state.crit[f[1]] = v; save(); $('prompt').value = buildPrompt();
+        if (f[1] === 'areas') state.crit.areaAt = 0;
+        state.crit[f[1]] = v; save(); renderFind();
       });
     });
 
 
     function moreText() {
-      var c = state.crit;
-      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
-      return 'Thanks. Now find ' + c.count + ' MORE businesses with the same criteria and the same CSV columns, in double quotes. ' +
-        'Rating must be from ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' (nothing above ' + c.max.toFixed(1) + ') with fewer than ' + c.reviews + ' reviews: check each one on Google Maps. ' +
-        'Try areas and types you haven\'t covered yet' + (c.areas ? ', but stay within: ' + c.areas : '') + '.' +
-        (names.length ? '\n\nDo not include: ' + names.join(', ') + '.' : '');
+      var c = state.crit, areas = searchAreas(0);
+      var names = skipNames(areas);
+      return 'Thanks. Please find up to ' + (c.count + 3) + ' more' + (areas.length ? ' in ' + areas.join(' and ') : '') + ' with the same columns, rated ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' with fewer than ' + c.reviews + ' reviews. Reply with the table even if you only find a few.' +
+        (names.length ? '\n\nSkip: ' + names.join(', ') + '.' : '');
     }
-    $('findMore').addEventListener('click', function () { copy(moreText(), 'Copied. Paste it into the same Gemini chat and send'); });
+    $('findMore').addEventListener('click', function () {
+      copy(moreText(), 'Copied. Paste it into the same Gemini chat and send');
+      if (areaList().length > 2) { state.crit.areaAt = ((state.crit.areaAt || 0) + 2) % areaList().length; save(); renderFind(); }
+    });
     function guessType(s) {
       s = (s || '').toLowerCase();
       if (/nail/.test(s)) return 'nails';
@@ -1287,8 +1307,12 @@
     var AI_APPS = { gemini: 'https://gemini.google.com/app', perplexity: 'https://www.perplexity.ai/', copilot: 'https://copilot.microsoft.com/' };
     document.querySelectorAll('[data-ai-open]').forEach(function (b) {
       b.addEventListener('click', function () {
-        copy(buildPrompt(), 'Search copied. Paste it into the chat and send');
+        var areas = searchAreas(0);
+        copy(buildPrompt(), 'Search copied' + (areas.length ? ' for ' + areas.join(' & ') : '') + '. Paste it into the chat and send');
         openLink(AI_APPS[b.dataset.aiOpen]);
+        // Next search moves on to the next 2 areas.
+        if (areaList().length > 2) { state.crit.areaAt = ((state.crit.areaAt || 0) + 2) % areaList().length; save(); }
+        setTimeout(renderFind, 400);
       });
     });
     function parseRows(text) {
