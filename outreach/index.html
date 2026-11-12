@@ -251,6 +251,9 @@
     .findig ol b { color: var(--text); }
     .skipx { flex: none; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-size: 15px; font-weight: 700; cursor: pointer; }
     .skipx:active { background: var(--bad-soft); color: var(--bad); }
+    .verify { display: flex; gap: 10px; align-items: center; margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--soft); font-size: 14.5px; font-weight: 600; cursor: pointer; border: 1.5px solid transparent; }
+    .verify input { width: 20px; height: 20px; flex: none; accent-color: #15803d; }
+    .verify.on { background: var(--ok-soft); color: var(--ok); border-color: rgba(21, 128, 61, .25); }
     .qg { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
     details.peek summary { font-size: 13.5px; font-weight: 600; color: var(--accent); cursor: pointer; }
     .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1503,7 +1506,8 @@
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
         '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
         '<div><label class="f" for="fReviews">Number of reviews</label><input type="number" id="fReviews" min="0" inputmode="numeric" value="' + esc(l.reviews) + '"></div></div>' +
-        '<label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + ' style="width:18px;height:18px"> I\'ve checked these on Google</label>' +
+        '<label class="verify' + (l.verified ? ' on' : '') + '"><input type="checkbox" id="fVerified"' + (l.verified ? ' checked' : '') + '><span>' +
+          (l.verified ? '✓ Checked on Google' + (l.verifiedAt ? ' ' + nice(l.verifiedAt) : '') : 'I\'ve checked these on Google') + '</span></label>' +
         (m === null ? '<div class="badge wait">Add the rating and review count to check the criteria</div>' :
           m ? '<div class="badge ok">✓ Meets your criteria</div>' : '<div class="badge no">✕ Outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews)</div>') +
         (l.status === 'check' && h ? '<div class="notice" style="margin-top:12px">' + (l.igOk
@@ -1655,7 +1659,16 @@
       var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt', demoTime: 'demoTime', fOwnerName: 'ownerName', fBeforeRev: 'beforeReviews', fBeforeRate: 'beforeRating' };
       if (e.target.dataset && e.target.dataset.prep) { cur.prep = Object.assign({}, cur.prep); cur.prep[e.target.dataset.prep] = e.target.checked; save(); var yp = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = yp; return; }
       if (id === 'ckRev' || id === 'ckRate') return;
-      if (id === 'fVerified') cur.verified = e.target.checked;
+      if (id === 'fVerified') {
+        if (e.target.checked && (!okRating(cur.rating) || cur.reviews === '' || cur.reviews == null)) {
+          e.target.checked = false;
+          toast('Add the rating and number of reviews from Google first');
+          var miss = !okRating(cur.rating) ? $('fRating') : $('fReviews'); miss.focus();
+          return;
+        }
+        cur.verified = e.target.checked; cur.verifiedAt = e.target.checked ? todayIso() : '';
+        toast(e.target.checked ? 'Checked on Google ✓' : 'Marked as not checked');
+      }
       else if (id === 'fStatus') {
         if (e.target.value === 'nofit') { notAFit(); return; }
         cur.status = e.target.value;
