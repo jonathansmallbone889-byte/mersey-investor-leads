@@ -543,6 +543,15 @@
     // Businesses marked "Not a fit" are removed but remembered, so they never come back in searches or imports.
     function tidy() {
       state.skipped = state.skipped || [];
+      // Remove values that were saved into the wrong field by an earlier misaligned import.
+      state.leads.forEach(function (l) {
+        if (l.aiComps && l.aiComps.length) {
+          var bad = /https?:|www\./i;
+          l.aiComps = l.aiComps.filter(function (c) { return c.t && !bad.test(c.t); }).map(function (c) { return { t: c.t, why: bad.test(c.why || '') ? '' : c.why }; });
+          if (l.compliment && bad.test(l.compliment)) { l.compliment = l.aiComps.length ? l.aiComps[0].t : ''; }
+        }
+        if (l.rating && !okRating(l.rating)) l.rating = '';
+      });
       // Drop blank leads left by an empty table row in an AI answer.
       state.leads = state.leads.filter(function (l) { return /[\p{L}\p{N}]/u.test(l.name || '') || l.status !== 'check'; });
       state.leads = state.leads.filter(function (l) { if (l.status !== 'nofit') return true; if (state.skipped.indexOf(l.name) < 0) state.skipped.push(l.name); return false; });
@@ -1220,8 +1229,9 @@
         'Types: ' + types + '.\n' +
         (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. If you can\'t find enough, give fewer rather than going outside these areas.\n\n' : '') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
-        'Use Google Search. Give me the results as a CSV in a code block, with these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
-        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews or that you can see on their website. In Compliment Based On, say briefly what they are based on (e.g. "reviews praise the friendly staff; website shows balayage work"). Only use things you actually found: never invent details. If you found nothing specific, leave all four blank.\n\n' +
+        'Use Google Search and Google Maps. Give me the results as a CSV in a code block. Put EVERY value in double quotes (addresses contain commas). Use these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'Google Rating and Number of Google Reviews: copy them exactly as shown on the business\'s Google Maps listing today. If you can\'t see them, leave them blank: never estimate.\n\n' +
+        'For Compliment 1, Compliment 2 and Compliment 3: three different short, friendly compliments (under 15 words, one emoji each) about specific things real customers praise in this business\'s Google reviews. In Compliment Based On, quote a few words from one of those real reviews (e.g. \'a review says "best carbonara in Southport"\'). Only use reviews you actually read: never invent. If you didn\'t read any reviews, leave all four blank.\n\n' +
         'Do NOT give Instagram usernames or links: I find those myself. Only give a Website if you found the business\'s real website; otherwise leave it blank.';
     }
     $('cTypes').addEventListener('click', function (e) {
@@ -1291,8 +1301,30 @@
       });
     }
     function cleanComp(t) {
-      t = String(t || '').replace(/\*\*/g, '').replace(/^["“'\s]+|["”'\s]+$/g, '').trim();
+      t = String(t || '').replace(/\*\*/g, '').trim();
+      if (/^["“'][\s\S]*["”']$/.test(t) && t.length > 1) t = t.slice(1, -1).trim();
       return /^(null|none|n\/a|-|blank)?$/i.test(t) ? '' : t;
+    }
+    // Sense checks, so a value that landed in the wrong column is never saved.
+    function okRating(v) { v = String(v || '').trim(); var n = parseFloat(v); return /^\d(\.\d{1,2})?$/.test(v) && n >= 1 && n <= 5 ? String(Math.round(n * 10) / 10) : ''; }
+    function okReviews(v) { v = String(v || '').replace(/[,\s]/g, ''); return /^\d{1,5}$/.test(v) ? v : ''; }
+    function okText(t) { t = cleanComp(t); return t && !/https?:|www\.|\.co\.uk|\.com\b/i.test(t) && /[a-z]{3}/i.test(t) && t.length <= 160 ? t : ''; }
+    // Addresses like "1 Lord St, Southport" often arrive without quotes, splitting into extra cells and
+    // shifting every later column. Rejoin the extra cells at whichever column makes the rest of the row make sense.
+    function alignRow(r, n, cols) {
+      if (r.length <= n) return r;
+      var extra = r.length - n, best = r.slice(0, n), bestScore = -1;
+      cols.merge.forEach(function (c) {
+        if (c < 0) return;
+        // A review count like 1,234 rejoins without the comma.
+        var a = r.slice(0, c).concat([r.slice(c, c + extra + 1).join(c === cols.rev ? '' : ', ')], r.slice(c + extra + 1));
+        var sc = (cols.rate > -1 && okRating(a[cols.rate]) ? 3 : 0) + (cols.rev > -1 && okReviews(a[cols.rev]) ? 3 : 0) +
+          (cols.area > -1 && /[a-z]{3}/i.test(a[cols.area] || '') ? 2 : 0) + (cols.rate > -1 && /\./.test(a[cols.rate] || '') ? 1 : 0) +
+          (cols.web > -1 && (!a[cols.web] || /^https?:\/\//.test(a[cols.web])) ? 1 : 0) +
+          cols.comps.filter(function (i) { return !a[i] || okText(a[i]); }).length;
+        if (sc > bestScore) { bestScore = sc; best = a; }
+      });
+      return best;
     }
     function importRows(rows) {
       if (rows.length < 2) return 0;
@@ -1302,10 +1334,12 @@
         cRev = col(/review/), cWeb = col(/^website/), cWhy = col(/based on|evidence/);
       var cComps = h.map(function (x, i) { return /compliment/.test(x) && i !== cWhy ? i : -1; }).filter(function (i) { return i > -1; });
       if (cName < 0) cName = 0;
+      var cols = { merge: [cAddr, cArea, cName, cType, cRev], rate: cRate, rev: cRev, area: cArea, web: cWeb, comps: cComps };
       var have = knownNames();
       var added = 0;
       rows.slice(1).forEach(function (r) {
         if (h.length >= 5 && r.length < 3) return; // a sentence after the table, not a business
+        r = alignRow(r, h.length, cols);
         var name = (r[cName] || '').replace(/\*\*/g, '').trim();
         if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()] || isKnown(name)) return;
         var addr = cAddr > -1 ? r[cAddr] || '' : '';
@@ -1314,10 +1348,10 @@
         var web = cWeb > -1 && /^https?:\/\//.test((r[cWeb] || '').trim()) ? r[cWeb].trim() : '';
         var nl = newLead({
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
-          rating: cRate > -1 ? (String(r[cRate]).match(/\d(\.\d)?/) || [''])[0] : '',
-          reviews: cRev > -1 ? (String(r[cRev]).match(/\d+/) || [''])[0] : '',
+          rating: cRate > -1 ? okRating(r[cRate]) : '',
+          reviews: cRev > -1 ? okReviews(r[cRev]) : '',
           notes: 'Imported ' + nice(todayIso()) + (web ? '\nWebsite: ' + web : ''),
-          aiComps: cComps.map(function (i) { return cleanComp(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? cleanComp(r[cWhy]) : '' }; })
+          aiComps: cComps.map(function (i) { return okText(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? okText(r[cWhy]) : '' }; })
         });
         if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
         state.leads.push(nl);
