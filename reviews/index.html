@@ -11,7 +11,16 @@
   <title>Mersey Stars | More Google Reviews for Liverpool Businesses</title>
   <meta name="description" content="Free tool for Liverpool businesses: ask every customer for a Google review in one tap, print QR table cards, hear complaints privately first, and reply to reviews in seconds. No sign-up.">
   <meta property="og:title" content="Mersey Stars: more Google reviews for Liverpool businesses">
-  <meta property="og:description" content="Ask every customer for a Google review in one tap. QR cards, WhatsApp asks, reply writer. Free, no sign-up.">
+  <meta property="og:description" content="Ask every customer for a Google review in one tap. QR cards, WhatsApp asks, reply writer. Free for founding businesses.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Mersey Stars">
+  <meta property="og:url" content="https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/">
+  <meta property="og:image" content="https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Mersey Stars: more Google reviews for Liverpool businesses">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/og.png">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230b2f4a'/%3E%3Cpath d='M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z' fill='%23f5b301'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -263,6 +272,8 @@
     .res .ba span { font-size: 40px; color: rgba(255, 255, 255, .35); }
     .res .ba svg { width: 22px; height: 22px; color: var(--star); align-self: center; }
     .res .ba b { font-size: 40px; color: var(--star); }
+    .res .ba b:only-child { font-size: 30px; }
+    .res p { line-height: 1.55; }
     .res p { font-size: 14px; color: rgba(255, 255, 255, .6); }
     .res-note { text-align: center; margin-top: 28px; font-size: 15px; color: rgba(255, 255, 255, .7); }
     .res-note a { color: var(--star); font-weight: 700; }
@@ -287,6 +298,49 @@
     .rules p { color: var(--text); opacity: .85; line-height: 1.65; }
     @media (max-width: 600px) { .rules { grid-template-columns: 1fr; } }
     #setupSection { background: var(--soft); }
+    #founding { background: linear-gradient(180deg, var(--bg, transparent), var(--soft)); }
+    .split { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 40px; align-items: start; max-width: 1000px; margin: 0 auto; }
+    .split .setup-card { max-width: none; margin: 0; }
+    .split .side { padding-top: 8px; }
+    .split .side h3 { font-size: 20px; margin-bottom: 16px; }
+    @media (max-width: 860px) { .split { grid-template-columns: 1fr; gap: 24px; } }
+    #setupSection .side { max-width: 520px; }
+    #setupSection .split:has(#setupHome[hidden]) { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    #setupSection .split:has(#setupHome[hidden]) .need { display: inline-block; text-align: left; }
+    ol.next { list-style: none; counter-reset: n; padding: 0; margin: 0; display: grid; gap: 18px; }
+    ol.next li { counter-increment: n; display: grid; grid-template-columns: 40px 1fr; column-gap: 14px; }
+    ol.next li::before { content: counter(n); grid-row: span 2; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--brand); color: var(--star); font-weight: 800; }
+    ol.next b { font-size: 16px; }
+    ol.next span { color: var(--muted); font-size: 15px; line-height: 1.5; }
+    .side-note { margin-top: 22px; color: var(--muted); font-size: 15px; }
+    .side-note a { color: var(--accent); font-weight: 700; }
+    ul.need { padding-left: 20px; margin: 0; color: var(--muted); line-height: 1.9; }
+    .about { display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center; max-width: 900px; margin: 0 auto; background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 40px; box-shadow: var(--shadow); }
+    .about .me { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; background: #082135; box-shadow: 0 0 0 4px var(--card), 0 0 0 6px var(--star); }
+    .about h2 { font-size: clamp(24px, 3vw, 32px); letter-spacing: -.02em; margin-bottom: 10px; }
+    .about p { color: var(--muted); font-size: 17px; line-height: 1.65; }
+    @media (max-width: 640px) { .about { grid-template-columns: 1fr; padding: 28px 20px; text-align: center; justify-items: center; } .about .kicker { text-align: center !important; } .about .btn-row { justify-content: center; } }
+    .sticky-cta { display: none; }
+    @media (max-width: 760px) {
+      .sticky-cta { display: flex; position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 18px; background: rgba(8, 33, 53, .96); color: #fff; box-shadow: 0 18px 40px -12px rgba(0, 0, 0, .5); transform: translateY(140%); transition: transform .3s ease; }
+      .sticky-cta.show { transform: none; }
+      .sticky-cta div { display: flex; flex-direction: column; min-width: 0; }
+      .sticky-cta b { font-size: 14px; }
+      .sticky-cta span { font-size: 12px; opacity: .7; }
+      .sticky-cta .btn { padding: 11px 16px; font-size: 14px; white-space: nowrap; }
+      /* Swipeable feature cards on phones */
+      .bento { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin: 0 -16px; padding: 4px 16px 16px; scrollbar-width: none; }
+      .bento::-webkit-scrollbar { display: none; }
+      .bento > div, .bento > .wide, .bento > .full { flex: 0 0 84%; scroll-snap-align: center; }
+      .goalgrid { display: block !important; }
+      .swipe-hint { display: block !important; }
+      /* Compact steps */
+      .step { display: grid; grid-template-columns: 48px 1fr; column-gap: 16px; text-align: left; padding: 0; }
+      .step .n { grid-row: span 2; width: 48px; height: 48px; margin: 0; font-size: 19px; border-radius: 14px; }
+      .step p { margin: 0; max-width: none; }
+      .steps3 { gap: 22px; }
+    }
+    .swipe-hint { display: none; text-align: center; color: var(--muted); font-size: 13px; margin-top: 4px; }
     .setup-card { max-width: 680px; margin: 0 auto; border-radius: 24px; }
     .faq { max-width: 760px; margin: 0 auto; }
     .faq details { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 10px; transition: border-color .15s; }
@@ -573,6 +627,7 @@
             </div>
           </div>
         </div>
+        <p class="swipe-hint">Swipe to see all six →</p>
       </div>
     </section>
 
@@ -605,14 +660,14 @@
     <section class="block dark" id="results">
       <div class="wrap">
         <span class="kicker reveal">Results</span>
-        <h2 class="t reveal">Real results, shown in public</h2>
-        <p class="st reveal">Our founding businesses are starting now. As they grow, their real before-and-after Google numbers will appear here. No made-up figures, ever.</p>
+        <h2 class="t reveal">Results you can check yourself</h2>
+        <p class="st reveal">Every founding business gets the same simple proof. We use your real Google numbers, so you can check every one of them on Google.</p>
         <div class="results">
-          <div class="res reveal"><div class="tag">Founding business #1</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Google reviews, before and after</p></div>
-          <div class="res reveal"><div class="tag">Founding business #2</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Google reviews, before and after</p></div>
-          <div class="res reveal"><div class="tag">Could be you</div><div class="ba"><span>?</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><b>?</b></div><p>Join free and be one of the first</p></div>
+          <div class="res reveal"><div class="tag">Day one</div><div class="ba"><b>Before</b></div><p>We note your Google star rating and number of reviews the day you start.</p></div>
+          <div class="res reveal"><div class="tag">Weeks 2, 4 and 8</div><div class="ba"><b>Check-ins</b></div><p>We look again and send you the new numbers, so you can see exactly what's changed.</p></div>
+          <div class="res reveal"><div class="tag">With your permission</div><div class="ba"><b>Shown here</b></div><p>Real before-and-after results will appear on this page. We never use made-up figures.</p></div>
         </div>
-        <p class="res-note reveal">Want your business here? <a href="#founding">Become a founding business →</a></p>
+        <p class="res-note reveal">Want to be one of the first? <a href="#founding">Claim a founding spot →</a></p>
       </div>
     </section>
 
@@ -644,7 +699,7 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Show your team how to ask</li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Across Liverpool and Merseyside</li>
             </ul>
-            <a class="btn btn-ghost" href="#founding">Ask for a visit</a>
+            <a class="btn btn-ghost" href="#founding" id="askVisit">Ask for a visit</a>
           </div>
         </div>
       </div>
@@ -662,20 +717,41 @@
       </div>
     </section>
 
-    <section class="block" id="setupSection">
+
+
+
+    <section class="block" id="about" style="padding-top:0">
       <div class="wrap">
-        <span class="kicker">Get started</span>
-        <h2 class="t">Set up your business</h2>
-        <p class="st">Takes about two minutes. Everything is saved on this device only.</p>
-        <div class="card setup-card" id="setupHome"></div>
+        <div class="about reveal">
+          <img class="me" src="jonathan.jpg" alt="Jonathan, founder of Mersey Stars" width="120" height="120" loading="lazy">
+          <div>
+            <span class="kicker" style="text-align:left;margin-bottom:8px">Who's behind it</span>
+            <h2>Hi, I'm Jonathan.</h2>
+            <p>I'm from Liverpool, and I built Mersey Stars to help local businesses get the Google reviews their customers already want to give. You deal with me directly: I'll set it up with you, answer your questions myself, and check in on your results.</p>
+            <div class="btn-row" style="margin-top:18px">
+              <a class="btn btn-gold" href="#founding">Claim a founding spot</a>
+              <a class="btn btn-ghost" href="tel:+447576618414">Call 07576 618414</a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="block" id="founding">
       <div class="wrap">
         <span class="kicker">Limited spots</span>
-        <h2 class="t">Become a founding business</h2>
+        <h2 class="t">Claim your founding spot</h2>
         <p class="st">Use Mersey Stars free during launch, tell us what you think, and keep a discount for life.</p>
+        <div class="split">
+        <div class="side">
+          <h3>What happens next</h3>
+          <ol class="next">
+            <li><b>Send your details</b><span>Takes a minute. Your message is written for you.</span></li>
+            <li><b>I'll be in touch within a day</b><span>By phone or WhatsApp, to answer any questions.</span></li>
+            <li><b>We set it up together</b><span>In person or over the phone. You'll leave with your review link and QR cards.</span></li>
+          </ol>
+          <p class="side-note">Prefer to talk first? Call or WhatsApp <a href="tel:+447576618414">07576 618414</a>.</p>
+        </div>
         <div class="card setup-card">
           <form id="foundForm" novalidate>
             <div class="row2">
@@ -691,16 +767,16 @@
                 <select id="ffType"><option value="">Choose…</option><option>Café / restaurant</option><option>Pub / bar</option><option>Takeaway</option><option>Barber / salon / beauty</option><option>Trades (plumber, electrician, builder…)</option><option>Dentist / clinic</option><option>Gym / personal trainer</option><option>Shop / retail</option><option>Garage / valeting</option><option>Letting / estate agent</option><option>Other</option></select></div>
               <div><label class="f" for="ffArea">Area <span class="opt">(e.g. Allerton Road)</span></label><input type="text" id="ffArea" maxlength="60"></div>
             </div>
-            <p style="margin-top:20px;font-weight:700">Where are you on Google today?</p>
+            <p style="margin-top:20px;font-weight:700">Where are you on Google today? <span class="opt" style="font-weight:400">(optional)</span></p>
             <p class="help" style="margin-top:2px">So we can show you how much you've grown. Search your business on Google to check.</p>
             <div class="row2">
               <div><label class="f" for="ffRating">Star rating</label><input type="number" id="ffRating" min="1" max="5" step="0.1" placeholder="e.g. 4.3" inputmode="decimal"></div>
               <div><label class="f" for="ffCount">Number of reviews</label><input type="number" id="ffCount" min="0" step="1" placeholder="e.g. 52" inputmode="numeric"></div>
             </div>
-            <label style="display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:15px;cursor:pointer"><input type="checkbox" id="ffHelp" style="margin-top:4px;width:18px;height:18px"> I'd like someone to visit and set it up for me</label>
+            <label style="display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:15px;cursor:pointer"><input type="checkbox" id="ffHelp" style="margin-top:4px;width:18px;height:18px"> I'd like you to visit and set it up for me</label>
             <p class="err" id="ffErr"></p>
             <button type="submit" class="btn btn-gold" id="ffSubmit" style="margin-top:18px;width:100%;padding:14px">Send my details</button>
-            <p class="help" style="text-align:center">Next you'll send your details by WhatsApp or email. We'll be in touch within a day.</p>
+            <p class="help" style="text-align:center">Next you'll send your details by WhatsApp or email. We'll be in touch within a day. See our <a href="privacy.html">privacy notice</a>.</p>
           </form>
           <div id="foundDone" hidden style="text-align:center">
             <div id="ffManual">
@@ -715,20 +791,26 @@
             <p class="small muted" style="margin-top:14px">Or call <a href="tel:+447576618414">07576 618414</a>. <button class="link-btn" id="ffBack" type="button" style="background:none;border:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer">Edit my details</button></p>
           </div>
         </div>
+        </div>
       </div>
     </section>
 
-    <section class="block" style="padding-top:0">
+    <section class="block" id="setupSection">
       <div class="wrap">
-        <div class="dfy reveal">
-          <div>
-            <h2>Rather someone did it for you?</h2>
-            <p>I'll set up your review link, design table cards and window signs in your colours, and show your team how to ask. Anywhere in Liverpool and Merseyside.</p>
+        <span class="kicker">Do it yourself</span>
+        <h2 class="t">Rather set it up yourself?</h2>
+        <p class="st">Create your review page now. It takes about two minutes. It's private to you: your details and customer list stay on your phone, and we never see them.</p>
+        <div class="split">
+          <div class="side">
+            <h3>You'll need</h3>
+            <ul class="need">
+              <li>Your business name</li>
+              <li>Your Google review link (we show you where to find it)</li>
+              <li>An email or WhatsApp number for private feedback</li>
+            </ul>
+            <button type="button" class="btn btn-primary" id="setupOpen" style="margin-top:18px">Set up my review page</button>
           </div>
-          <div class="btn-row">
-            <a class="btn btn-gold" href="mailto:jonathansmallbone889@gmail.com?subject=Mersey%20Stars%20setup">Email me</a>
-            <a class="btn btn-ghost" href="tel:+447576618414">07576 618414</a>
-          </div>
+          <div class="card setup-card" id="setupHome" hidden></div>
         </div>
       </div>
     </section>
@@ -737,12 +819,11 @@
       <div class="wrap faq">
         <span class="kicker">FAQ</span>
         <h2 class="t" style="margin-bottom:32px">Questions</h2>
-        <details><summary>Is it free?</summary><p>Yes, completely free while we launch. Paid plans will come later with extra features. Founding businesses who join now keep a discount for life, and we'll always tell you well before anything changes.</p></details>
-        <details><summary>Will it always be free?</summary><p>It's free for now while we launch. Paid plans may come later, and founding businesses keep a discount for life. We'll always tell you well before anything changes, and there's never a contract.</p></details>
-        <details><summary>What's a founding business?</summary><p>One of the first Liverpool businesses to use Mersey Stars. You use it free during launch, tell us what works and what doesn't, and lock in a lifetime discount on any paid plan. Sign up with the form above. It takes a minute.</p></details>
+        <details><summary>Is it free? Will it stay free?</summary><p>Yes, it's completely free while we launch. Paid plans will come later. Founding businesses who join now keep a discount for life, we'll always tell you well before anything changes, and there's never a contract.</p></details>
+        <details><summary>What's a founding business?</summary><p>One of the first Liverpool businesses to use Mersey Stars. You use it free during launch, tell us what works and what doesn't, and lock in a lifetime discount on any paid plan. <a href="#founding">Claim a spot</a>. It takes a minute.</p></details>
         <details><summary>What do I need?</summary><p>A Google Business Profile (it's free from Google and is what shows your business on Google Maps and Search). If you can see "Ask for reviews" when you search for your business while signed in, you're ready.</p></details>
         <details><summary>Where does the private feedback go?</summary><p>Straight to your email or WhatsApp, whichever you choose during setup. We never see it.</p></details>
-        <details><summary>Where is my customer list stored?</summary><p>Only in the browser on your device. Nothing is uploaded. Use Settings to back it up, or to copy your setup to a second phone for your staff.</p></details>
+        <details><summary>Where is my customer list stored?</summary><p>It's private to you. It stays in the browser on your phone and is never uploaded, so we never see it. Use Settings to back it up, or to copy your setup to a second phone for your staff.</p></details>
         <details><summary>Can I offer a discount for a review?</summary><p>No. Google doesn't allow rewards for reviews, and UK law treats incentivised reviews that aren't clearly disclosed as misleading. Just ask, and make asking easy. That's what this tool is for.</p></details>
         <details><summary>Does it work for businesses without a shop?</summary><p>Yes. Trades and mobile businesses usually get the best results by sending a WhatsApp message the same day the job is finished.</p></details>
       </div>
@@ -752,13 +833,19 @@
         <div>
           <span class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b2f4a"/><path d="M16 6l3 6.3 6.9.9-5 4.8 1.2 6.8L16 21.6l-6.1 3.2 1.2-6.8-5-4.8 6.9-.9z" fill="#f5b301"/></svg>Mersey Stars</span>
           <div>More Google reviews for Liverpool businesses. Made in Liverpool.</div>
+          <div style="margin-top:6px">© <span id="yr">2026</span> Mersey Stars</div>
         </div>
         <div class="links">
-          <a href="#problems">Features</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="flyer.html">Printable flyer</a>
+          <a href="#problems">Features</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="flyer.html">Printable flyer</a><a href="privacy.html">Privacy</a>
           <a href="mailto:jonathansmallbone889@gmail.com">jonathansmallbone889@gmail.com</a><a href="tel:+447576618414">07576 618414</a>
         </div>
       </div>
     </footer>
+  </div>
+
+  <div class="sticky-cta" id="stickyCta" aria-hidden="true">
+    <div><b>Free for founding businesses</b><span>Limited spots in Liverpool</span></div>
+    <a class="btn btn-gold" href="#founding" tabindex="-1">Claim a spot</a>
   </div>
 
   <!-- ===================== APP ===================== -->
@@ -1163,6 +1250,25 @@
 
     // ---------- Views ----------
     var form = $('bizForm');
+    var setupOpened = false;
+    $('setupOpen').addEventListener('click', function () {
+      setupOpened = true; $('setupHome').hidden = false; this.hidden = true;
+      var first = $('setupHome').querySelector('input'); if (first) first.focus({ preventScroll: true });
+      $('setupHome').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    // Sticky "Claim a spot" bar on phones: shows after the hero, hides near the sign-up form.
+    function stickyCheck() {
+      var bar = $('stickyCta');
+      var hero = document.querySelector('.hero');
+      var near = ['founding', 'setupSection'].some(function (id) { var r = $(id).getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; });
+      var on = !$('landing').hidden && !state.founded && !near && hero && hero.getBoundingClientRect().bottom < 0;
+      bar.classList.toggle('show', !!on);
+      bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+      bar.querySelector('a').tabIndex = on ? 0 : -1;
+    }
+    window.addEventListener('scroll', stickyCheck, { passive: true });
+    $('askVisit').addEventListener('click', function () { $('ffHelp').checked = true; });
+    try { $('yr').textContent = new Date().getFullYear(); } catch (e) { /* not essential */ }
     function setView(v) {
       var hasBiz = !!state.biz;
       if (v === 'app' && !hasBiz) v = 'landing';
@@ -1179,7 +1285,11 @@
         if (hasBiz) {
           $('setupSection').querySelector('h2.t').textContent = 'Your business';
           $('setupSection').querySelector('p.st').textContent = 'You\'re set up. Change your details here or open your dashboard.';
+          $('setupSection').querySelector('.kicker').textContent = 'Your account';
         }
+        $('setupHome').hidden = !hasBiz && !setupOpened;
+        $('setupOpen').hidden = !$('setupHome').hidden;
+        stickyCheck();
       } else {
         $('setupApp').appendChild(form);
         $('formTitle').hidden = false;
@@ -1687,7 +1797,7 @@
       $('foundDone').hidden = false;
       $('founding').scrollIntoView();
     });
-    function founded() { state.founded = true; save(); }
+    function founded() { state.founded = true; save(); stickyCheck(); }
     $('ffWa').addEventListener('click', function (e) { e.preventDefault(); founded(); openWa(FOUND_WA, foundText); });
     $('ffMail').addEventListener('click', founded);
     $('ffCopy').addEventListener('click', function () { founded(); copy('To: ' + FOUND_TO + '\n\n' + foundText, 'Copied. Paste it into an email to ' + FOUND_TO); });
