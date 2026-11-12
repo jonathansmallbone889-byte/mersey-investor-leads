@@ -389,6 +389,8 @@
         <textarea id="importText" placeholder="Paste the AI's answer here" style="min-height:110px"></textarea>
         <button class="btn btn-primary btn-block" id="doImport" style="margin-top:10px">Add to my list</button>
         <p class="help" id="importMsg"></p>
+        <button class="btn btn-ghost btn-block" id="findMore" style="margin-top:8px">Copy a find-more message</button>
+        <p class="help" style="margin-top:6px">Got too few? Copy this, paste it into the same Gemini chat, then paste the new answer above.</p>
       </div>
 
       <div class="card">
@@ -1228,9 +1230,10 @@
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
       var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
       return 'Find ' + c.count + ' independent small businesses in and around ' + CITY() + ', UK (not chains or franchises) that could benefit from getting more Google reviews.\n\n' +
-        'Criteria:\n- Google rating between ' + c.min.toFixed(1) + ' and ' + c.max.toFixed(1) + ' stars\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Likely to be active on Instagram (a type of business that posts its work)\n\n' +
+        'Criteria (all must be true):\n- Google rating from ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' stars. Do NOT include anything rated above ' + c.max.toFixed(1) + ' (so no ' + (Math.min(5, c.max + 0.1)).toFixed(1) + ' or 5.0) or below ' + c.min.toFixed(1) + '.\n- Fewer than ' + c.reviews + ' Google reviews\n- Currently open\n- Likely to be active on Instagram (a type of business that posts its work)\n\n' +
+        'Check each business\'s rating on its Google Maps listing before adding it. Many small businesses are rated 4.9 or 5.0, so you will need to skip a lot of them: keep searching until you have ' + c.count + ' that fit. Work through each area and each type of business in turn.\n\n' +
         'Types: ' + types + '.\n' +
-        (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. If you can\'t find enough, give fewer rather than going outside these areas.\n\n' : '') +
+        (c.areas ? 'Areas: ONLY include businesses whose address is in one of these areas of ' + CITY() + ': ' + c.areas + '. Search Google Maps for each area by name. Put the area in the Area column. Only if you\'ve searched every area and type and still can\'t find enough, give fewer and tell me how many.\n\n' : '') +
         (names.length ? 'Do not include: ' + names.join(', ') + '.\n\n' : '') +
         'Use Google Search and Google Maps. Give me the results as a CSV in a code block. Put EVERY value in double quotes (addresses contain commas). Use these columns and nothing else in the block:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
         'Google Rating and Number of Google Reviews: copy them exactly as shown on the business\'s Google Maps listing today. If you can\'t see them, leave them blank: never estimate.\n\n' +
@@ -1253,6 +1256,15 @@
     });
 
 
+    function moreText() {
+      var c = state.crit;
+      var names = state.leads.map(function (l) { return l.name; }).concat(state.skipped);
+      return 'Thanks. Now find ' + c.count + ' MORE businesses with the same criteria and the same CSV columns, in double quotes. ' +
+        'Rating must be from ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' (nothing above ' + c.max.toFixed(1) + ') with fewer than ' + c.reviews + ' reviews: check each one on Google Maps. ' +
+        'Try areas and types you haven\'t covered yet' + (c.areas ? ', but stay within: ' + c.areas : '') + '.' +
+        (names.length ? '\n\nDo not include: ' + names.join(', ') + '.' : '');
+    }
+    $('findMore').addEventListener('click', function () { copy(moreText(), 'Copied. Paste it into the same Gemini chat and send'); });
     function guessType(s) {
       s = (s || '').toLowerCase();
       if (/nail/.test(s)) return 'nails';
@@ -1329,6 +1341,7 @@
       });
       return best;
     }
+    var lastOut = [];
     function importRows(rows) {
       if (rows.length < 2) return 0;
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
@@ -1340,6 +1353,7 @@
       var cols = { merge: [cAddr, cArea, cName, cType, cRev], rate: cRate, rev: cRev, area: cArea, web: cWeb, comps: cComps };
       var have = knownNames();
       var added = 0;
+      lastOut = [];
       rows.slice(1).forEach(function (r) {
         if (h.length >= 5 && r.length < 3) return; // a sentence after the table, not a business
         r = alignRow(r, h.length, cols);
@@ -1357,6 +1371,13 @@
           aiComps: cComps.map(function (i) { return okText(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? okText(r[cWhy]) : '' }; })
         });
         if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
+        // The AI often ignores the rating range, so anything clearly outside it is left out.
+        var rr = parseFloat(nl.rating), rn = parseInt(nl.reviews, 10), c = state.crit;
+        if ((!isNaN(rr) && (rr > c.max || rr < c.min)) || (!isNaN(rn) && rn >= c.reviews)) {
+          lastOut.push(name + ' (' + (isNaN(rr) ? '?' : rr) + '★, ' + (isNaN(rn) ? '?' : rn) + ' reviews)');
+          if (state.skipped.indexOf(name) < 0) state.skipped.push(name);
+          have[name.toLowerCase()] = 1; return;
+        }
         state.leads.push(nl);
         have[name.toLowerCase()] = 1; added++;
       });
@@ -1367,8 +1388,10 @@
       var raw = $('importText').value;
       if (!raw.trim()) { $('importMsg').textContent = 'Paste the AI\'s answer first.'; return; }
       var n = importRows(parseRows(raw));
-      if (n) { $('importText').value = ''; $('importMsg').textContent = ''; toast(n + ' new business' + (n === 1 ? '' : 'es') + ' added to "To check"'); setView('today'); }
-      else $('importMsg').textContent = 'Nothing new found. Check you pasted the table, or they may all be on your list already.';
+      var out = lastOut.length ? ' Left out ' + lastOut.length + ' outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews): ' + lastOut.join(', ') + '.' : '';
+      var short = n < state.crit.count ? ' Need more? Tap "Copy a find-more message" and paste it into the same chat.' : '';
+      if (n) { $('importText').value = ''; $('importMsg').textContent = ''; toast(n + ' new business' + (n === 1 ? '' : 'es') + ' added to "To check"' + (lastOut.length ? '. ' + lastOut.length + ' left out (outside your criteria)' : '')); if (out || short) { $('importMsg').textContent = (n + ' added.' + out + short).trim(); return; } setView('today'); }
+      else $('importMsg').textContent = out ? ('Nothing added.' + out + ' Tap "Copy a find-more message" and paste it into the same chat.') : 'Nothing new found. Check you pasted the table, or they may all be on your list already.';
     });
     // ---------- Settings ----------
     function renderSettings() {
