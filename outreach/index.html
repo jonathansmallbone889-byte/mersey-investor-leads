@@ -661,18 +661,20 @@
     }
 
     // ---------- Messages ----------
+    // Lead with what others don't offer (one-tap WhatsApp asks, hearing problems privately first).
+    // QR cards are left out of the first message: owners have seen plenty and switch off.
     var TYPE_LINE = {
-      salon: "I've built a free tool that helps salons turn happy clients into Google reviews, with a quick WhatsApp after their appointment or a QR card at the desk.",
-      nails: "I've built a free tool that helps nail bars turn happy clients into Google reviews, with a quick WhatsApp after their appointment or a QR card at the desk.",
-      barber: "I've built a free tool that helps barbers get more Google reviews, with a quick WhatsApp after a cut or a QR card at the chair.",
-      groomer: "I've built a free tool that helps groomers turn happy owners into Google reviews. You can send the \"after\" photo on WhatsApp with your review link.",
-      cafe: "I've built a free tool that helps independent cafés turn regulars into Google reviews, with a QR card by the till or on every table.",
-      takeaway: "I've built a free tool that helps takeaways get happy customers on Google, not just the odd unhappy one, with a QR card on the counter or a quick message after an order.",
-      gym: "I've built a free tool that helps gyms and PTs turn happy members into Google reviews, with a quick WhatsApp after a milestone or a QR card on the wall.",
-      tattoo: "I've built a free tool that helps studios turn happy clients into Google reviews, with a quick WhatsApp once they've healed or a QR card at the desk.",
-      trade: "I've built a free tool that helps trades get more Google reviews, with a quick WhatsApp the day the job's finished.",
-      shop: "I've built a free tool that helps independent shops turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp.",
-      other: "I've built a free tool that helps local businesses turn happy customers into Google reviews, with a QR card by the till or a quick WhatsApp."
+      salon: "I've built a tool that sends clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      nails: "I've built a tool that sends clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      barber: "I've built a tool that sends customers a friendly WhatsApp after their cut, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      groomer: "I've built a tool that lets you send owners the \"after\" photo on WhatsApp with your review link, so happy owners leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      cafe: "I've built a tool that gives your regulars your own review page in your café's colours: happy ones leave a Google review in one tap, and anyone unhappy can message you privately first. Not an agency, and no contract.",
+      takeaway: "I've built a tool that helps takeaways get happy customers on Google, not just the odd unhappy one: a quick message after an order, and anyone unhappy can message you privately first. Not an agency, and no contract.",
+      gym: "I've built a tool that sends members a friendly WhatsApp after a milestone, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      tattoo: "I've built a tool that sends clients a friendly WhatsApp once they've healed, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      trade: "I've built a tool that sends customers a friendly WhatsApp the day the job's finished, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
+      shop: "I've built a tool that gives your customers your own review page in your shop's colours: happy ones leave a Google review in one tap, and anyone unhappy can message you privately first. Not an agency, and no contract.",
+      other: "I've built a tool that sends customers a friendly WhatsApp after their visit, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract."
     };
     // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
     // as the default when no compliment has been written (each lead gets its own by default).
@@ -837,7 +839,7 @@
       ['Hi again!', 'Just checking you saw my message. No worries if you\'re busy. I\'m happy to pop in to {name} for 2 minutes whenever suits 😊'],
       ['Hi!', 'Just following up on my message about getting more Google reviews from your {people}. It\'s completely free while I launch, and I\'d set it all up for you. Worth a quick look? 😊'],
       ['Hey!', 'I know it gets busy, so just bumping this up. I\'m only looking for a handful of founding businesses in ' + CITY() + ', and I\'d love {name} to be one of them. Fancy a quick chat? 😊'],
-      ['Hi again!', 'Quick one: would it help if your happy {people} could leave {name} a Google review in one tap, from a QR card on the counter or a quick WhatsApp? Happy to show you, it takes 2 minutes 😊']
+      ['Hi again!', 'Quick one: would it help if your happy {people} got a friendly WhatsApp after their visit and could leave {name} a Google review in one tap? It\'s free while I launch, with no contract. Happy to show you, it takes 2 minutes 😊']
     ];
     function seed(l) { var n = 0; for (var i = 0; i < l.id.length; i++) n = (n * 31 + l.id.charCodeAt(i)) % 9973; return n; }
     function fill(t, l) { return t.replace(/\{name\}/g, l.name).replace(/\{people\}/g, PEOPLE[l.type] || 'customers'); }
