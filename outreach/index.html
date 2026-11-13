@@ -664,17 +664,17 @@
     // Lead with what others don't offer (one-tap WhatsApp asks, hearing problems privately first).
     // QR cards are left out of the first message: owners have seen plenty and switch off.
     var TYPE_LINE = {
-      salon: "I've built a tool that sends clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      nails: "I've built a tool that sends clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      barber: "I've built a tool that sends customers a friendly WhatsApp after their cut, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      groomer: "I've built a tool that lets you send owners the \"after\" photo on WhatsApp with your review link, so happy owners leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      cafe: "I've built a tool that gives your regulars your own review page in your café's colours: happy ones leave a Google review in one tap, and anyone unhappy can message you privately first. Not an agency, and no contract.",
-      takeaway: "I've built a tool that helps takeaways get happy customers on Google, not just the odd unhappy one: a quick message after an order, and anyone unhappy can message you privately first. Not an agency, and no contract.",
-      gym: "I've built a tool that sends members a friendly WhatsApp after a milestone, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      tattoo: "I've built a tool that sends clients a friendly WhatsApp once they've healed, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      trade: "I've built a tool that sends customers a friendly WhatsApp the day the job's finished, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract.",
-      shop: "I've built a tool that gives your customers your own review page in your shop's colours: happy ones leave a Google review in one tap, and anyone unhappy can message you privately first. Not an agency, and no contract.",
-      other: "I've built a tool that sends customers a friendly WhatsApp after their visit, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first. Not an agency, and no contract."
+      salon: "I've built a simple way to send clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      nails: "I've built a simple way to send clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      barber: "I've built a simple way to send customers a friendly WhatsApp after their cut, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      groomer: "I've built a simple way to send owners the \"after\" photo on WhatsApp with your review link, so happy owners leave a Google review in one tap and anyone unhappy tells you privately first.",
+      cafe: "I've built a simple way for regulars to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
+      takeaway: "I've built a simple way for happy customers to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
+      gym: "I've built a simple way to send members a friendly WhatsApp after a milestone, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      tattoo: "I've built a simple way to send clients a friendly WhatsApp once they've healed, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      trade: "I've built a simple way to send customers a friendly WhatsApp the day the job's finished, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
+      shop: "I've built a simple way for customers to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
+      other: "I've built a simple way for happy customers to leave a Google review in one tap, and for anyone unhappy to message you privately first."
     };
     // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
     // as the default when no compliment has been written (each lead gets its own by default).
@@ -805,10 +805,8 @@
       var opener = (l.compliment || '').trim();
       if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}\uFE0F?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
       if (!opener) opener = aiList(l).length ? aiList(l)[0].t : autoCompliment(l);
-      var rev = '';
-      var n = parseInt(l.reviews, 10);
-      if (l.verified && !isNaN(n) && n < 60) rev = ' You\'ve got a great rating but only ' + n + ' reviews on Google, which doesn\'t reflect how many happy customers you must have.';
-      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', I\'m local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + rev + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' I\'m looking for a few founding businesses to try it free. Could I show you in 2 minutes? 😊';
+      // Short on purpose (about 55 words): fits one phone screen. The review count is saved for after they reply.
+      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' Not an agency, no contract. I\'m looking for a few founding businesses to try it free. Fancy a 2-minute look? 😊';
     }
     // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
     function igMessage(l) {
