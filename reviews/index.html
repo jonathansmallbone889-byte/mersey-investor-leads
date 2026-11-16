@@ -174,7 +174,25 @@
     .hero .btn-gold:hover { transform: translateY(-1px); }
     .hero .btn-ghost { background: rgba(255, 255, 255, .06); color: #fff; border-color: rgba(255, 255, 255, .2); }
     .hero .btn-ghost:hover { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .3); }
-    .btn { transition: transform .15s, filter .15s, background .15s, border-color .15s; }
+    .btn { transition: transform .15s, filter .15s, background .15s, border-color .15s, box-shadow .15s; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0) scale(.98); }
+    [data-enter] { animation: enter .8s cubic-bezier(.2, .7, .2, 1) var(--d, 0s) both; }
+    @keyframes enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .shots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+    .shot { margin: 0; }
+    .shot h3 { font-size: 19px; letter-spacing: -.015em; margin-bottom: 6px; }
+    .shot p { color: var(--muted); font-size: 15px; line-height: 1.55; margin-bottom: 18px; min-height: 3.1em; }
+    .shot .frame { border-radius: 28px; overflow: hidden; border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); aspect-ratio: 3 / 4; transition: transform .2s, box-shadow .2s; }
+    .shot .frame img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; transition: transform .4s ease; }
+    .shot:hover .frame { transform: translateY(-2px); }
+    .shot:hover .frame img { transform: scale(1.02); }
+    .eg { display: block; width: max-content; margin: -36px auto 40px; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--soft); border: 1px solid var(--border); padding: 6px 14px; border-radius: 99px; }
+    @media (max-width: 860px) {
+      .shots { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 14px; margin: 0 -16px; padding: 4px 16px 16px; scrollbar-width: none; }
+      .shots::-webkit-scrollbar { display: none; }
+      .shot { flex: 0 0 82%; scroll-snap-align: center; }
+    }
     .ticks { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 28px; font-size: 14px; color: rgba(255, 255, 255, .72); }
     .ticks span { display: inline-flex; align-items: center; gap: 7px; }
     .ticks svg { width: 16px; height: 16px; color: var(--star); flex: none; }
@@ -370,6 +388,8 @@
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .reveal { opacity: 1; transform: none; transition: none; }
+      [data-enter] { animation: none; }
+      .btn:hover, .btn:active, .shot:hover .frame, .shot:hover .frame img { transform: none; }
       .float { animation: none; }
     }
 
@@ -532,7 +552,7 @@
         Mersey Stars
       </a>
       <nav class="nav" id="landNav" aria-label="Page sections">
-        <a href="#problems">Features</a><a href="#how">How it works</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+        <a href="#problems">Features</a><a href="#how">How it works</a><a href="#inside">Inside the app</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
       </nav>
       <div class="top-actions">
         <button class="top-btn" id="toAbout" hidden>How it works</button>
@@ -547,21 +567,21 @@
     <section class="hero">
       <div class="wrap">
         <div>
-          <div class="badge"><b>New</b> Now welcoming founding businesses in Liverpool</div>
-          <h1>Turn happy customers into <em>5-star Google reviews.</em></h1>
-          <p class="sub">Your happiest customers aren't leaving reviews, because nobody asks them. Mersey Stars helps Liverpool businesses ask every customer in one tap, hear about problems first, and reply to reviews in seconds.</p>
-          <div class="btn-row">
+          <div class="badge" data-enter style="--d:0s"><b>New</b> Now welcoming founding businesses in Liverpool</div>
+          <h1 data-enter style="--d:.08s">Turn happy customers into <em>5-star Google reviews.</em></h1>
+          <p class="sub" data-enter style="--d:.16s">Your happiest customers aren't leaving reviews, because nobody asks them. Mersey Stars helps Liverpool businesses ask every customer in one tap, hear about problems first, and reply to reviews in seconds.</p>
+          <div class="btn-row" data-enter style="--d:.24s">
             <a class="btn btn-gold" href="#founding">Join free as a founding business</a>
             <a class="btn btn-ghost" href="#how">See how it works</a>
           </div>
-          <div class="ticks">
+          <div class="ticks" data-enter style="--d:.32s">
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Free until 31 January</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Set up in 2 minutes</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>No contract</span>
             <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Local to Liverpool</span>
           </div>
         </div>
-        <div class="stage">
+        <div class="stage" data-enter style="--d:.2s">
           <div class="glow"></div>
           <div class="float f1"><div class="h"><i style="background:#1fa855">✓</i>WhatsApp · just now</div>Thanks for coming in today! Got a minute to leave us a quick review? ⭐</div>
           <div class="phone"><iframe title="Example of the page your customers see" src="r.html?n=Lark+Lane+Coffee&g=https%3A%2F%2Fwww.google.com%2Fmaps&o=Sam&e=hello%40example.com&w=447700900000&c=7c2d12&demo=1" loading="lazy"></iframe></div>
@@ -623,7 +643,7 @@
                 <div class="prob">No idea what you're aiming for</div><h3>A clear target</h3>
                 <p>Enter your rating and see exactly how many 5-star reviews you need to reach 4.5 or 4.8, then track it week by week.</p>
               </div>
-              <div class="mock" style="margin-top:0"><div class="goal">To reach 4.8 you need<b>12 more 5-star reviews</b></div><div class="meter"><i></i></div><div class="goal" style="margin-top:6px">Example: 4.6 from 31 reviews</div></div>
+              <div class="mock" style="margin-top:0"><div class="goal">To reach 4.8 you need<b>31 more 5-star reviews</b></div><div class="meter"><i></i></div><div class="goal" style="margin-top:6px">Example: 4.6 from 31 reviews</div></div>
             </div>
           </div>
         </div>
@@ -640,6 +660,20 @@
           <div class="step reveal"><div class="n">1</div><h3>Add your business</h3><p>Your name and your Google review link. We show you exactly where to find it.</p></div>
           <div class="step reveal"><div class="n">2</div><h3>Ask every customer</h3><p>Send a WhatsApp after their visit, and put a QR card on the counter or tables.</p></div>
           <div class="step reveal"><div class="n">3</div><h3>Watch the stars add up</h3><p>Happy customers post on Google. Unhappy ones tell you first, so you can fix it.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="inside" style="padding-top:0">
+      <div class="wrap">
+        <span class="kicker reveal">Inside the app</span>
+        <h2 class="t reveal">Everything in one place, on your phone</h2>
+        <p class="st reveal">No app to download. This is the real dashboard, shown with an example café.</p>
+        <span class="eg reveal">Example business: Lark Lane Coffee</span>
+        <div class="shots">
+          <figure class="shot reveal"><h3>Your week at a glance</h3><p>Who you've asked, who needs a nudge, and how many 5★ reviews to your goal.</p><div class="frame"><img src="img/dashboard.jpg" alt="Mersey Stars dashboard for the example café Lark Lane Coffee" width="390" height="575" loading="lazy"></div></figure>
+          <figure class="shot reveal"><h3>Know who to nudge</h3><p>Tick off reviews as they appear, and send a one-tap nudge to anyone who forgot.</p><div class="frame"><img src="img/asks.jpg" alt="List of customers asked for a review, with reviewed and nudge labels" width="358" height="780" loading="lazy"></div></figure>
+          <figure class="shot reveal"><h3>Replies written for you</h3><p>Pick the stars, add their name, and copy a friendly reply signed by you.</p><div class="frame"><img src="img/reply.jpg" alt="A ready-written reply to a five-star review" width="358" height="463" loading="lazy"></div></figure>
         </div>
       </div>
     </section>
