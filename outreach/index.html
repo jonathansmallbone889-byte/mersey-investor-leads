@@ -832,9 +832,9 @@
     var PEOPLE = { salon: 'clients', nails: 'clients', barber: 'customers', groomer: 'dog owners', cafe: 'regulars', takeaway: 'regulars', gym: 'members', tattoo: 'clients', trade: 'customers', shop: 'customers', other: 'customers' };
     var FU = [
       ['Hi again!', 'Just checking you saw my message. No worries if you\'re busy. I\'m happy to pop in to {name} for 2 minutes whenever suits 😊'],
-      ['Hi!', 'Just following up on my message about getting more Google reviews from your {people}. It\'s completely free while I launch, and I\'d set it all up for you. Worth a quick look? 😊'],
+      ['Hi!', 'Just following up on my message about getting more Google reviews from your {people}. It\'s free until 31 January, and I\'d set it all up for you. Worth a quick look? 😊'],
       ['Hey!', 'I know it gets busy, so just bumping this up. I\'m only looking for a handful of founding businesses in ' + CITY() + ', and I\'d love {name} to be one of them. Fancy a quick chat? 😊'],
-      ['Hi again!', 'Quick one: would it help if your happy {people} got a friendly WhatsApp after their visit and could leave {name} a Google review in one tap? It\'s free while I launch, with no contract. Happy to show you, it takes 2 minutes 😊']
+      ['Hi again!', 'Quick one: would it help if your happy {people} got a friendly WhatsApp after their visit and could leave {name} a Google review in one tap? It\'s free until 31 January, with no contract. Happy to show you, it takes 2 minutes 😊']
     ];
     function seed(l) { var n = 0; for (var i = 0; i < l.id.length; i++) n = (n * 31 + l.id.charCodeAt(i)) % 9973; return n; }
     function fill(t, l) { return t.replace(/\{name\}/g, l.name).replace(/\{people\}/g, PEOPLE[l.type] || 'customers'); }
@@ -868,7 +868,7 @@
         function () { return 'Whenever works best for you 😊 Mornings or afternoons this week are both fine. Just give me a day and a quiet time and I\'ll be there. It only takes a couple of minutes.'; },
         function () { return 'Any day this week works for me 😊 Just tell me a day and time that\'s quiet for you.'; }] },
       { k: 'details', g: 'yes', t: 'Leave your details', next: 'rMaybe', v: [
-        function (l) { return 'No problem at all, thanks for getting back to me! 😊 Here are my details:\n\n' + myDetails() + '\nIn short: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in and set it up in 2 minutes whenever suits. No rush at all!'; },
+        function (l) { return 'No problem at all, thanks for getting back to me! 😊 Here are my details:\n\n' + myDetails() + '\nIn short: ' + pitch(l) + ' It\'s free until 31 January, and I\'m local, so I can pop in and set it up in 2 minutes whenever suits. No rush at all!'; },
         function () { return 'Of course! 😊\n\n' + myDetails() + '\nWhenever suits, I can pop in and show you in 2 minutes.'; }] },
       { k: 'call', g: 'yes', t: 'Can you call me?', next: 'rYes', v: [
         function () { return 'Of course! 😊 What\'s the best number and time to ring you?' + (state.me.phone ? ' Or call me whenever suits on ' + state.me.phone + '.' : ''); }] },
@@ -876,10 +876,10 @@
         function (l) { return 'Happy to explain! 😊 In short: ' + pitch(l) + ' If anyone wasn\'t happy, they can message you privately first, so you get the chance to put it right. It takes 2 minutes to set up and I can do it with you in person.'; },
         function (l) { return 'Really simple: ' + pitch(l) + ' Easiest is if I show you, it takes 2 minutes 😊'; }] },
       { k: 'price', g: 'q', t: 'How much is it?', v: [
-        function () { return 'It\'s completely free while I\'m launching 😊 Founding businesses also keep a discount for life when paid plans start, and I\'ll always tell you well before anything changes. No contract. Could I pop in and show you? It only takes 2 minutes.'; },
-        function () { return 'Free while I launch 😊 Founding businesses keep a discount for life after that, with no contract. Fancy a quick look?'; }] },
+        function () { return 'It\'s free until 31 January 😊 After that, founding businesses pay £25 a month for life, instead of the usual £40. No contract, cancel any time. And if your Google reviews haven\'t grown by 31 January, you don\'t pay until they do.'; },
+        function () { return 'Free until 31 January, then £25 a month for life as a founding business (usually £40). No contract, and if your reviews haven\'t grown by then, you don\'t pay until they do 😊'; }] },
       { k: 'free', g: 'q', t: 'Is it really free?', v: [
-        function () { return 'Yes, genuinely free while I\'m launching 😊 No contract and no card details. When paid plans start, founding businesses keep a discount for life, and I\'ll tell you well before anything changes, so you can decide then.'; }] },
+        function () { return 'Yes, genuinely free until 31 January 😊 No contract and no card details. After that it\'s £25 a month for life as a founding business, and if your reviews haven\'t grown by then, you don\'t pay until they do. You can stop any time.'; }] },
       { k: 'google', g: 'q', t: 'Do I need a Google page?', v: [
         function (l) { return 'You just need your Google Business profile, the listing that shows when people search for you on Google or Maps' + (l.rating ? ', which you\'ve already got' : '') + ' 😊 I\'ll find your review link and set everything up for you, so there\'s nothing technical to do.'; }] },
       { k: 'long', g: 'q', t: 'How long does it take?', v: [
@@ -890,19 +890,19 @@
         function () { return 'No problem at all, I know how busy it gets! 😊 I\'ll leave it with you. Whenever you\'ve got 2 minutes, I\'m happy to pop in' + (state.me.phone ? ', or you can reach me on ' + state.me.phone : '') + '.'; },
         function () { return 'Totally understand 😊 It only takes 2 minutes, so whenever there\'s a quiet moment, just give me a shout.'; }] },
       { k: 'stand', g: 'obj', t: 'We have a stand / NFC card', v: [
-        function () { return 'Nice one, they\'re a great idea! 😊 The one thing a stand can\'t do is ask the customers who walk straight past it. ' + BRAND() + ' works alongside it: a quick WhatsApp after their visit with your review link, plus reminders for who to nudge. It\'s free while I launch, so there\'s no harm trying both.'; }] },
+        function () { return 'Nice one, they\'re a great idea! 😊 The one thing a stand can\'t do is ask the customers who walk straight past it. ' + BRAND() + ' works alongside it: a quick WhatsApp after their visit with your review link, plus reminders for who to nudge. It\'s free until 31 January, so there\'s no harm trying both.'; }] },
       { k: 'enough', g: 'obj', t: 'We already get reviews', v: [
-        function () { return 'That\'s brilliant, you clearly look after your customers 👏 Google favours recent reviews, so a steady flow each month helps keep you showing up when people search nearby. ' + BRAND() + ' makes that a one-tap habit. Free while I launch if you ever fancy trying it 😊'; }] },
+        function () { return 'That\'s brilliant, you clearly look after your customers 👏 Google favours recent reviews, so a steady flow each month helps keep you showing up when people search nearby. ' + BRAND() + ' makes that a one-tap habit. Free until 31 January if you ever fancy trying it 😊'; }] },
       { k: 'small', g: 'obj', t: 'We\'re only small', v: [
-        function () { return 'That\'s exactly who it\'s for 😊 Reviews are how small local businesses stand out, and it only takes a tap after each visit, so it fits around a busy day. Free while I launch, with no contract.'; }] },
+        function () { return 'That\'s exactly who it\'s for 😊 Reviews are how small local businesses stand out, and it only takes a tap after each visit, so it fits around a busy day. Free until 31 January, with no contract.'; }] },
       { k: 'catch', g: 'obj', t: 'What\'s the catch?', v: [
-        function () { return 'Fair question! No catch: I\'m local to ' + CITY() + ' and launching ' + BRAND() + ', so I\'m looking for a few founding businesses to try it free and tell me honestly what works. No contract, nothing to pay, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊'; }] },
+        function () { return 'Fair question! No catch: I\'m local to ' + CITY() + ' and launching ' + BRAND() + ', so I\'m looking for a few founding businesses to try it free and tell me honestly what works. Free until 31 January, no contract, and it plays by Google\'s rules (no fake reviews, ever). Happy to show you in person 😊'; }] },
       { k: 'legit', g: 'obj', t: 'Is this legit?', v: [
         function () { return 'Totally fair to ask! 😊 I\'m ' + (state.me.name ? state.me.name + ', a' : 'a') + ' local ' + CITY() + ' founder launching ' + BRAND() + '. No payment, no passwords and nothing to sign, and it plays by Google\'s rules, with no fake reviews ever.' + (state.me.link ? ' You can see it here: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Or I can pop in and show you in person.'; }] },
       { k: 'think', g: 'obj', t: 'Need to think about it', next: 'rMaybe', v: [
         function () { return 'Of course, no pressure at all 😊' + (state.me.link ? ' Have a look whenever you get a minute: ' + state.me.link.replace(/^https?:\/\//, '') + '.' : '') + ' Happy to answer any questions, and I can pop in for a 2-minute demo whenever suits.'; }] },
       { k: 'team', g: 'later', t: 'Passing to the team', next: 'rMaybe', v: [
-        function (l) { return 'Thank you, that\'s brilliant! 😊 For whoever picks this up: ' + pitch(l) + ' It\'s free while I launch, and I\'m local, so I can pop in to ' + l.name + ' and set it all up in 2 minutes. Just let me know a day and time that suits.'; }] },
+        function (l) { return 'Thank you, that\'s brilliant! 😊 For whoever picks this up: ' + pitch(l) + ' It\'s free until 31 January, and I\'m local, so I can pop in to ' + l.name + ' and set it all up in 2 minutes. Just let me know a day and time that suits.'; }] },
       { k: 'later', g: 'later', t: 'Maybe later', next: 'rMaybe', v: [
         function () { return 'No problem at all 😊 I\'ll check back in a few weeks. If you\'d like to try it sooner, just message me here' + (state.me.phone ? ' or on ' + state.me.phone : '') + '.'; }] },
       { k: 'no', g: 'later', t: 'No thanks', next: 'rNo', v: [
@@ -954,7 +954,7 @@
     }
     function previewText(l) {
       return 'Brilliant, thanks for getting back to me! 😊 Here\'s a preview of what your customers would see 👇\n' + previewUrl(l) +
-        '\n\nIt\'s just a preview, so nothing gets sent. Happy customers go straight to your Google review box, and anyone unhappy can message you privately first. Want me to set yours up? It\'s free while I\'m launching, and I can do it all by message.';
+        '\n\nIt\'s just a preview, so nothing gets sent. Happy customers go straight to your Google review box, and anyone unhappy can message you privately first. Want me to set yours up? It\'s free until 31 January, then £25 a month as a founding business, and I can do it all by message.';
     }
     function readyText(l) {
       return 'Your ' + BRAND() + ' page is ready 🎉 Here\'s your link:\n' + (l.pageLink || '[paste their page link]') +
@@ -1012,7 +1012,7 @@
         'Open your outreach app and work through today\'s plan: replies first, then follow-ups, then DMs.\n\n' + appUrl(), 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR');
     }
     // ---------- Demos and results ----------
-    var PREP = [['confirm', 'Confirmed the day and time with them'], ['link', 'Their Google review link set up in Mersey Stars'], ['before', 'Written down their review count today'], ['price', 'Decided my founding price'], ['flyer', 'Printed their QR card and a flyer']];
+    var PREP = [['confirm', 'Confirmed the day and time with them'], ['link', 'Their Google review link set up in Mersey Stars'], ['before', 'Written down their review count today'], ['price', 'Told them the founding price: free until 31 Jan, then £25/month'], ['flyer', 'Printed their QR card and a flyer']];
     var CHECK_WEEKS = [2, 4, 8];
     function fmtTime(t) { if (!t) return ''; var h = +t.slice(0, 2), m = t.slice(3, 5); return (h % 12 || 12) + (m !== '00' ? ':' + m : '') + (h < 12 ? 'am' : 'pm'); }
     function demoWhen(l) { return (l.demoAt ? nice(l.demoAt) : 'date to confirm') + (l.demoTime ? ', ' + fmtTime(l.demoTime) : ''); }
@@ -1487,7 +1487,7 @@
     function CITY() { return state.me.city || 'Liverpool'; }
     function about() { return BRAND() + ' helps independent ' + CITY() + ' businesses get more Google reviews: they ask every customer in one tap by WhatsApp or text, or with a QR card on the counter. ' +
       'Unhappy customers can message the owner privately first, it reminds them who to nudge, writes review replies and shows how many reviews they need for their rating goal. ' +
-      'It is free for founding businesses while it launches, founding businesses keep a discount for life, there is no contract, set-up takes 2 minutes and can be done in person. ' +
+      'It is free until 31 January, then founding businesses pay £25 a month for life (usual price £40). If their Google reviews have not grown by 31 January they do not pay until they do. There is no contract, set-up takes 2 minutes and can be done in person. ' +
       'It follows Google\'s rules: no fake reviews, no rewards for reviews, every customer can always reach the Google page.'; }
     function compPrompt(l) {
       return 'Look up ' + l.name + (l.area ? ' in ' + l.area : '') + ', ' + CITY() + (handle(l.ig) ? ' (Instagram: @' + handle(l.ig) + ')' : '') +
