@@ -98,7 +98,7 @@
     .chips::-webkit-scrollbar { display: none; }
     .chip { flex: none; background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 99px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
     .chip[aria-pressed="true"] { background: var(--brand); color: #fff; border-color: var(--brand); }
-    .msg { white-space: pre-wrap; background: #dcf8c6; color: #111; border-radius: 14px 14px 4px 14px; padding: 12px 14px; font-size: 14.5px; margin: 10px 0; }
+    .msg { white-space: pre-wrap; overflow-wrap: anywhere; background: #dcf8c6; color: #111; border-radius: 14px 14px 4px 14px; padding: 12px 14px; font-size: 14.5px; margin: 10px 0; }
     .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 10px; margin-top: 10px; }
     .badge.ok { background: var(--ok-soft); color: var(--ok); }
     .badge.no { background: var(--bad-soft); color: var(--bad); }
@@ -106,6 +106,18 @@
     .notice { background: var(--warn-soft); border-radius: 12px; padding: 11px 13px; font-size: 13.5px; margin-top: 10px; }
     .meter { height: 8px; background: var(--soft); border-radius: 99px; overflow: hidden; margin-top: 8px; }
     .meter i { display: block; height: 100%; background: var(--star); border-radius: 99px; }
+    .run-start { position: relative; margin-top: 14px; padding: 14px; font-size: 16px; }
+    .runbar { height: 6px; background: var(--soft); margin: 0 16px; border-radius: 99px; overflow: hidden; }
+    .runbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ffd25e, #f5b301); border-radius: 99px; transition: width .3s; }
+    .run-step { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft, var(--soft)); padding: 5px 10px; border-radius: 99px; margin-bottom: 12px; }
+    .run-biz { display: flex; gap: 12px; align-items: center; margin-bottom: 6px; }
+    .run-biz b { display: block; font-size: 19px; }
+    .run-biz small { color: var(--muted); font-size: 13.5px; }
+    .run-done { text-align: center; padding: 18px 4px; }
+    .run-done h2 { text-align: center; }
+    .run-done .big { font-size: 46px; }
+    .run-sum { display: grid; gap: 8px; margin: 16px 0; text-align: left; }
+    .run-sum div { display: flex; justify-content: space-between; padding: 12px 14px; border-radius: 12px; background: var(--soft); font-weight: 600; }
     /* Lead sheet */
     .sheet { position: fixed; inset: 0; background: var(--bg); z-index: 40; overflow-y: auto; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
     .sheet header { position: sticky; top: 0; background: var(--brand); color: #fff; display: flex; align-items: center; gap: 10px; padding: calc(12px + env(safe-area-inset-top)) 12px 12px; z-index: 2; }
@@ -291,6 +303,7 @@
           <div class="stat"><b id="sReplies">0</b><span id="sRate">replies</span></div>
           <div class="stat"><b id="sSigned">0</b><span>signed up</span></div>
         </div>
+        <button class="btn btn-gold btn-block run-start" id="runStart" hidden>▶ Start today's run <span id="runCount"></span></button>
       </div>
       <div class="card" id="cardBackup" hidden style="background:var(--warn-soft);border-color:transparent">
         <h2>Back up your leads 💾</h2>
@@ -469,6 +482,16 @@
     <button role="tab" data-tab="find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Find</button>
     <button role="tab" data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Settings</button>
   </nav>
+
+  <!-- Today's run: one business at a time -->
+  <div class="sheet" id="run" hidden>
+    <header>
+      <button id="runBack" aria-label="Back to Today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="t"><b>Today's run</b><span id="runMeta"></span></div>
+    </header>
+    <div class="runbar"><i id="runFill"></i></div>
+    <main id="runBody"></main>
+  </div>
 
   <!-- Lead detail -->
   <div class="sheet" id="sheet" hidden>
@@ -810,7 +833,7 @@
       if (l.status === 'followed') return { text: dmText(l), label: 'DM' };
       if (l.status === 'dm') return { text: fuText(l), label: 'Follow-up' };
       if (l.status === 'fu') return { text: finalText(l), label: 'Final message' };
-      if (l.status === 'replied') return { text: previewText(l), label: 'preview' };
+      if (l.status === 'replied') return { text: previewText(l), label: 'Preview' };
       if (l.status === 'wait') return { text: nudgeText(l), label: 'Nudge' };
       return null;
     }
@@ -1081,6 +1104,107 @@
       toast('Backup saved to your Downloads');
     }
     var lastDue = [];
+    // ---------- Today's run: everything due today, one business at a time ----------
+    var RUN_KINDS = {
+      reply: { step: 'Send the preview', done: 'Preview sent ✓', sum: 'Previews sent' },
+      fu: { step: 'Follow-up', done: 'Follow-up sent ✓', sum: 'Follow-ups sent' },
+      nudge: { step: 'Friendly nudge', done: 'Nudge sent ✓', sum: 'Nudges sent' },
+      final: { step: 'Last message', done: 'Sent, close it ✓', sum: 'Closed with a last message' },
+      dm: { step: 'Send the DM', done: 'DM sent ✓', sum: 'DMs sent' },
+      follow: { step: 'Follow and like', done: 'Followed and liked ✓', sum: 'Followed and liked' }
+    };
+    var RUN_STATUS = { reply: 'replied', fu: 'dm', nudge: 'wait', final: 'fu', dm: 'followed', follow: 'follow' };
+    var run = null;
+    function runQueue() {
+      var t = todayIso(), L = state.leads, fd = state.me.fuDays, q = [];
+      var skip = state.runSkip && state.runSkip.day === t ? state.runSkip.ids : [];
+      function add(kind, list) { list.forEach(function (l) { if (skip.indexOf(l.id) < 0) q.push({ id: l.id, kind: kind }); }); }
+      add('reply', L.filter(function (l) { return l.status === 'replied'; }));
+      add('fu', L.filter(function (l) { return l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t; }));
+      add('nudge', L.filter(function (l) { return l.status === 'wait' && addDays(l.waitAt || l.repliedAt || t, 3) <= t; }));
+      add('final', L.filter(function (l) { return l.status === 'fu' && l.fuAt && addDays(l.fuAt, 4) <= t; }));
+      var left = Math.max(0, state.me.limit - L.filter(function (l) { return l.dmAt === t; }).length);
+      add('dm', L.filter(function (l) { return l.status === 'followed' && skip.indexOf(l.id) < 0; }).slice(0, left));
+      add('follow', L.filter(function (l) { return l.status === 'follow'; }));
+      return q;
+    }
+    function startRun() {
+      var q = runQueue(); if (!q.length) { toast('Nothing due right now 👍'); return; }
+      run = { q: q, i: 0, sum: {} };
+      $('run').hidden = false; document.body.style.overflow = 'hidden'; renderRun();
+    }
+    function endRun() { run = null; $('run').hidden = true; document.body.style.overflow = ''; render(); }
+    function runItem() {
+      // Skip anything already handled elsewhere (e.g. changed in the full page).
+      while (run.i < run.q.length) {
+        var it = run.q[run.i], l = find(it.id);
+        if (l && l.status === RUN_STATUS[it.kind]) return { it: it, l: l };
+        run.i++;
+      }
+      return null;
+    }
+    function renderRun() {
+      if (!run) return;
+      var x = runItem(), total = run.q.length;
+      $('runFill').style.width = Math.round(Math.min(run.i, total) / total * 100) + '%';
+      if (!x) {
+        $('runMeta').textContent = 'All done';
+        var rows = Object.keys(RUN_KINDS).filter(function (k) { return run.sum[k]; }).map(function (k) { return '<div><span>' + RUN_KINDS[k].sum + '</span><b>' + run.sum[k] + '</b></div>'; }).join('');
+        $('runBody').innerHTML = '<div class="card run-done"><div class="big">🎉</div><h2>Run complete</h2><p class="sub">' + (rows ? 'Nice work. Here\'s what you did:' : 'Nothing was marked as done this time.') + '</p>' +
+          (rows ? '<div class="run-sum">' + rows + '</div>' : '') + '<button class="btn btn-gold btn-block" data-run="close">Back to Today</button></div>';
+        return;
+      }
+      var it = x.it, l = x.l, K = RUN_KINDS[it.kind], h = handle(l.ig);
+      var m = it.kind === 'follow' ? null : igMessage(l);
+      $('runMeta').textContent = (run.i + 1) + ' of ' + total;
+      var html = '<div class="card"><span class="run-step">' + K.step + '</span>' +
+        '<div class="run-biz">' + avatar(l) + '<div><b>' + esc(l.name) + '</b><small>' + esc([typeArea(l), ratingText(l)].filter(Boolean).join(' · ')) + '</small></div></div>';
+      if (it.kind === 'dm') html += '<p class="help">Opening line: ' + esc((l.compliment || '').trim() || 'an automatic compliment') + '. <button class="link-btn" data-run="open" style="background:none;border:0;color:var(--accent);font:inherit;text-decoration:underline;cursor:pointer;padding:0">Change it</button></p>';
+      if (it.kind === 'follow') html += '<p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts.</p>';
+      if (m) html += '<div class="msg">' + esc(m.text) + '</div>';
+      if (h) html += '<button class="btn btn-ig btn-block" data-run="ig">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open Instagram' : 'Open @' + esc(h)) + '</button>';
+      else html += (m ? '<button class="btn btn-primary btn-block" data-run="copy">Copy message</button>' : '') + '<a class="btn btn-ghost btn-block" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener" style="margin-top:8px">Find their Instagram</a>';
+      html += '<button class="btn btn-gold btn-block" data-run="done" style="margin-top:10px">' + K.done + '</button>' +
+        '<div class="pair" style="margin-top:8px"><button class="btn btn-ghost" data-run="skip">Skip for today</button><button class="btn btn-ghost" data-run="open">Open full page</button></div></div>';
+      $('runBody').innerHTML = html;
+      $('run').scrollTop = 0;
+    }
+    function runDone(it, l) {
+      var t = todayIso();
+      if (it.kind === 'reply') Object.assign(l, { status: 'wait', waitAt: t, previewAt: t, repliedAt: l.repliedAt || t });
+      else if (it.kind === 'fu') Object.assign(l, { status: 'fu', fuAt: t, fuHook: '' });
+      else if (it.kind === 'nudge') l.waitAt = t;
+      else if (it.kind === 'final') Object.assign(l, { status: 'no', notes: ((l.notes || '') + (l.notes ? '\n' : '') + 'Final message sent ' + nice(t)).trim() });
+      else if (it.kind === 'dm') Object.assign(l, { status: 'dm', dmAt: t });
+      else if (it.kind === 'follow') Object.assign(l, { status: 'followed', followedAt: t });
+      save();
+      run.sum[it.kind] = (run.sum[it.kind] || 0) + 1;
+    }
+    $('runStart').addEventListener('click', startRun);
+    $('runBack').addEventListener('click', endRun);
+    $('runBody').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-run]'); if (!b || !run) return;
+      var a = b.dataset.run;
+      if (a === 'close') { endRun(); return; }
+      var x = runItem(); if (!x) return;
+      var m = x.it.kind === 'follow' ? null : igMessage(x.l);
+      if (a === 'ig') { if (m) copy(m.text, m.label + ' copied. Paste it in their chat'); openInstagram(handle(x.l.ig)); }
+      else if (a === 'copy') { if (m) copy(m.text, m.label + ' copied'); }
+      else if (a === 'done') {
+        if (x.it.kind === 'dm') {
+          var t = todayIso(), sent = state.leads.filter(function (l) { return l.dmAt === t; }).length;
+          if (sent >= state.me.limit && !b.dataset.armed) { b.dataset.armed = '1'; b.textContent = 'Daily limit reached. Tap again to count it anyway'; return; }
+        }
+        runDone(x.it, x.l); run.i++; renderRun();
+      }
+      else if (a === 'skip') {
+        var day = todayIso();
+        if (!state.runSkip || state.runSkip.day !== day) state.runSkip = { day: day, ids: [] };
+        state.runSkip.ids.push(x.l.id); save(); run.i++; renderRun();
+      }
+      else if (a === 'open') openLead(x.l.id);
+    });
+
     function renderToday() {
       $('cardCal').hidden = !!state.me.calSet || state.leads.length < 3;
       $('calDaily').href = dailyCalUrl();
@@ -1157,6 +1281,8 @@
       if (last.length) plan.push(last.length + ' to close');
       if (ready.length && left) plan.push(Math.min(left, ready.length) + ' DM' + (Math.min(left, ready.length) > 1 ? 's' : '') + ' to send');
       if (fol.length) plan.push(fol.length + ' to follow');
+      var rq = runQueue();
+      $('runStart').hidden = !rq.length; $('runCount').textContent = rq.length ? '(' + rq.length + ')' : '';
       $('helloPlan').textContent = plan.length ? 'Today: ' + plan.join(' · ') : fresh ? 'Let\'s find your first businesses ✨' : 'You\'re all caught up. Time to find new businesses ✨';
       $('lCheck').innerHTML = chk.map(function (l) {
         return itemHtml(l, typeArea(l) + ' · ' + (ratingText(l) || 'not checked'), '<button class="skipx" data-skip="' + l.id + '" aria-label="Not a fit: remove ' + esc(l.name) + '">✕</button>');
@@ -1518,7 +1644,7 @@
       return true;
     }
     function openLead(id) { cur = find(id); if (!cur) return; qrKey = ''; qrVar = 0; aiSaid = ''; compAngle = 'ai'; $('sheet').hidden = false; document.body.style.overflow = 'hidden'; renderSheet(); $('sheet').scrollTop = 0; }
-    function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; cur = null; render(); }
+    function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = run ? 'hidden' : ''; cur = null; render(); if (run) renderRun(); }
     $('sheetBack').addEventListener('click', closeSheet);
 
     function renderSheet() {
