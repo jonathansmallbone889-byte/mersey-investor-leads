@@ -312,7 +312,7 @@
         <div class="pair"><a class="btn btn-gold" id="calDaily" target="_blank" rel="noopener">Add reminder</a><button class="btn btn-ghost" id="calSkip">Not now</button></div>
       </div>
       <div class="card" id="cardRes" hidden><h2>Results checks due 📈 <span class="n" id="nRes"></span></h2><p class="sub">Look up their Google reviews and save the number. This is your proof it works.</p><div id="lRes"></div></div>
-      <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly and book a 2-minute demo.</p><div id="lHot"></div></div>
+      <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly. Send a preview of their page.</p><div id="lHot"></div></div>
       <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
       <div class="card" id="cardLast" hidden>
         <h2>Last message or close <span class="n" id="nLast"></span></h2>
@@ -803,14 +803,14 @@
       if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}\uFE0F?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
       if (!opener) opener = aiList(l).length ? aiList(l)[0].t : autoCompliment(l);
       // Short on purpose (about 55 words): fits one phone screen. The review count is saved for after they reply.
-      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' Not an agency, no contract. I\'m looking for a few founding businesses to try it free. Fancy a 2-minute look? 😊';
+      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' Not an agency, no contract. I\'m looking for a few founding businesses to try it free. Want to see what yours would look like? 😊';
     }
     // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
     function igMessage(l) {
       if (l.status === 'followed') return { text: dmText(l), label: 'DM' };
       if (l.status === 'dm') return { text: fuText(l), label: 'Follow-up' };
       if (l.status === 'fu') return { text: finalText(l), label: 'Final message' };
-      if (l.status === 'replied') return { text: replyText(), label: 'Reply' };
+      if (l.status === 'replied') return { text: previewText(l), label: 'preview' };
       if (l.status === 'wait') return { text: nudgeText(l), label: 'Nudge' };
       return null;
     }
@@ -861,6 +861,7 @@
     var QGROUPS = [['yes', 'Interested 🎉'], ['q', 'Questions'], ['obj', 'Not sure yet'], ['later', 'Not now']];
     var QUICK = [
       { k: 'yes', g: 'yes', t: 'Sounds good', next: 'rYes', v: [
+        function (l) { return previewText(l); },
         function (l) { return 'Brilliant, thanks for getting back to me! 😊 I could pop in to ' + l.name + ' this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set everything up for you while I\'m there.'; },
         function () { return 'Great stuff! 😊 When suits you for a quick 2-minute visit this week? I\'ll set it all up while I\'m there.'; }] },
       { k: 'book', g: 'yes', t: 'When can you come?', next: 'rYes', v: [
@@ -941,6 +942,23 @@
         '<button class="btn btn-gold btn-block" data-act="aiReply" style="margin-top:8px">Copy &amp; open Gemini</button>' +
         '<p class="help">Gemini writes the reply. Copy it from there and paste it in their chat.</p></details>' +
         (folded ? '</details>' : '') + '</div>';
+    }
+    // A preview of their own review page: their name on it, nothing gets sent (demo mode).
+    function siteBase() {
+      var b = (state.me.link || 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/').replace(/[#?].*$/, '').replace(/index\.html$/, '');
+      return /\/$/.test(b) ? b : b + '/';
+    }
+    function previewUrl(l) {
+      return siteBase() + 'r.html?n=' + encodeURIComponent(l.name) + (l.ownerName ? '&o=' + encodeURIComponent(l.ownerName) : '') +
+        '&g=' + encodeURIComponent('https://www.google.com/maps') + '&e=' + encodeURIComponent('hello@example.com') + '&demo=1';
+    }
+    function previewText(l) {
+      return 'Brilliant, thanks for getting back to me! 😊 Here\'s a preview of what your customers would see 👇\n' + previewUrl(l) +
+        '\n\nIt\'s just a preview, so nothing gets sent. Happy customers go straight to your Google review box, and anyone unhappy can message you privately first. Want me to set yours up? It\'s free while I\'m launching, and I can do it all by message.';
+    }
+    function readyText(l) {
+      return 'Your ' + BRAND() + ' page is ready 🎉 Here\'s your link:\n' + (l.pageLink || '[paste their page link]') +
+        '\n\nSend it to customers on WhatsApp after their visit and happy ones can leave a Google review in one tap. I can also send you a QR card for the counter. Any questions, just message me 😊';
     }
     function replyText() { return 'Brilliant, thanks for getting back to me! 😊 I could pop in this week. What day and time suits you best? It takes about 2 minutes, and I\'ll set it all up for you while I\'m there.'; }
 
@@ -1518,7 +1536,9 @@
       else if (l.status === 'followed') next = '<h2>Next: send the DM</h2><p class="sub">Add something specific you liked on their page, copy the message, and send it on Instagram.</p>';
       else if (l.status === 'dm') next = '<h2>' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'Follow-up due now' : 'Waiting for a reply') + '</h2><p class="sub">DM sent ' + nice(l.dmAt) + '. ' + (addDays(l.dmAt, state.me.fuDays) <= todayIso() ? 'No reply yet? Send one friendly follow-up.' : 'Follow up ' + nice(addDays(l.dmAt, state.me.fuDays)) + ' if they haven\'t replied.') + '</p>';
       else if (l.status === 'fu') next = '<h2>Followed up</h2><p class="sub">Followed up ' + nice(l.fuAt) + '. Still nothing after a few days? Visit or call if they\'re nearby, or send one polite final message to close the loop.</p>';
-      else if (l.status === 'replied') next = '<h2>They replied! Book a demo</h2><div class="msg">' + esc(replyText()) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyReply">Copy reply</button>') + '</div><button class="btn btn-gold btn-block" data-act="demo" style="margin-top:8px">Demo booked</button>';
+      else if (l.status === 'replied') next = '<h2>They replied! Send a preview</h2><p class="sub">They see their own review page, with their name on it. No call needed.</p><div class="msg">' + esc(previewText(l)) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyPreview">Copy preview message</button>') + '</div>' +
+        '<a class="btn btn-ghost btn-block" href="' + esc(previewUrl(l)) + '" target="_blank" rel="noopener" style="margin-top:8px">👀 See their preview</a>' +
+        '<div class="row" style="margin-top:8px"><button class="btn btn-gold" data-act="signed">They signed up ⭐</button><button class="btn btn-ghost" data-act="demo">They want a call or visit</button></div>';
       else if (l.status === 'wait') next = '<h2>They said maybe</h2><p class="sub">Replied ' + nice(l.repliedAt) + (l.waitAt && l.waitAt !== l.repliedAt ? ', nudged ' + nice(l.waitAt) : '') + '. Give them a few days, then send a friendly nudge.</p>' +
         '<div class="msg">' + esc(nudgeText(l)) + '</div><div class="row">' + (handle(l.ig) ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyNudge">Copy nudge</button>') + '</div>' +
         '<button class="btn btn-ghost btn-block" data-act="nudgeSent" style="margin-top:8px">I\'ve sent the nudge</button>' +
@@ -1537,6 +1557,17 @@
           '<button class="btn btn-ghost btn-block btn-sm" data-act="rAuto" style="margin-top:8px">🤖 It was an automatic reply</button>' +
           (l.autoAt ? '<p class="help">Automatic reply noted ' + nice(l.autoAt) + '. Still waiting for a real one.</p>' : '') + '</div>' +
           quickCard(l, true);
+      }
+
+      if (['dm', 'fu', 'wait'].indexOf(l.status) > -1) {
+        cards.preview = '<details class="card peek"><summary><b>Send a preview of their page</b></summary><p class="sub" style="margin-top:8px">If they ask what you mean, show them. Their name is on it and nothing gets sent.</p>' +
+          '<div class="msg">' + esc(previewText(l)) + '</div><div class="row"><button class="btn btn-primary" data-act="copyPreview">Copy preview message</button>' +
+          '<a class="btn btn-ghost" href="' + esc(previewUrl(l)) + '" target="_blank" rel="noopener">👀 See it</a></div></details>';
+      }
+      if (l.status === 'signed') {
+        cards.ready = '<div class="card"><h2>Send their page</h2><p class="sub">Set up their page on your website, then paste their link here.</p>' +
+          '<label class="f" for="fPage">Their review page link</label><input type="url" id="fPage" value="' + esc(l.pageLink || '') + '" placeholder="https://…/r.html?n=…" autocomplete="off" spellcheck="false">' +
+          '<div class="msg">' + esc(readyText(l)) + '</div><div class="row"><button class="btn btn-primary" data-act="copyReady"' + (l.pageLink ? '' : ' disabled') + '>Copy "page ready" message</button></div></div>';
       }
 
       // Instagram + Maps
@@ -1598,7 +1629,7 @@
         '<button class="btn btn-danger btn-block" data-act="delete" style="margin-top:10px">Delete this business</button></div>';
 
       // The card for the next action always comes straight after the progress card.
-      var order = { check: ['next', 'ig', 'dm'], follow: ['next', 'ig', 'dm'], followed: ['next', 'dm', 'ig'], dm: ['next', 'msg', 'reply', 'ig'], fu: ['next', 'msg', 'reply', 'ig'] }[l.status] || ['next', 'quick', 'ig'];
+      var order = { check: ['next', 'ig', 'dm'], follow: ['next', 'ig', 'dm'], followed: ['next', 'dm', 'ig'], dm: ['next', 'msg', 'reply', 'preview', 'ig'], fu: ['next', 'msg', 'reply', 'preview', 'ig'], wait: ['next', 'preview', 'quick', 'ig'], signed: ['next', 'ready', 'quick', 'ig'] }[l.status] || ['next', 'quick', 'ig'];
       html = order.concat(['details']).map(function (k) { return cards[k] || ''; }).join('');
       $('shBody').innerHTML = html;
     }
@@ -1691,6 +1722,8 @@
       else if (a === 'copyNudge') copy(nudgeText(cur), 'Nudge copied');
       else if (a === 'nudgeSent') { setStatus('wait', { waitAt: t }); toast('Nudge sent. Check again ' + nice(addDays(t, 3))); }
       else if (a === 'copyReply') copy(replyText(), 'Reply copied');
+      else if (a === 'copyPreview') { cur.previewAt = t; save(); copy(previewText(cur), 'Preview copied. Paste it into their chat'); }
+      else if (a === 'copyReady') copy(readyText(cur), 'Copied. Paste it into their chat');
       else if (a === 'demo') setStatus('demo', { demoAt: cur.demoAt || addDays(t, 2) });
       else if (a === 'signed') { setStatus('signed', { signedAt: cur.signedAt || t, beforeReviews: cur.beforeReviews !== undefined && cur.beforeReviews !== '' ? cur.beforeReviews : cur.reviews || '', beforeRating: cur.beforeRating || cur.rating || '' }); toast('Founding business signed up ⭐'); }
       else if (a === 'no') setStatus('no');
@@ -1698,7 +1731,7 @@
     });
     $('shBody').addEventListener('change', function (e) {
       var id = e.target.id; if (!cur) return;
-      var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt', demoTime: 'demoTime', fOwnerName: 'ownerName', fBeforeRev: 'beforeReviews', fBeforeRate: 'beforeRating' };
+      var map = { fIg: 'ig', fRating: 'rating', fReviews: 'reviews', fComp: 'compliment', fName: 'name', fArea: 'area', fNotes: 'notes', fType: 'type', demoAt: 'demoAt', demoTime: 'demoTime', fOwnerName: 'ownerName', fBeforeRev: 'beforeReviews', fBeforeRate: 'beforeRating', fPage: 'pageLink' };
       if (e.target.dataset && e.target.dataset.prep) { cur.prep = Object.assign({}, cur.prep); cur.prep[e.target.dataset.prep] = e.target.checked; save(); var yp = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = yp; return; }
       if (id === 'ckRev' || id === 'ckRate') return;
       if (id === 'fStatus') {
