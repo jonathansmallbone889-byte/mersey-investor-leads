@@ -552,7 +552,37 @@
     function mapsUrl(l) { return (l.mapsReal && l.maps) || ('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([l.name, l.address || l.area, CITY()].filter(Boolean).join(' '))); }
     function googleUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent([l.name, l.address || l.area, CITY() + ' reviews'].filter(Boolean).join(' ')); }
     // Only real Instagram profiles come back from a site: search, so nothing here can be made up.
-    function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent('site:instagram.com ' + l.name + ' ' + (l.area || CITY())); }
+    // A wide Google search (not limited to instagram.com pages, which often miss small businesses).
+    function igSearchUrl(l) { return 'https://www.google.com/search?q=' + encodeURIComponent('"' + l.name + '" ' + (l.area || CITY()) + ' instagram'); }
+    function siteOf(l) { var m = String(l.notes || '').match(/Website:\s*(https?:\/\/\S+)/i); return m && !/instagram\.com/i.test(m[1]) ? m[1] : ''; }
+    // Open the Instagram app on its search page (falls back to the website).
+    function openIgSearch() {
+      var web = 'https://www.instagram.com/explore/';
+      if (/Android/i.test(navigator.userAgent)) { location.href = 'intent://instagram.com/explore/#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=' + encodeURIComponent(web) + ';end'; return; }
+      openLink(web);
+    }
+    // Does a username look like this business? Used to catch the wrong account being pasted.
+    function igLooksRight(h, name) {
+      var u = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      var w = nameWords(name), sig = w.filter(function (x) { return !GENERIC[x] && x.length >= 3; });
+      if (!u) return true;
+      // The whole main name run together ("Hair of the Dog - Holistic…" -> hairofthedog).
+      var bw = nameWords(String(name || '').split(/\s[-–—|]\s|\(/)[0]);
+      if ([bw.join(''), bw.filter(function (x) { return x !== 'the'; }).join('')].some(function (m) { return m.length >= 6 && u.indexOf(m) > -1; })) return true;
+      if (!sig.length) return true; // nothing distinctive to compare
+      if (sig.some(function (x) { return u.indexOf(x) > -1 || (x.length >= 5 && u.indexOf(x.slice(0, 4)) > -1); })) return true;
+      var ini = w.map(function (x) { return x[0]; }).join('');
+      if (ini.length >= 2 && u.indexOf(ini) === 0) return true;
+      return u.length >= 4 && w.join('').indexOf(u) > -1;
+    }
+    function findIgHtml(l) {
+      var site = siteOf(l);
+      return '<div class="findig"><b>Find their Instagram</b><ol><li>Tap <b>Search Instagram</b>. Their name is copied, so tap 🔍 and paste it</li><li>Pick the account whose name, photos and area match</li><li>Tap <b>⋯</b> then <b>Copy profile URL</b>, and paste it below</li></ol>' +
+        '<button class="btn btn-ig btn-block" data-act="igSearch">Search Instagram</button>' +
+        '<div class="pair" style="margin-top:8px"><a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Search Google</a>' +
+        (site ? '<a class="btn btn-ghost" href="' + esc(site) + '" target="_blank" rel="noopener">Their website</a>' : '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>') + '</div>' +
+        '<p class="help" style="margin-top:8px">' + (site ? 'Websites usually link their Instagram at the bottom. ' : 'Their Google Maps listing sometimes links their Instagram. ') + 'No Instagram at all? Tap <b>Not a fit</b>.</p></div>';
+    }
 
     var defaults = {
       me: { name: 'Jonathan', brand: 'Mersey Stars', city: 'Liverpool', ig: 'merseystars', link: 'https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/', phone: '07576 618414', email: 'jonathansmallbone889@gmail.com', limit: 5, fuDays: 3, key: '', lastBackup: '' },
@@ -1163,7 +1193,7 @@
       if (it.kind === 'follow') html += '<p class="sub">Open their Instagram, follow, and like 2 or 3 recent posts.</p>';
       if (m) html += '<div class="msg">' + esc(m.text) + '</div>';
       if (h) html += '<button class="btn btn-ig btn-block" data-run="ig">' + (m ? 'Copy ' + (m.label === 'DM' ? 'DM' : m.label.toLowerCase()) + ' & open Instagram' : 'Open @' + esc(h)) + '</button>';
-      else html += (m ? '<button class="btn btn-primary btn-block" data-run="copy">Copy message</button>' : '') + '<a class="btn btn-ghost btn-block" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener" style="margin-top:8px">Find their Instagram</a>';
+      else html += (m ? '<button class="btn btn-primary btn-block" data-run="copy">Copy message</button>' : '') + '<button class="btn btn-ghost btn-block" data-run="open" style="margin-top:8px">Find their Instagram</button>';
       html += '<button class="btn btn-gold btn-block" data-run="done" style="margin-top:10px">' + K.done + '</button>' +
         '<div class="pair" style="margin-top:8px"><button class="btn btn-ghost" data-run="skip">Skip for today</button><button class="btn btn-ghost" data-run="open">Open full page</button></div></div>';
       $('runBody').innerHTML = html;
@@ -1698,8 +1728,7 @@
 
       // Instagram + Maps
       cards.ig = '<div class="card"><h2>Instagram & Google</h2>' +
-        (h ? '' : '<div class="findig"><b>Find their Instagram</b><ol><li>Tap the button: it only shows real Instagram profiles</li><li>Open the right one and check the name and photos match</li><li>Tap <b>⋯</b> then <b>Copy profile URL</b>, and paste it below</li></ol>' +
-          '<a class="btn btn-ig btn-block" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Find their Instagram</a></div>') +
+        (h ? '' : findIgHtml(l)) +
         '<label class="f" for="fIg">Instagram username or profile link</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
         (h ? (igMessage(l) ? '' : igButton(l)) : '') +
@@ -1711,7 +1740,7 @@
           m ? '<div class="badge ok">✓ Meets your criteria</div>' : '<div class="badge no">✕ Outside your criteria (' + state.crit.min + '–' + state.crit.max + '★, under ' + state.crit.reviews + ' reviews)</div>') +
         (l.status === 'check' && h ? '<div class="notice" style="margin-top:12px">' + (l.igOk
             ? '✓ Instagram checked: @' + esc(h)
-            : '<b>Check @' + esc(h) + ' is really them.</b> AI tools sometimes guess usernames that don\'t exist. Open it and check the name, photos and location match.' +
+            : '<b>Check @' + esc(h) + ' is really them.</b> ' + (igLooksRight(h, l.name) ? 'Open it and check the name, photos and location match.' : 'The username doesn\'t look like "' + esc(l.name) + '", so it may be a different business. Open it and check the name, photos and location match.') +
               (l.igSrc ? ' <a href="' + esc(l.igSrc) + '" target="_blank" rel="noopener">See where it was found</a>' : '') +
               '<div class="igbtns">' + igButton(l, ' btn-block') +
               '<div class="pair"><button class="btn btn-primary" data-act="igOk">Yes, it\'s them</button><button class="btn btn-ghost" data-act="igBad">Not them</button></div></div>') + '</div>' : '') +
@@ -1807,6 +1836,7 @@
         if (!cur.igOk) { toast('Check their Instagram is real first'); return; }
         setStatus('follow'); toast('Ready to follow'); }
       else if (a === 'nofit') notAFit();
+      else if (a === 'igSearch') { copy(cur.name, 'Name copied. Tap 🔍 in Instagram and paste it'); openIgSearch(); }
       else if (a === 'igOk') { setStatus(cur.status, { igOk: true }); toast('Instagram confirmed'); }
       else if (a === 'igBad') { setStatus(cur.status, { ig: '', igSrc: '', igOk: false }); toast('Removed. Tap "Find their Instagram", or Not a fit if they have none'); }
       else if (a === 'followed') { setStatus('followed', { followedAt: t }); toast('Nice. DM them tomorrow'); }
@@ -1867,7 +1897,7 @@
         if (cur.status === 'wait' && !cur.waitAt) cur.waitAt = todayIso();
         if (cur.status === 'signed' && !cur.signedAt) cur.signedAt = todayIso();
       }
-      else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { cur.igOk = /instagram\.com\//i.test(e.target.value); cur.igSrc = ''; if (cur.igOk && cur.ig) toast('@' + cur.ig + ' saved and checked ✓'); } }
+      else if (map[id]) { cur[map[id]] = id === 'fIg' ? handle(e.target.value) : e.target.value.trim(); if (id === 'fIg') { var isLink = /instagram\.com\//i.test(e.target.value), looks = igLooksRight(cur.ig, cur.name); cur.igOk = isLink && looks; cur.igSrc = ''; if (cur.ig) toast(cur.igOk ? '@' + cur.ig + ' saved and checked ✓' : looks ? '@' + cur.ig + ' saved. Check it\'s them' : '@' + cur.ig + ' doesn\'t look like ' + cur.name + '. Check it\'s them'); } }
       else return;
       save();
       if (id === 'fNotes' || id === 'fHook' || id === 'fOwnerName') return;
