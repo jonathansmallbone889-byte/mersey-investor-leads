@@ -15,6 +15,7 @@ Both are static, single-file HTML/JS apps (ES5 style, a `$()` helper, state in `
 - **Live site:** https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/
 - **Outreach app:** https://jonathansmallbone889-byte.github.io/mersey-investor-leads/outreach/
 - **Import links:** `outreach/#import=<base64url JSON array of leads>` adds leads (`name`, `type`, `area`, `address`, `notes`) into "To check". Names already on the list are skipped. This is how to hand Jonathan new businesses.
+- **Finding new businesses:** use the `/lead-finder` skill (`.claude/skills/lead-finder/`). It researches businesses from the web and their own websites, and returns one import link. It never sends anything.
 - **Outreach `type` values:** `salon`, `nails`, `barber`, `groomer`, `cafe`, `takeaway`, `gym`, `tattoo`, `trade`, `shop`, `other`.
 
 ## The offer (keep everything consistent with this)
