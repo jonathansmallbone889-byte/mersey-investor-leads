@@ -577,11 +577,15 @@
     }
     function findIgHtml(l) {
       var site = siteOf(l);
-      return '<div class="findig"><b>Find their Instagram</b><ol><li>Tap <b>Search Instagram</b>. Their name is copied, so tap 🔍 and paste it</li><li>Pick the account whose name, photos and area match</li><li>Tap <b>⋯</b> then <b>Copy profile URL</b>, and paste it below</li></ol>' +
-        '<button class="btn btn-ig btn-block" data-act="igSearch">Search Instagram</button>' +
-        '<div class="pair" style="margin-top:8px"><a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Search Google</a>' +
-        (site ? '<a class="btn btn-ghost" href="' + esc(site) + '" target="_blank" rel="noopener">Their website</a>' : '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>') + '</div>' +
-        '<p class="help" style="margin-top:8px">' + (site ? 'Websites usually link their Instagram at the bottom. ' : 'Their Google Maps listing sometimes links their Instagram. ') + 'No Instagram at all? Tap <b>Not a fit</b>.</p></div>';
+      return '<div class="findig"><b>Find their Instagram</b>' +
+        '<p class="help" style="margin:6px 0 8px"><b>Most reliable:</b> the business links its own Instagram on ' + (site ? 'its website (usually at the bottom) or ' : '') + 'its Google listing (look for its social profiles or website).</p>' +
+        '<div class="pair">' + (site ? '<a class="btn btn-primary" href="' + esc(site) + '" target="_blank" rel="noopener">Their website</a>' : '') +
+        '<a class="btn ' + (site ? 'btn-ghost' : 'btn-primary') + '" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a></div>' +
+        '<p class="help" style="margin:12px 0 6px"><b>No link there?</b> Search Instagram. Their name is copied, so tap 🔍 and paste it.</p>' +
+        '<div class="pair"><button class="btn btn-ig" data-act="igSearch">Search Instagram</button><a class="btn btn-ghost" href="' + igSearchUrl(l) + '" target="_blank" rel="noopener">Search Google</a></div>' +
+        '<p class="help" style="margin:12px 0 4px"><b>Is it really them?</b> Only pick an account if at least two of these match:</p>' +
+        '<ul class="help" style="margin:0 0 6px;padding-left:20px;line-height:1.6"><li>Their area or address in the bio (' + esc(l.area || CITY()) + ')</li><li>Photos that match their Google Maps photos</li><li>A link to their website or booking page</li><li>Posts in the last few months</li></ul>' +
+        '<p class="help">Then tap <b>⋯</b> → <b>Copy profile URL</b> and paste it below. Not sure, or no Instagram? Tap <b>Not a fit</b>.</p></div>';
     }
 
     var defaults = {
