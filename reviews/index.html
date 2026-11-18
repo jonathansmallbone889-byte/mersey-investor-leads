@@ -1215,7 +1215,7 @@
     function googleUrl(g) {
       g = (g || '').trim();
       if (/^https?:\/\//i.test(g)) return g.replace(/^http:/i, 'https:');
-      if (/^(g\.page|maps\.app\.goo\.gl|goo\.gl|search\.google\.com|www\.google\.|google\.)/i.test(g)) return 'https://' + g;
+      if (/^(g\.page|maps\.app\.goo\.gl|goo\.gl|share\.google|search\.google\.com|www\.google\.|google\.)/i.test(g)) return 'https://' + g;
       if (/^[A-Za-z0-9_-]{15,}$/.test(g)) return 'https://search.google.com/local/writereview?placeid=' + g;
       return '';
     }
@@ -1366,8 +1366,8 @@
       if (v) {
         var g = googleUrl(v);
         if (!g) h = '';
-        else if (/google\.[a-z.]+\/maps|maps\.app\.goo\.gl/i.test(g)) h = 'This looks like a Google Maps link. It works, but a review link (g.page/r/…/review) opens the review box directly, which gets more reviews.';
-        else if (!/(g\.page|google\.|goo\.gl)/i.test(g)) h = 'This doesn\'t look like a Google link. Double-check it with "Test my Google link".';
+        else if (/google\.[a-z.]+\/maps|maps\.app\.goo\.gl|share\.google\//i.test(g)) h = 'This is a link to your Google profile. It works, but customers then have to find "Write a review". A review link (g.page/r/…/review) or your Place ID opens the review box directly, which gets more reviews.';
+        else if (!/(g\.page|google\.|goo\.gl|share\.google)/i.test(g)) h = 'This doesn\'t look like a Google link. Double-check it with "Test my Google link".';
         else h = '✓ Looks good.';
       }
       $('hGoogle').textContent = h;
