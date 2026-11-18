@@ -380,6 +380,29 @@
 
     <!-- FIND -->
     <section data-view="find" hidden>
+      <div class="card" id="igFindCard">
+        <h2>Find on Instagram 📸</h2>
+        <p class="sub"><b>Always the right account:</b> start on Instagram, then check their Google rating in the app.</p>
+        <div class="steps2">
+          <div class="st"><b>1</b><div><strong>Pick an area, then tap a business type</strong><span>Instagram opens that local hashtag, e.g. #crosbynails.</span></div></div>
+        </div>
+        <select id="igArea" aria-label="Area" style="margin-bottom:10px"></select>
+        <div class="chips" id="igTags" style="flex-wrap:wrap;overflow:visible"></div>
+        <div class="steps2" style="margin-top:14px">
+          <div class="st"><b>2</b><div><strong>Open a local business's profile</strong><span>Check it's the business, not a customer. Then tap ⋯ → Copy profile URL.</span></div></div>
+          <div class="st"><b>3</b><div><strong>Paste it here and add</strong><span>It goes straight into "To check" with the right Instagram.</span></div></div>
+        </div>
+        <input type="text" id="qaIg" placeholder="Paste their profile link" autocomplete="off" spellcheck="false">
+        <input type="text" id="qaName" placeholder="Business name" style="margin-top:8px">
+        <div class="two" style="margin-top:0">
+          <div><select id="qaType" aria-label="Type"></select></div>
+          <div><input type="text" id="qaArea" placeholder="Area" aria-label="Area"></div>
+        </div>
+        <p class="err" id="qaErr" style="color:var(--bad);font-size:13px;margin:6px 0 0"></p>
+        <button class="btn btn-gold btn-block" id="qaAdd" style="margin-top:8px">Add business</button>
+        <p class="help" id="qaDone"></p>
+      </div>
+
       <div class="card" id="findCard">
         <h2>Find businesses with free AI ✨</h2>
         <p class="sub">Your search is written for you, with your criteria and every business to skip. You'll find each Instagram yourself in one tap, so no made-up usernames.</p>
@@ -1393,8 +1416,53 @@
       openLead(l.id);
     });
 
+    // ---------- Find on Instagram: start from the real profile, so the username is always right ----------
+    var IG_TAG = { salon: 'hairsalon', nails: 'nails', barber: 'barber', groomer: 'doggroomer', cafe: 'cafe', takeaway: 'takeaway', gym: 'gym', tattoo: 'tattoo', shop: 'shop', trade: 'plumber' };
+    var qaCount = 0;
+    function tagArea(a) { return String(a || '').toLowerCase().replace(/city centre/, '').replace(/[^a-z0-9]/g, ''); }
+    function renderIgFind() {
+      var areas = areaList(); if (!areas.length) areas = [CITY()];
+      var cur = $('igArea').value;
+      $('igArea').innerHTML = areas.map(function (a) { return '<option>' + esc(a) + '</option>'; }).join('');
+      if (areas.indexOf(cur) > -1) $('igArea').value = cur;
+      var a = tagArea($('igArea').value) || tagArea(CITY());
+      var types = state.crit.types.length ? state.crit.types : Object.keys(IG_TAG);
+      $('igTags').innerHTML = types.filter(function (t) { return IG_TAG[t]; }).map(function (t) { return '<button class="chip" data-igtag="' + a + IG_TAG[t] + '" data-t="' + t + '">#' + a + IG_TAG[t] + '</button>'; }).join('');
+      if (!$('qaType').options.length) $('qaType').innerHTML = TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+      if (!$('qaArea').value) $('qaArea').value = $('igArea').value;
+    }
+    $('igArea').addEventListener('change', function () { $('qaArea').value = this.value; renderIgFind(); });
+    $('igTags').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-igtag]'); if (!b) return;
+      $('qaType').value = b.dataset.t; $('qaArea').value = $('igArea').value;
+      var web = 'https://www.instagram.com/explore/tags/' + b.dataset.igtag + '/';
+      if (/Android/i.test(navigator.userAgent)) { location.href = 'intent://instagram.com/explore/tags/' + b.dataset.igtag + '/#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url=' + encodeURIComponent(web) + ';end'; return; }
+      openLink(web);
+    });
+    // Suggest a name from the username (e.g. "crosby_coffee" -> "Crosby Coffee"); always editable.
+    $('qaIg').addEventListener('change', function () {
+      var h = handle(this.value);
+      if (h && !$('qaName').value.trim()) $('qaName').value = h.replace(/[._]+/g, ' ').replace(/\d+/g, ' ').trim().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      var t = guessType($('qaName').value + ' ' + h); if (t !== 'other') $('qaType').value = t;
+    });
+    $('qaAdd').addEventListener('click', function () {
+      var raw = $('qaIg').value.trim(), h = handle(raw), name = $('qaName').value.trim();
+      $('qaErr').textContent = '';
+      if (!h) { $('qaErr').textContent = 'Paste their Instagram profile link first.'; $('qaIg').focus(); return; }
+      if (!name) { $('qaErr').textContent = 'Add the business name (as it appears on Google).'; $('qaName').focus(); return; }
+      var dupe = state.leads.filter(function (l) { return handle(l.ig).toLowerCase() === h.toLowerCase() || l.name.toLowerCase() === name.toLowerCase(); })[0];
+      if (dupe) { $('qaErr').textContent = dupe.name + ' is already on your list.'; return; }
+      unskip(name);
+      state.leads.push(newLead({ name: name, ig: h, igOk: true, type: $('qaType').value, area: $('qaArea').value.trim(), notes: 'Added from Instagram ' + nice(todayIso()) + '. Check the Google rating and reviews.' }));
+      save(); qaCount++;
+      $('qaIg').value = ''; $('qaName').value = '';
+      $('qaDone').textContent = '✓ ' + name + ' added to "To check" (' + qaCount + ' added). Paste the next one.';
+      toast(name + ' added ✓');
+    });
+
     // ---------- Find ----------
     function renderFind() {
+      renderIgFind();
       var c = state.crit;
       $('cMin').value = c.min; $('cMax').value = c.max; $('cRev').value = c.reviews; $('cCount').value = c.count;
       $('cAreas').value = c.areas || '';
