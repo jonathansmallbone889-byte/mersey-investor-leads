@@ -9,7 +9,7 @@ Both are static, single-file HTML/JS apps (ES5 style, a `$()` helper, state in `
 | Path | What it is | localStorage key |
 |---|---|---|
 | `reviews/` | The public website, plus the business dashboard (ask customers, QR & print, reply writer, goal). `r.html` is the customer review page; `?demo=1` makes a safe preview that sends nothing. | `mersey-stars-v1` |
-| `outreach/` | Jonathan's private Instagram outreach app: Today (with "Start today's run"), Leads, Find (AI search prompt plus paste-import), Settings. | `ms-outreach-v1` |
+| `outreach/` | Jonathan's private Instagram outreach app: Today (with "Start today's run"), Leads, Find (Google AI search that fills in a batch, plus "Add one from Instagram"), Settings. | `ms-outreach-v1` |
 | `index.html` | Redirects to `reviews/`, keeping the query string and hash. | |
 
 - **Live site:** https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/
@@ -33,7 +33,7 @@ Never write "no monthly fee". Don't promise a specific number of reviews.
 5. Sign them up, then send their page link.
 
 - **Daily DM limit:** 10.
-- **Instagram usernames:** the AI search must never supply them (they were made up before). Jonathan finds them with "Search Instagram" in the app, and the app checks that pasted usernames look like the business name.
+- **Instagram usernames:** never trust a username from an AI. The Google AI search may suggest an instagram.com link only when Google shows it on the listing or website. The app keeps it only if it looks like the business name, and always marks it "check it's them" for Jonathan to confirm. "Add one from Instagram" (copying the real profile link) is always correct.
 
 ## Jonathan's rules
 
