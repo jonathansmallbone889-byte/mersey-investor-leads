@@ -390,7 +390,7 @@
         <div class="chips" id="igTags" style="flex-wrap:wrap;overflow:visible"></div>
         <div class="steps2" style="margin-top:14px">
           <div class="st"><b>2</b><div><strong>Open a local business's profile</strong><span>Check it's the business, not a customer. Then tap ⋯ → Copy profile URL.</span></div></div>
-          <div class="st"><b>3</b><div><strong>Paste it here and add</strong><span>It goes straight into "To check" with the right Instagram.</span></div></div>
+          <div class="st"><b>3</b><div><strong>Paste it, check Google, add</strong><span>Tap "Check Google rating", type the stars and reviews, then Add. 5.0★ and busy businesses are skipped for you.</span></div></div>
         </div>
         <input type="text" id="qaIg" placeholder="Paste their profile link" autocomplete="off" spellcheck="false">
         <input type="text" id="qaName" placeholder="Business name" style="margin-top:8px">
@@ -398,15 +398,21 @@
           <div><select id="qaType" aria-label="Type"></select></div>
           <div><input type="text" id="qaArea" placeholder="Area" aria-label="Area"></div>
         </div>
+        <button class="btn btn-ghost btn-block" id="qaGoogle" style="margin-top:4px">Check Google rating</button>
+        <div class="two" style="margin-top:8px">
+          <div><input type="number" id="qaRating" step="0.1" min="1" max="5" inputmode="decimal" placeholder="Rating, e.g. 4.6" aria-label="Google rating"></div>
+          <div><input type="number" id="qaReviews" min="0" inputmode="numeric" placeholder="Reviews, e.g. 38" aria-label="Number of Google reviews"></div>
+        </div>
         <p class="err" id="qaErr" style="color:var(--bad);font-size:13px;margin:6px 0 0"></p>
         <button class="btn btn-gold btn-block" id="qaAdd" style="margin-top:8px">Add business</button>
         <p class="help" id="qaDone"></p>
       </div>
 
       <div class="card" id="findCard">
-        <h2>Find businesses with free AI ✨</h2>
-        <p class="sub">Your search is written for you, with your criteria and every business to skip. You'll find each Instagram yourself in one tap, so no made-up usernames.</p>
-        <div class="steps2">
+        <h2>Or search with AI ✨</h2>
+        <p class="sub">Less accurate: AI often suggests businesses rated 5.0★ and can't give you their Instagram. Use it when hashtags run dry.</p>
+        <details class="peek" id="aiPeek"><summary>Open AI search</summary>
+        <div class="steps2" style="margin-top:10px">
           <div class="st"><b>1</b><div><strong>Tap Find businesses</strong><span>Your search is copied and Gemini opens. Paste it in and send.</span></div></div>
         </div>
         <button class="btn btn-gold btn-block" data-ai-open="gemini">Find businesses</button>
@@ -425,6 +431,7 @@
         <p class="help" id="importMsg"></p>
         <button class="btn btn-ghost btn-block" id="findMore" style="margin-top:8px">Copy a find-more message</button>
         <p class="help" style="margin-top:6px">Got too few? Copy this, paste it into the same Gemini chat, then paste the new answer above.</p>
+        </details>
       </div>
 
       <div class="card">
@@ -1445,6 +1452,12 @@
       if (h && !$('qaName').value.trim()) $('qaName').value = h.replace(/[._]+/g, ' ').replace(/\d+/g, ' ').trim().replace(/\b\w/g, function (c) { return c.toUpperCase(); });
       var t = guessType($('qaName').value + ' ' + h); if (t !== 'other') $('qaType').value = t;
     });
+    $('qaGoogle').addEventListener('click', function () {
+      var name = $('qaName').value.trim() || handle($('qaIg').value).replace(/[._]+/g, ' ');
+      if (!name) { $('qaErr').textContent = 'Paste their profile link or add the name first.'; return; }
+      openLink('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([name, $('qaArea').value.trim() || CITY()].join(' ')));
+      setTimeout(function () { $('qaRating').focus(); }, 300);
+    });
     $('qaAdd').addEventListener('click', function () {
       var raw = $('qaIg').value.trim(), h = handle(raw), name = $('qaName').value.trim();
       $('qaErr').textContent = '';
@@ -1452,11 +1465,22 @@
       if (!name) { $('qaErr').textContent = 'Add the business name (as it appears on Google).'; $('qaName').focus(); return; }
       var dupe = state.leads.filter(function (l) { return handle(l.ig).toLowerCase() === h.toLowerCase() || l.name.toLowerCase() === name.toLowerCase(); })[0];
       if (dupe) { $('qaErr').textContent = dupe.name + ' is already on your list.'; return; }
+      var r = okRating($('qaRating').value), n = okReviews($('qaReviews').value), c = state.crit;
+      var clear = function () { ['qaIg', 'qaName', 'qaRating', 'qaReviews'].forEach(function (id) { $(id).value = ''; }); };
+      // Outside the criteria (e.g. 5.0★ or 100+ reviews): skip it, and remember so searches don't suggest it again.
+      if ((r !== '' && (+r > c.max || +r < c.min)) || (n !== '' && +n >= c.reviews)) {
+        if (state.skipped.indexOf(name) < 0) state.skipped.push(name);
+        save(); clear();
+        $('qaDone').textContent = '✕ ' + name + ' skipped: ' + (r !== '' ? r + '★' : '') + (r !== '' && n !== '' ? ', ' : '') + (n !== '' ? n + ' reviews' : '') + '. You want ' + c.min + '–' + c.max + '★ with under ' + c.reviews + ' reviews. Try the next one.';
+        toast('Skipped: not a fit');
+        return;
+      }
+      var checked = r !== '' && n !== '';
       unskip(name);
-      state.leads.push(newLead({ name: name, ig: h, igOk: true, type: $('qaType').value, area: $('qaArea').value.trim(), notes: 'Added from Instagram ' + nice(todayIso()) + '. Check the Google rating and reviews.' }));
-      save(); qaCount++;
-      $('qaIg').value = ''; $('qaName').value = '';
-      $('qaDone').textContent = '✓ ' + name + ' added to "To check" (' + qaCount + ' added). Paste the next one.';
+      state.leads.push(newLead({ name: name, ig: h, igOk: true, type: $('qaType').value, area: $('qaArea').value.trim(), rating: r, reviews: n,
+        status: checked ? 'follow' : 'check', notes: 'Added from Instagram ' + nice(todayIso()) + (checked ? '. Checked on Google.' : '. Check the Google rating and reviews.') }));
+      save(); qaCount++; clear();
+      $('qaDone').textContent = '✓ ' + name + (checked ? ' added, ready to follow' : ' added to "To check"') + ' (' + qaCount + ' added). Paste the next one.';
       toast(name + ' added ✓');
     });
 
