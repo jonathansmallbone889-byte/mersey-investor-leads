@@ -380,9 +380,35 @@
 
     <!-- FIND -->
     <section data-view="find" hidden>
+      <div class="card" id="findCard">
+        <h2>Find businesses with Google AI ✨</h2>
+        <p class="sub">Finds a batch at once, with ratings straight from Google Maps. Anything rated 5.0★ or too busy is left out for you.</p>
+        <div id="aiPeek">
+        <div class="steps2">
+          <div class="st"><b>1</b><div><strong>Tap Find with Google AI</strong><span>Google's AI Mode opens with your search already in. Let it answer.</span></div></div>
+        </div>
+        <button class="btn btn-gold btn-block" data-ai-open="google">Find with Google AI</button>
+        <p class="help" id="nextAreas" style="text-align:center;margin-top:6px"></p>
+        <details class="peek"><summary>More options</summary>
+          <p class="help" style="margin:8px 0 6px">Google AI not working? Use another free AI instead (it copies the search for you to paste):</p>
+          <div class="pair"><button class="btn btn-ghost btn-sm" data-ai-open="gemini">Gemini</button><button class="btn btn-ghost btn-sm" data-ai-open="perplexity">Perplexity</button></div>
+          <p class="help" style="margin:10px 0 0">The search that gets copied:</p>
+          <textarea id="prompt" readonly style="min-height:150px;font-size:13px;margin-top:6px"></textarea>
+        </details>
+        <div class="steps2" style="margin-top:16px">
+          <div class="st"><b>2</b><div><strong>Paste the answer here</strong><span>Select the whole answer (or just the table), copy it and paste it below. Any Instagram it found shows as "check it's them".</span></div></div>
+        </div>
+        <textarea id="importText" placeholder="Paste the AI's answer here" style="min-height:110px"></textarea>
+        <button class="btn btn-primary btn-block" id="doImport" style="margin-top:10px">Add to my list</button>
+        <p class="help" id="importMsg"></p>
+        <button class="btn btn-ghost btn-block" id="findMore" style="margin-top:8px">Copy a find-more message</button>
+        <p class="help" style="margin-top:6px">Got too few? Copy this, paste it into the same chat, then paste the new answer above.</p>
+        </div>
+      </div>
+
       <div class="card" id="igFindCard">
-        <h2>Find on Instagram 📸</h2>
-        <p class="sub"><b>Always the right account:</b> start on Instagram, then check their Google rating in the app.</p>
+        <h2>Add one from Instagram 📸</h2>
+        <p class="sub">Spotted a business on Instagram? Add it here: always the right account.</p>
         <div class="steps2">
           <div class="st"><b>1</b><div><strong>Pick an area, then tap a business type</strong><span>Instagram opens that local hashtag, e.g. #crosbynails.</span></div></div>
         </div>
@@ -408,31 +434,6 @@
         <p class="help" id="qaDone"></p>
       </div>
 
-      <div class="card" id="findCard">
-        <h2>Or search with AI ✨</h2>
-        <p class="sub">Less accurate: AI often suggests businesses rated 5.0★ and can't give you their Instagram. Use it when hashtags run dry.</p>
-        <details class="peek" id="aiPeek"><summary>Open AI search</summary>
-        <div class="steps2" style="margin-top:10px">
-          <div class="st"><b>1</b><div><strong>Tap Find businesses</strong><span>Your search is copied and Gemini opens. Paste it in and send.</span></div></div>
-        </div>
-        <button class="btn btn-gold btn-block" data-ai-open="gemini">Find businesses</button>
-        <p class="help" id="nextAreas" style="text-align:center;margin-top:6px"></p>
-        <details class="peek"><summary>More options</summary>
-          <p class="help" style="margin:8px 0 6px">Gemini not working? Use another free AI instead:</p>
-          <div class="pair"><button class="btn btn-ghost btn-sm" data-ai-open="perplexity">Perplexity</button><button class="btn btn-ghost btn-sm" data-ai-open="copilot">Copilot</button></div>
-          <p class="help" style="margin:10px 0 0">The search that gets copied:</p>
-          <textarea id="prompt" readonly style="min-height:150px;font-size:13px;margin-top:6px"></textarea>
-        </details>
-        <div class="steps2" style="margin-top:16px">
-          <div class="st"><b>2</b><div><strong>Paste the answer here</strong><span>Copy the whole reply (the table is enough) and paste it below.</span></div></div>
-        </div>
-        <textarea id="importText" placeholder="Paste the AI's answer here" style="min-height:110px"></textarea>
-        <button class="btn btn-primary btn-block" id="doImport" style="margin-top:10px">Add to my list</button>
-        <p class="help" id="importMsg"></p>
-        <button class="btn btn-ghost btn-block" id="findMore" style="margin-top:8px">Copy a find-more message</button>
-        <p class="help" style="margin-top:6px">Got too few? Copy this, paste it into the same Gemini chat, then paste the new answer above.</p>
-        </details>
-      </div>
 
       <div class="card">
         <h2>Your criteria</h2>
@@ -1508,7 +1509,7 @@
       return state.leads.filter(function (l) {
         var where = ((l.area || '') + ' ' + (l.address || '')).toLowerCase();
         return !low.length || low.some(function (x) { return where.indexOf(x) > -1; });
-      }).map(function (l) { return l.name; }).slice(-40);
+      }).map(function (l) { return l.name; }).slice(-25);
     }
     function buildPrompt(step) {
       var c = state.crit;
@@ -1520,10 +1521,11 @@
         'Types: ' + types + '.\n' +
         'Looking for: Google rating ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' (not 4.9 or 5.0) and fewer than ' + c.reviews + ' Google reviews. Lots of places are rated 4.9 or 5.0, so skip those. Don\'t spend long checking: I double-check every business on Google myself.\n\n' +
         (names.length ? 'Already on my list, so skip: ' + names.join(', ') + '.\n\n' : '') +
-        'Always reply with the table, even if you only find a few. Give it as a CSV in a code block, every value in double quotes, with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'Always reply with the table, even if you only find a few. Give it as a CSV in a code block, every value in double quotes, with these columns:\nBusiness Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Instagram,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
         'Rating and reviews: copy them as shown on Google Maps. If you can\'t see them, leave them blank (never guess).\n' +
         'Compliments: if you read the business\'s Google reviews, write 3 short friendly compliments (under 15 words, one emoji each) about what real customers praise, and in Compliment Based On quote a few words from one real review. If you didn\'t read any, leave all four blank.\n' +
-        'Don\'t give Instagram usernames. Only give a Website if you found the real one.';
+        'Instagram: the full instagram.com link ONLY if it is shown on their Google listing or their own website. Otherwise leave it blank. Never guess a username.\n' +
+        'Only give a Website if you found the real one.';
     }
     $('cTypes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-t]'); if (!b) return;
@@ -1571,12 +1573,19 @@
         status: 'check', compliment: '', notes: '', createdAt: todayIso(), followedAt: '', dmAt: '', fuAt: '', demoAt: '' }, o);
     }
     // ---------- Find: copy the search into a free AI, paste the answer back ----------
-    var AI_APPS = { gemini: 'https://gemini.google.com/app', perplexity: 'https://www.perplexity.ai/', copilot: 'https://copilot.microsoft.com/' };
+    var AI_APPS = { google: 'https://www.google.com/search?udm=50', gemini: 'https://gemini.google.com/app', perplexity: 'https://www.perplexity.ai/', copilot: 'https://copilot.microsoft.com/' };
     document.querySelectorAll('[data-ai-open]').forEach(function (b) {
       b.addEventListener('click', function () {
         var areas = searchAreas(0);
-        copy(buildPrompt(), 'Search copied' + (areas.length ? ' for ' + areas.join(' & ') : '') + '. Paste it into the chat and send');
-        openLink(AI_APPS[b.dataset.aiOpen]);
+        var pr = buildPrompt();
+        if (b.dataset.aiOpen === 'google') {
+          // Google AI Mode reads Google Maps, so ratings are more reliable. The search is filled in for you (and copied, in case).
+          copy(pr, 'Search sent to Google AI' + (areas.length ? ' for ' + areas.join(' & ') : '') + '. If it\'s empty, paste it in');
+          openLink(AI_APPS.google + '&q=' + encodeURIComponent(pr));
+        } else {
+          copy(pr, 'Search copied' + (areas.length ? ' for ' + areas.join(' & ') : '') + '. Paste it into the chat and send');
+          openLink(AI_APPS[b.dataset.aiOpen]);
+        }
         // Next search moves on to the next 2 areas.
         if (areaList().length > 2) { state.crit.areaAt = ((state.crit.areaAt || 0) + 2) % areaList().length; save(); }
         setTimeout(renderFind, 400);
@@ -1638,7 +1647,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cWeb = col(/^website/), cWhy = col(/based on|evidence/);
+        cRev = col(/review/), cWeb = col(/^website/), cIg = col(/instagram/), cWhy = col(/based on|evidence/);
       var cComps = h.map(function (x, i) { return /compliment/.test(x) && i !== cWhy ? i : -1; }).filter(function (i) { return i > -1; });
       if (cName < 0) cName = 0;
       var cols = { merge: [cAddr, cArea, cName, cType, cRev], rate: cRate, rev: cRev, area: cArea, web: cWeb, comps: cComps };
@@ -1652,7 +1661,9 @@
         if (!/[\p{L}\p{N}]/u.test(name) || have[name.toLowerCase()] || isKnown(name)) return;
         var addr = cAddr > -1 ? r[cAddr] || '' : '';
         var area = cArea > -1 ? r[cArea] || '' : (addr.split(',').slice(-2, -1)[0] || '').replace(/Liverpool|L\d+.*$/g, '').trim();
-        // Instagram handles from AI answers are often made up, so they're never imported.
+        // AI Instagram links are only a suggestion: kept if it looks like this business, and always confirmed by Jonathan.
+        var igRaw = cIg > -1 ? String(r[cIg] || '').trim() : '', igH = /instagram\.com\//i.test(igRaw) ? handle(igRaw) : '';
+        if (igH && !igLooksRight(igH, name)) igH = '';
         var web = cWeb > -1 && /^https?:\/\//.test((r[cWeb] || '').trim()) ? r[cWeb].trim() : '';
         var nl = newLead({
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
@@ -1662,6 +1673,7 @@
           aiComps: cComps.map(function (i) { return okText(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? okText(r[cWhy]) : '' }; })
         });
         if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
+        if (igH) { nl.ig = igH; nl.igOk = false; nl.igSrc = mapsUrl(nl); }
         // The AI often ignores the rating range, so anything clearly outside it is left out.
         var rr = parseFloat(nl.rating), rn = parseInt(nl.reviews, 10), c = state.crit;
         if ((!isNaN(rr) && (rr > c.max || rr < c.min)) || (!isNaN(rn) && rn >= c.reviews)) {
