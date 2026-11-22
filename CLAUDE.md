@@ -20,7 +20,7 @@ Both are static, single-file HTML/JS apps (ES5 style, a `$()` helper, state in `
 
 ## The offer (keep everything consistent with this)
 
-Free until **31 January 2027**, then **£25 a month for life** for founding businesses (usual price £40). No contract, only 10 founding spots.
+Free until **31 January 2027**, then **£25 a month for life** for founding businesses (usual price £40). No contract, only 10 founding spots. Every founding business gets a **free custom desk card** in their colours (A6, QR code to their review page). Mention it after they reply, not in the first DM.
 **Promise:** if their Google reviews haven't grown by 31 January, they don't pay until they do.
 Never write "no monthly fee". Don't promise a specific number of reviews.
 
