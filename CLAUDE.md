@@ -28,7 +28,7 @@ Never write "no monthly fee". Don't promise a specific number of reviews.
 
 1. Find businesses: rated **4.0–4.8★** with **under 100 Google reviews**, in Jonathan's areas.
 2. Follow and like their Instagram.
-3. Send a short DM of about 60 words. It ends "Want to see what yours would look like? 😊", and doesn't mention QR cards in the first message.
+3. Send a short, personal DM of about 45–55 words: their first name if known, a specific compliment about their page, a warm local intro, one simple line about what it does. Three wordings rotate ("Another version"), so DMs don't look like a template. It ends "Want to see what yours would look like? 😊", and doesn't mention QR cards in the first message.
 4. When they reply, send a **preview link** to their own review page. Work by message; calls only if they ask.
 5. Sign them up, then send their page link.
 

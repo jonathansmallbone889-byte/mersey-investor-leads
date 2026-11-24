@@ -746,21 +746,6 @@
     }
 
     // ---------- Messages ----------
-    // Lead with what others don't offer (one-tap WhatsApp asks, hearing problems privately first).
-    // QR cards are left out of the first message: owners have seen plenty and switch off.
-    var TYPE_LINE = {
-      salon: "I've built a simple way to send clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      nails: "I've built a simple way to send clients a friendly WhatsApp after their appointment, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      barber: "I've built a simple way to send customers a friendly WhatsApp after their cut, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      groomer: "I've built a simple way to get more Google reviews from happy owners, with a quick WhatsApp after each groom. Anyone unhappy can tell you privately first.",
-      cafe: "I've built a simple way for regulars to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
-      takeaway: "I've built a simple way for happy customers to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
-      gym: "I've built a simple way to send members a friendly WhatsApp after a milestone, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      tattoo: "I've built a simple way to send clients a friendly WhatsApp once they've healed, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      trade: "I've built a simple way to send customers a friendly WhatsApp the day the job's finished, so happy ones leave a Google review in one tap and anyone unhappy tells you privately first.",
-      shop: "I've built a simple way for customers to leave a Google review in one tap, and for anyone unhappy to message you privately first.",
-      other: "I've built a simple way for happy customers to leave a Google review in one tap, and for anyone unhappy to message you privately first."
-    };
     // Compliments that hold true for most businesses of each type. Used as one-tap ideas, and
     // as the default when no compliment has been written (each lead gets its own by default).
     // Compliment ideas by angle. Kept general on purpose: never claim something specific about a business that may not be true.
@@ -885,13 +870,23 @@
         }).join('') + '</div>' +
         (compAngle === 'fill' ? '<p class="help">Tap one, then swap ___ for something real you saw on their page.</p>' : '');
     }
+    // First DM: short, warm and about them. Three wordings so no two DMs look the same ("Another version" cycles them).
+    var DM_PLURAL = { salon: 'salons', nails: 'nail techs', barber: 'barbers', groomer: 'groomers', cafe: 'cafés', takeaway: 'takeaways', gym: 'gyms and PTs', tattoo: 'tattoo studios', trade: 'tradespeople', shop: 'independent shops', other: 'local businesses' };
+    var DM_AFTER = { salon: 'after each appointment', nails: 'after each appointment', barber: 'after each cut', groomer: 'after each groom', gym: 'after a milestone', tattoo: 'once they\'ve healed', trade: 'when the job\'s done' };
+    function firstName(n) { var f = String(n || '').trim().split(/\s+/)[0] || ''; return f ? f.charAt(0).toUpperCase() + f.slice(1) : ''; }
     function dmText(l) {
-      var me = state.me.name;
+      var me = state.me.name || 'Jonathan';
       var opener = (l.compliment || '').trim();
-      if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}\uFE0F?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
+      if (opener && !/[.!?…]$/.test(opener) && !/(\p{Extended_Pictographic}️?|[\u{1F1E6}-\u{1F1FF}])$/u.test(opener)) opener += '!';
       if (!opener) opener = aiList(l).length ? aiList(l)[0].t : autoCompliment(l);
-      // Short on purpose (about 55 words): fits one phone screen. The review count is saved for after they reply.
-      return 'Hi! ' + opener + ' ' + (me ? 'I\'m ' + me + ', local to ' + CITY() + '.' : 'I\'m local to ' + CITY() + '.') + ' ' + (TYPE_LINE[l.type] || TYPE_LINE.other) + ' Not an agency, no contract. I\'m looking for a few founding businesses to try it free. Want to see what yours would look like? 😊';
+      var hi = 'Hi' + (firstName(l.ownerName) ? ' ' + firstName(l.ownerName) : '') + '! ';
+      var people = PEOPLE[l.type] || 'customers', plural = DM_PLURAL[l.type] || DM_PLURAL.other, after = DM_AFTER[l.type];
+      var how = after ? 'one friendly message ' + after : 'a one-tap review page that takes them seconds';
+      var v = (l.dmVar == null ? seed(l) : l.dmVar) % 3;
+      var end = ' Want to see what yours would look like? 😊';
+      if (v === 0) return hi + opener + ' I\'m ' + me + ', local to ' + CITY() + ' too 👋 I help ' + plural + ' get more Google reviews from happy ' + people + ', with ' + how + '. Free to try, no contract.' + end;
+      if (v === 1) return hi + opener + ' I\'m ' + me + ', from ' + CITY() + '. Quick one: I\'ve made a simple way for your happy ' + people + ' to leave a Google review in one tap, and anyone unhappy tells you privately first. Not an agency, just me.' + end;
+      return hi + opener + ' I\'m ' + me + ', I\'m local and I help ' + (l.area ? l.area + ' ' : '') + 'businesses like yours turn happy ' + people + ' into Google reviews. It\'s free to try and there\'s no contract.' + end;
     }
     // The message that belongs with opening Instagram at each stage (null = nothing to send yet).
     function igMessage(l) {
@@ -1870,10 +1865,12 @@
       if (['followed', 'follow', 'check'].indexOf(l.status) > -1) {
         cards.dm = '<div class="card"><h2>Your DM</h2>' +
           '<label class="f" for="fType">Type of business</label><select id="fType">' + TYPES.concat([['other', 'Other']]).map(function (t) { return '<option value="' + t[0] + '"' + (l.type === t[0] ? ' selected' : '') + '>' + t[1] + '</option>'; }).join('') + '</select>' +
+          '<label class="f" for="fOwnerName">Their first name <span class="o">(optional, makes it personal)</span></label><input type="text" id="fOwnerName" value="' + esc(l.ownerName || '') + '" placeholder="Check their bio or how they sign posts" autocomplete="off">' +
           '<label class="f" for="fComp">Something specific you liked on their page</label><input type="text" id="fComp" value="' + esc(l.compliment) + '" placeholder="e.g. That fried ice cream looks unreal 😍">' +
           ideasHtml(l) +
           '<p class="help" id="compNote">' + compNote(l) + '</p>' +
           '<div class="msg" id="dmPrev">' + esc(dmText(l)) + '</div>' +
+          '<button class="btn btn-ghost btn-sm" data-act="dmNext" style="margin-bottom:8px">↻ Another version</button>' +
           (l.status === 'followed' ? '<div class="row">' + (h ? igButton(l, ' btn-block') : '<button class="btn btn-primary" data-act="copyDm">Copy DM</button>') + '</div><button class="btn btn-gold btn-block" data-act="sent" style="margin-top:8px">I\'ve sent it</button>' :
             (h ? '' : '<div class="row"><button class="btn btn-ghost" data-act="copyDm">Copy DM</button></div>')) +
           '</div>';
@@ -1962,6 +1959,7 @@
       else if (a === 'copyDm') { if (!overLimit(b)) copy(dmText(cur), 'DM copied'); }
       else if (a === 'sent') { setStatus('dm', { dmAt: t }); toast('Marked as sent. Follow up ' + nice(addDays(t, state.me.fuDays))); }
       else if (a === 'sendFu') copy(fuText(cur), 'Follow-up copied');
+      else if (a === 'dmNext') { cur.dmVar = ((cur.dmVar == null ? seed(cur) : cur.dmVar) + 1) % 3; save(); $('dmPrev').textContent = dmText(cur); }
       else if (a === 'fuNext') { cur.fuVar = ((cur.fuVar == null ? seed(cur) : cur.fuVar) + 1) % FU.length; save(); $('fuPrev').textContent = fuText(cur); }
       else if (a === 'sendFinal') copy(finalText(cur), 'Final message copied');
       else if (a === 'finalSent') { setStatus('no', { notes: ((cur.notes || '') + (cur.notes ? '\n' : '') + 'Final message sent ' + nice(t)).trim() }); toast('Lead closed. You can reopen it any time'); }
@@ -2023,6 +2021,7 @@
       var y = $('sheet').scrollTop; renderSheet(); $('sheet').scrollTop = y;
     });
     $('shBody').addEventListener('input', function (e) {
+      if (e.target.id === 'fOwnerName' && cur && $('dmPrev')) { cur.ownerName = e.target.value; $('dmPrev').textContent = dmText(cur); save(); }
       if (e.target.id === 'fComp' && cur) { cur.compliment = e.target.value; cur.compSrc = ''; $('dmPrev').textContent = dmText(cur); $('compNote').textContent = compNote(cur); save(); }
       if (e.target.id === 'fHook' && cur) { cur.fuHook = e.target.value; $('fuPrev').textContent = cur.status === 'fu' ? finalText(cur) : fuText(cur); save(); }
     });
