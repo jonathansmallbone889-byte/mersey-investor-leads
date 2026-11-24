@@ -326,7 +326,7 @@
       </div>
       <div class="card" id="cardRes" hidden><h2>Results checks due 📈 <span class="n" id="nRes"></span></h2><p class="sub">Look up their Google reviews and save the number. This is your proof it works.</p><div id="lRes"></div></div>
       <div class="card" id="cardHot" hidden><h2>Reply to these first 🔥 <span class="n" id="nHot"></span></h2><p class="sub">They replied, so answer quickly. Send a preview of their page.</p><div id="lHot"></div></div>
-      <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div></div>
+      <div class="card" id="cardFu"><h2>Follow-ups due <span class="n" id="nFu"></span></h2><p class="sub">No reply after a few days? Send one friendly follow-up.</p><div id="lFu"></div><button class="btn btn-ghost btn-block btn-sm" id="clearFu" hidden style="margin-top:10px"></button></div>
       <div class="card" id="cardLast" hidden>
         <h2>Last message or close <span class="n" id="nLast"></span></h2>
         <p class="sub">You've followed these up and heard nothing. Open each to send one polite last message (it leaves the door open), or close them.</p>
@@ -1168,7 +1168,7 @@
       download('mersey-outreach-backup-' + todayIso() + '.json', JSON.stringify(state, null, 2), 'application/json');
       toast('Backup saved to your Downloads');
     }
-    var lastDue = [];
+    var lastDue = [], fuDue = [];
     // ---------- Today's run: everything due today, one business at a time ----------
     var RUN_KINDS = {
       reply: { step: 'Send the preview', done: 'Preview sent ✓', sum: 'Previews sent' },
@@ -1309,6 +1309,7 @@
         return (l.status === 'dm' && l.dmAt && addDays(l.dmAt, fd) <= t) || (l.status === 'wait' && addDays(l.waitAt || l.repliedAt || t, 3) <= t);
       });
       $('nFu').textContent = fu.length;
+      fuDue = fu; $('clearFu').hidden = !fu.length; $('clearFu').textContent = 'Clear all ' + fu.length + ' and focus on new businesses';
       list('lFu', fu, function (l) {
         if (l.status === 'wait') return 'Said maybe ' + nice(l.repliedAt) + '. Send a nudge';
         return 'DM sent ' + nice(l.dmAt) + '. No reply yet';
@@ -1719,6 +1720,16 @@
       gone.forEach(function (l) { l.status = 'no'; l.notes = ((l.notes || '') + (l.notes ? '\n' : '') + 'Closed, no reply ' + nice(t)).trim(); });
       save(); renderToday();
       toast(gone.length + ' closed as "Not interested"', function () { before.forEach(function (b) { b.l.status = b.status; b.l.notes = b.notes; }); save(); render(); });
+    });
+    // Close every follow-up that's due in one go (with undo), to focus on new businesses.
+    $('clearFu').addEventListener('click', function () {
+      var gone = fuDue.slice(), t = todayIso();
+      if (!gone.length) return;
+      if (!confirm('Close all ' + gone.length + ' follow-ups due? They\'ll be marked "Not interested" and won\'t come up again. You can undo straight after.')) return;
+      var before = gone.map(function (l) { return { l: l, status: l.status, notes: l.notes }; });
+      gone.forEach(function (l) { l.status = 'no'; l.notes = ((l.notes || '') + (l.notes ? '\n' : '') + 'Closed without a follow-up ' + nice(t)).trim(); });
+      save(); renderToday();
+      toast(gone.length + ' follow-ups cleared', function () { before.forEach(function (b) { b.l.status = b.status; b.l.notes = b.notes; }); save(); render(); });
     });
     $('calSkip').addEventListener('click', function () { state.me.calSet = 'skipped'; save(); renderToday(); });
     $('exportCsv').addEventListener('click', function () {
