@@ -406,6 +406,15 @@
         </div>
       </div>
 
+      <div class="card" id="fbFindCard">
+        <h2>Find on Facebook 👥</h2>
+        <p class="sub">Google AI finds local groups to join, or businesses with a Facebook page. Always check a link is really theirs before you message.</p>
+        <button class="btn btn-ghost btn-block" id="fbGroups">Find local Facebook groups</button>
+        <p class="help" style="margin:4px 0 10px">Join 5–8, read their rules, and share helpful posts where it's allowed.</p>
+        <button class="btn btn-primary btn-block" id="fbBiz">Find businesses on Facebook</button>
+        <p class="help" style="margin-top:4px">Copy Google's table and paste it into "Paste the answer here" above. Each business gets a Facebook page button.</p>
+      </div>
+
       <div class="card" id="igFindCard">
         <h2>Add one from Instagram 📸</h2>
         <p class="sub">Spotted a business on Instagram? Add it here: always the right account.</p>
@@ -1506,6 +1515,34 @@
         return !low.length || low.some(function (x) { return where.indexOf(x) > -1; });
       }).map(function (l) { return l.name; }).slice(-25);
     }
+    // ---------- Find on Facebook (Google AI Mode) ----------
+    function fbGroupsPrompt() {
+      var areas = areaList(); if (!areas.length) areas = [CITY()];
+      return 'List active Facebook groups for small business owners, and big local community groups, in ' + areas.join(', ') + ' (' + CITY() + ', UK). ' +
+        'For each give: Group name, Area, Type (business networking / community / buy and sell), and the facebook.com/groups link only if Google shows it. ' +
+        'Only include groups you can actually find. Never invent a group or a link. Reply as a table.';
+    }
+    function fbBizPrompt() {
+      var c = state.crit, areas = searchAreas(0);
+      var where = areas.length ? areas.join(' and ') + ', near ' + CITY() : 'in and around ' + CITY();
+      var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
+      return 'Use Google Maps to find up to ' + (c.count + 3) + ' independent small businesses in ' + where + ', UK, that have an active Facebook page. No chains or franchises.\n\n' +
+        'Types: ' + types + '.\nLooking for: Google rating ' + c.min.toFixed(1) + ' to ' + c.max.toFixed(1) + ' (not 4.9 or 5.0) and fewer than ' + c.reviews + ' Google reviews.\n\n' +
+        'Always reply with the table, even if you only find a few. Give it as a CSV in a code block, every value in double quotes, with these columns:\n' +
+        'Business Name,Type of Business,Address,Area,Google Rating,Number of Google Reviews,Website,Facebook,Google Maps Link,Compliment 1,Compliment 2,Compliment 3,Compliment Based On\n\n' +
+        'Rating and reviews: copy them as shown on Google Maps. If you can\'t see them, leave them blank (never guess).\n' +
+        'Facebook: the full facebook.com link ONLY if it is shown on their Google listing or their own website. Otherwise leave it blank. Never guess a link.\n' +
+        'Compliments: if you read their Google reviews, write 3 compliments about what real customers love. ' + COMP_VOICE + ' In Compliment Based On, quote a few words from one real review. If you didn\'t read any, leave all four blank.';
+    }
+    function openGoogleAi(pr, msg) { copy(pr, msg); openLink('https://www.google.com/search?udm=50&q=' + encodeURIComponent(pr)); }
+    $('fbGroups').addEventListener('click', function () { openGoogleAi(fbGroupsPrompt(), 'Group search sent to Google AI. If it\'s empty, paste it in'); });
+    $('fbBiz').addEventListener('click', function () {
+      var areas = searchAreas(0);
+      openGoogleAi(fbBizPrompt(), 'Facebook search sent to Google AI' + (areas.length ? ' for ' + areas.join(' & ') : '') + '. Paste the table back here');
+      if (areaList().length > 2) { state.crit.areaAt = ((state.crit.areaAt || 0) + 2) % areaList().length; save(); }
+      setTimeout(renderFind, 400);
+    });
+
     function buildPrompt(step) {
       var c = state.crit;
       var types = c.types.map(function (t) { return TYPE_NAME[t].toLowerCase(); }).join(', ') || 'any small local business';
@@ -1642,7 +1679,7 @@
       var h = rows[0].map(function (x) { return x.toLowerCase(); });
       function col(re) { for (var i = 0; i < h.length; i++) if (re.test(h[i])) return i; return -1; }
       var cName = col(/name/), cType = col(/type/), cAddr = col(/address/), cArea = col(/^area/), cRate = col(/rating/),
-        cRev = col(/review/), cWeb = col(/^website/), cIg = col(/instagram/), cWhy = col(/based on|evidence/);
+        cRev = col(/review/), cWeb = col(/^website/), cIg = col(/instagram/), cFb = col(/facebook/), cWhy = col(/based on|evidence/);
       var cComps = h.map(function (x, i) { return /compliment/.test(x) && i !== cWhy ? i : -1; }).filter(function (i) { return i > -1; });
       if (cName < 0) cName = 0;
       var cols = { merge: [cAddr, cArea, cName, cType, cRev], rate: cRate, rev: cRev, area: cArea, web: cWeb, comps: cComps };
@@ -1660,11 +1697,13 @@
         var igRaw = cIg > -1 ? String(r[cIg] || '').trim() : '', igH = /instagram\.com\//i.test(igRaw) ? handle(igRaw) : '';
         if (igH && !igLooksRight(igH, name)) igH = '';
         var web = cWeb > -1 && /^https?:\/\//.test((r[cWeb] || '').trim()) ? r[cWeb].trim() : '';
+        var fbRaw = cFb > -1 ? String(r[cFb] || '').trim() : '', fb = /^https?:\/\/(www\.|m\.)?facebook\.com\/[^\s]+$/i.test(fbRaw) ? fbRaw : '';
         var nl = newLead({
           name: name, type: guessType(cType > -1 ? r[cType] : ''), address: addr, area: area,
           rating: cRate > -1 ? okRating(r[cRate]) : '',
           reviews: cRev > -1 ? okReviews(r[cRev]) : '',
-          notes: 'Imported ' + nice(todayIso()) + (web ? '\nWebsite: ' + web : ''),
+          notes: 'Imported ' + nice(todayIso()) + (fb ? ' via Facebook search' : '') + (web ? '\nWebsite: ' + web : '') + (fb ? '\nFacebook: ' + fb : ''),
+          fb: fb,
           aiComps: cComps.map(function (i) { return okText(r[i]); }).filter(Boolean).map(function (t) { return { t: t, why: cWhy > -1 ? okText(r[cWhy]) : '' }; })
         });
         if (nl.aiComps.length) { nl.compliment = nl.aiComps[0].t; nl.compSrc = 'gemini'; nl.aiFrom = todayIso(); }
@@ -1849,6 +1888,7 @@
         '<label class="f" for="fIg">Instagram username or profile link</label><input type="text" id="fIg" value="' + esc(h) + '" placeholder="their_username" autocomplete="off" spellcheck="false">' +
         '<div class="row" style="margin-top:10px">' +
         (h ? (igMessage(l) ? '' : igButton(l)) : '') +
+        (l.fb ? '<a class="btn btn-ghost" href="' + esc(l.fb) + '" target="_blank" rel="noopener">Facebook page</a>' : '') +
         '<a class="btn btn-ghost" href="' + esc(mapsUrl(l)) + '" target="_blank" rel="noopener">Google Maps</a>' +
         '<a class="btn btn-ghost" href="' + esc(googleUrl(l)) + '" target="_blank" rel="noopener">Google search</a></div>' +
         '<div class="two"><div><label class="f" for="fRating">Google rating</label><input type="number" id="fRating" step="0.1" min="1" max="5" inputmode="decimal" value="' + esc(l.rating) + '"></div>' +
