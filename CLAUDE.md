@@ -32,6 +32,7 @@ Never write "no monthly fee". Don't promise a specific number of reviews.
 4. When they reply, send a **preview link** to their own review page. Work by message; calls only if they ask.
 5. Sign them up, then send their page link.
 
+- **Compliments** must sound like Jonathan texting: first person, casual, under 12 words, one emoji, about one specific thing ("That red French set is gorgeous 😍"). Never "your reviews praise…" or "your page showcases…".
 - **Daily DM limit:** 10.
 - **Instagram usernames:** never trust a username from an AI. The Google AI search may suggest an instagram.com link only when Google shows it on the listing or website. The app keeps it only if it looks like the business name, and always marks it "check it's them" for Jonathan to confirm. "Add one from Instagram" (copying the real profile link) is always correct.
 
