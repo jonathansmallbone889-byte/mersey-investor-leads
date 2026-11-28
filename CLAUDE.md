@@ -9,7 +9,7 @@ Both are static, single-file HTML/JS apps (ES5 style, a `$()` helper, state in `
 | Path | What it is | localStorage key |
 |---|---|---|
 | `reviews/` | The public website, plus the business dashboard (ask customers, QR & print, reply writer, goal). `r.html` is the customer review page; `?demo=1` makes a safe preview that sends nothing. | `mersey-stars-v1` |
-| `outreach/` | Jonathan's private Instagram outreach app: Today (with "Start today's run"), Leads, Find (Google AI search that fills in a batch, plus "Add one from Instagram"), Settings. | `ms-outreach-v1` |
+| `outreach/` | Jonathan's private Instagram outreach app: Today (with "Start today's run"), Leads, Find (Google AI search that fills in a batch, "Find on Facebook" for groups and businesses with a Facebook page, plus "Add one from Instagram"), Settings. | `ms-outreach-v1` |
 | `index.html` | Redirects to `reviews/`, keeping the query string and hash. | |
 
 - **Live site:** https://jonathansmallbone889-byte.github.io/mersey-investor-leads/reviews/
